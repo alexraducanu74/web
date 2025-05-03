@@ -18,27 +18,24 @@ class SignupContr extends Signup
     public function signupUser()
     {
         if ($this->emptyInput() == false) {
-            header("location: ../index.php/?error=emptyinput");
-            exit();
+            return "Please input all the fields.";
         }
         if ($this->invalidUid() == false) {
-            header("location: ../index.php/?error=invaliduid");
-            exit();
+            return "Username is invalid.";
         }
         if ($this->invalidEmail() == false) {
-            header("location: ../index.php/?error=invalidemail");
-            exit();
+            return "Email adress is invalid";
         }
         if ($this->pwdMatch() == false) {
-            header("location: ../index.php/?error=pwdmatch");
-            exit();
+            return "Passwords do not match.";
         }
         if ($this->uidTakenCheck() == false) {
-            header("location: ../index.php/?error=usernameoremailtaken");
-            exit();
+            return "Username already taken";
         }
 
         $this->setUser($this->uid, $this->pwd, $this->email);
+
+        return "";
 
     }
 
