@@ -1,4 +1,5 @@
 <?php
+include '../nav/navbar.php';
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
