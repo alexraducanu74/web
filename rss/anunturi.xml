@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Anunțuri Cărți</title>
+    <link>http://exemplu.ro/anunturi</link>
+    <description>Flux de anunțuri legate de cărți, recenzii și clasamente.</description>
+    <language>ro-ro</language>
+
+    <item>
+      <title>Recenzie: „Solenoid” de Mircea Cărtărescu</title>
+      <link>http://exemplu.ro/articole/recenzie-solenoid</link>
+      <description>O analiză detaliată a romanului „Solenoid”, una dintre cele mai apreciate lucrări ale literaturii contemporane românești.</description>
+      <pubDate>Thu, 02 May 2025 14:00:00 +0300</pubDate>
+    </item>
+
+    <item>
+      <title>A apărut volumul 3 din seria „Arhiva Luminii”</title>
+      <link>http://exemplu.ro/noutati/volumul-3-arhiva-luminii</link>
+      <description>Noul volum extinde universul fantastic creat de autoarea Ana Popescu, cu personaje noi și intrigi surprinzătoare.</description>
+      <pubDate>Wed, 01 May 2025 10:00:00 +0300</pubDate>
+    </item>
+
+    <item>
+      <title>Top 10 cărți științifice: o nouă lideră</title>
+      <link>http://exemplu.ro/clasamente/top-10-stiinta-2025</link>
+      <description>„O scurtă istorie a timpului” a fost detronată de „Universul Elegant” în clasamentul celor mai apreciate cărți științifice ale anului.</description>
+      <pubDate>Tue, 30 Apr 2025 18:30:00 +0300</pubDate>
+    </item>
+
+  </channel>
+</rss>

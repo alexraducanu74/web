@@ -1,0 +1,245 @@
+/* === Global Reset & Base === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background-color: #f7f7f7;
+  color: #2d3748;
+  line-height: 1.6;
+}
+
+/* === Navbar === */
+.navbar {
+  height:70px;
+  background-color: #2c3e50;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  transition: background-color 0.3s ease;
+}
+
+.navbar .logo {
+  color: #fff;
+  font-size: 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar .menu {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.navbar .menu a {
+  color: #f8f9fa;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.navbar .menu a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* === Page Container === */
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+/* === Page Heading === */
+.container h1 {
+  font-size: 2.25rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.container h1::after {
+  content: "";
+  position: absolute;
+  width: 60px;
+  height: 4px;
+  background-color: #e74c3c;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+/* === RSS Feed Items === */
+.feed-item {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.feed-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.feed-item h2 {
+  font-size: 1.35rem;
+  margin: 0 0 1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.feed-item h2 a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+.feed-item h2 a:hover {
+  color: #e74c3c;
+}
+
+.feed-item p {
+  font-size: 1.05rem;
+  color: #4a5568;
+  line-height: 1.7;
+  text-align: justify;
+}
+
+.feed-item time {
+  display: block;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: #718096;
+  text-align: right;
+  font-weight: 500;
+}
+
+/* === Forms: Login & Signup === */
+.index-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  background-color: #ecf0f1;
+}
+
+.wrapper {
+  background-color: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 450px;
+}
+
+.index-login-login,
+.index-login-signup {
+  text-align: center;
+}
+
+.index-login h4 {
+  font-size: 1.75rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.index-login p {
+  font-size: 1rem;
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
+.index-login form input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.index-login form input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.index-login form button {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #2c3e50;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.index-login form button:hover {
+  background-color: #34495e;
+}
+
+/* === Error Message Styling === */
+form p[style*="color:red"] {
+  margin: 1rem 0;
+  font-weight: 500;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1.2rem;
+  }
+
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar .menu {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: 0.5rem;
+  }
+
+  .navbar .menu a {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+
+  .wrapper {
+    padding: 1.5rem;
+  }
+
+  .container h1 {
+    font-size: 1.75rem;
+  }
+
+  .feed-item {
+    padding: 1.5rem;
+  }
+
+  .feed-item h2 {
+    font-size: 1.2rem;
+  }
+}

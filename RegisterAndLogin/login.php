@@ -1,5 +1,4 @@
 <?php
-include '../nav/navbar.php';
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -12,6 +11,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/web/style.css"> 
+</head>
+<body>
+<?php include '../nav/navbar.php';?>
 <section class="index-login">
     <div class="wrapper">
         <div class="index-login-login">
@@ -34,3 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 </section>
+
+</body>
+</html>
