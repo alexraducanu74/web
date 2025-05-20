@@ -1,26 +1,25 @@
 <?php
-require_once 'rss/FeedController.php';
-$controller = new FeedController();
-$items = $controller->getAllFeeds();
-?>
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-    <meta charset="UTF-8">
-    <title>Flux de Știri Cărți</title>
-    <link rel="stylesheet" href="/web/style.css">
-</head>
-<body>
-<?php include './nav/navbar.php';?>
-    <div class="container">
-        <h1>Flux de Știri RSS despre Cărți</h1>
-        <?php foreach ($items as $item): ?>
-            <div class="feed-item">
-            <h2><a href="<?= htmlspecialchars($item->link) ?>" target="_blank"><?= htmlspecialchars($item->title) ?></a></h2>
-            <p><?= htmlspecialchars($item->description) ?></p>
-            <time><?= $item->pubDate ?></time>
-            </div>
-        <?php endforeach; ?>
-    </div>
-</body>
-</html>
+session_start();
+require_once 'autoload.php';
+
+function sanitizeKey($value) {
+    // Allow only letters and numbers
+    return preg_replace('/[^a-zA-Z0-9]/', '', $value);
+}
+
+// Sanitize and validate inputs
+$controller = isset($_GET['controller']) ? sanitizeKey($_GET['controller']) : 'feed';
+$actiune    = isset($_GET['actiune'])    ? sanitizeKey($_GET['actiune'])    : 'showFeed';
+$parametrii = isset($_GET['parametrii']) ? $_GET['parametrii'] : '';
+
+// Process parameters
+$params = array_filter(array_map('trim', explode(',', $parametrii)));
+
+// Construct controller class name
+$controllerClass = 'Controller' . ucfirst(strtolower($controller));
+
+if (class_exists($controllerClass)) {
+    $ctrl = new $controllerClass($actiune, $params);
+} else {
+    echo "Controller-ul '$controllerClass' nu există.";
+}
