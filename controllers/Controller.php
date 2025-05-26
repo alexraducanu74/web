@@ -6,10 +6,17 @@ abstract class Controller
 
     public function __construct()
     {
-        $numeModel = str_replace("Controller", "Model", get_class($this));
-        $this->model = new $numeModel;
+        $className = get_class($this);
+        if ($className !== 'ControllerAuth') {
+            $numeModel = str_replace("Controller", "Model", $className);
+            if (class_exists($numeModel)) {
+                $this->model = new $numeModel;
+            }
 
-        $numeView = str_replace("Controller", "View", get_class($this));
-        $this->view = new $numeView;
+            $numeView = str_replace("Controller", "View", $className);
+            if (class_exists($numeView)) {
+                $this->view = new $numeView;
+            }
+        }
     }
 }

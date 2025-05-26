@@ -34,10 +34,10 @@
       <a href="stats.php">Statistici</a>
       <div class="separator"></div>
     </div>
-    <div class="auth-links">
-      <a href="/web/RegisterAndLogin/login.php">Login</a>
-      <a href="/web/RegisterAndLogin/register.php">Register</a>
-    </div>
+      <div class="auth-links">
+      <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
+      <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>
+</div>
   </div>
 </div>
 
