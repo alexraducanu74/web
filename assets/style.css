@@ -321,3 +321,77 @@ h2 {
 .filters button:hover {
     background: #666;
 }
+
+/* ... (your existing styles) ... */
+
+/* Filter Bar Styles */
+#filter-bar-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  align-items: center;
+}
+
+#filter-bar-container input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+  flex-grow: 1; /* Allow inputs to take available space */
+}
+
+#filter-bar-container button {
+  padding: 8px 15px;
+  border: none;
+  background-color: #555;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#filter-bar-container button:hover {
+  background-color: #333;
+}
+
+#filter-bar-container button#reset-filters-button {
+    background-color: #777;
+}
+#filter-bar-container button#reset-filters-button:hover {
+    background-color: #555;
+}
+
+
+.book p.genre {
+    font-size: 0.8em;
+    color: #777;
+    margin-top: 3px;
+}
+
+.no-books-message-ajax {
+  padding: 20px;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+/* Responsive adjustments for filter bar if needed */
+@media (max-width: 600px) {
+  #filter-bar-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #filter-bar-container input[type="text"],
+  #filter-bar-container button {
+    width: 100%; /* Full width on small screens */
+    margin-bottom: 5px; /* Add some space when stacked */
+  }
+   #filter-bar-container button:last-child {
+    margin-bottom: 0;
+  }
+}

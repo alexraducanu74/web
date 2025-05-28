@@ -1,4 +1,4 @@
 {$header}
-<div class="book-list">
-    {$books}
-</div>
+
+{$filterBar} <div class="book-list">
+    {$books} </div>

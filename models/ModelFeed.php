@@ -8,21 +8,37 @@ class ModelFeed
         $this->db = Dbh::getInstance()->getConnection();
     }
 
-    public function getBooks(string $query = ''): array
+    public function getBooks(string $generalQuery = '', ?string $authorFilter = null, ?string $genreFilter = null): array
     {
-        if ($query === '') {
-            $stmt = $this->db->query("SELECT * FROM books ORDER BY title ASC");
-        } else {
-            $stmt = $this->db->prepare("
-                SELECT * FROM books 
-                WHERE title LIKE :query OR author LIKE :query 
-                ORDER BY title ASC
-            ");
-            $search = '%' . $query . '%';
-            $stmt->bindParam(':query', $search, PDO::PARAM_STR);
-            $stmt->execute();
+        $sql = "SELECT * FROM books";
+        $conditions = [];
+        $params = [];
+
+        if (!empty($generalQuery)) {
+            $conditions[] = "(title LIKE :generalQuery OR author LIKE :generalQueryGeneral)";
+            $params[':generalQuery'] = '%' . $generalQuery . '%';
+            $params[':generalQueryGeneral'] = '%' . $generalQuery . '%';
         }
-    
+
+        if (!empty($authorFilter)) {
+            $conditions[] = "author LIKE :authorFilter";
+            $params[':authorFilter'] = '%' . $authorFilter . '%';
+        }
+
+        if (!empty($genreFilter)) {
+            $conditions[] = "genre LIKE :genreFilter";
+            $params[':genreFilter'] = '%' . $genreFilter . '%';
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $sql .= " ORDER BY title ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -33,7 +49,7 @@ class ModelFeed
         $stmt->execute();
         $book = $stmt->fetch(PDO::FETCH_ASSOC);
         return $book ?: null;
-    }   
+    }
 
     public function findLibrariesNearby(float $lat, float $lon): array
     {
@@ -49,7 +65,7 @@ class ModelFeed
             ]
         ];
         $context = stream_context_create($opts);
-        $response = file_get_contents($url, false, $context);
+        $response = @file_get_contents($url, false, $context); // Added @ to suppress warnings on failure
 
         if ($response === false) {
             return [];
@@ -57,7 +73,6 @@ class ModelFeed
 
         $data = json_decode($response, true);
 
-        // Mapăm rezultatele într-un format simplu
         $libraries = [];
         if (is_array($data)) {
             foreach ($data as $place) {
