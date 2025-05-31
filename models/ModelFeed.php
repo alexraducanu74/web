@@ -8,26 +8,40 @@ class ModelFeed
         $this->db = Dbh::getInstance()->getConnection();
     }
 
-    public function getBooks(string $generalQuery = '', ?string $authorFilter = null, ?string $genreFilter = null): array
+    public function getBooks(string $generalQuery = '', array $authorFilters = [], array $genreFilters = []): array
     {
         $sql = "SELECT * FROM books";
         $conditions = [];
         $params = [];
 
         if (!empty($generalQuery)) {
-            $conditions[] = "(title LIKE :generalQuery OR author LIKE :generalQueryGeneral)";
+            $conditions[] = "(title LIKE :generalQuery OR author LIKE :generalQueryAuthor)"; // Changed param name for clarity
             $params[':generalQuery'] = '%' . $generalQuery . '%';
-            $params[':generalQueryGeneral'] = '%' . $generalQuery . '%';
+            $params[':generalQueryAuthor'] = '%' . $generalQuery . '%';
         }
 
-        if (!empty($authorFilter)) {
-            $conditions[] = "author LIKE :authorFilter";
-            $params[':authorFilter'] = '%' . $authorFilter . '%';
+        if (!empty($authorFilters)) {
+            $authorPlaceholders = [];
+            foreach ($authorFilters as $index => $author) {
+                $paramName = ':authorFilter' . $index;
+                $authorPlaceholders[] = "author = " . $paramName; // Exact match for selected authors
+                $params[$paramName] = $author;
+            }
+            if (!empty($authorPlaceholders)) {
+                $conditions[] = "(" . implode(" OR ", $authorPlaceholders) . ")";
+            }
         }
 
-        if (!empty($genreFilter)) {
-            $conditions[] = "genre LIKE :genreFilter";
-            $params[':genreFilter'] = '%' . $genreFilter . '%';
+        if (!empty($genreFilters)) {
+            $genrePlaceholders = [];
+            foreach ($genreFilters as $index => $genre) {
+                $paramName = ':genreFilter' . $index;
+                $genrePlaceholders[] = "genre LIKE " . $paramName;
+                $params[$paramName] = '%' . $genre . '%';
+            }
+            if (!empty($genrePlaceholders)) {
+                $conditions[] = "(" . implode(" OR ", $genrePlaceholders) . ")";
+            }
         }
 
         if (!empty($conditions)) {
@@ -51,6 +65,31 @@ class ModelFeed
         return $book ?: null;
     }
 
+    public function getDistinctAuthors(): array
+    {
+        $stmt = $this->db->query("SELECT DISTINCT author FROM books WHERE author IS NOT NULL AND author != '' ORDER BY author ASC");
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    public function getDistinctIndividualGenres(): array
+    {
+        $stmt = $this->db->query("SELECT genre FROM books WHERE genre IS NOT NULL AND genre != ''");
+        $allGenreStrings = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        $individualGenres = [];
+        foreach ($allGenreStrings as $genreString) {
+            $genres = explode(',', $genreString);
+            foreach ($genres as $genre) {
+                $trimmedGenre = trim($genre);
+                if (!empty($trimmedGenre) && !in_array($trimmedGenre, $individualGenres, true)) {
+                    $individualGenres[] = $trimmedGenre;
+                }
+            }
+        }
+        sort($individualGenres);
+        return $individualGenres;
+    }
+
     public function findLibrariesNearby(float $lat, float $lon): array
     {
         $url = "https://nominatim.openstreetmap.org/search?format=json&limit=5&q=library&viewbox="
@@ -65,7 +104,7 @@ class ModelFeed
             ]
         ];
         $context = stream_context_create($opts);
-        $response = @file_get_contents($url, false, $context); // Added @ to suppress warnings on failure
+        $response = @file_get_contents($url, false, $context);
 
         if ($response === false) {
             return [];

@@ -13,7 +13,7 @@ class ViewRegister
         <head>
             <meta charset="UTF-8">
             <title>Sign Up</title>
-            <link rel="stylesheet" href="/assets/web/style.css">
+            <link rel="stylesheet" href="assets/style.css">
         </head>
 
         <body>

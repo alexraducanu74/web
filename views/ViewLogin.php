@@ -13,7 +13,7 @@ class ViewLogin
         <head>
             <meta charset="UTF-8">
             <title>Login</title>
-            <link rel="stylesheet" href="/assets/web/style.css">
+            <link rel="stylesheet" href="assets/style.css">
         </head>
 
         <body>
@@ -47,7 +47,7 @@ class ViewLogin
                     if (token) {
                         localStorage.setItem('jwtToken', token);
                         alert('Login successful! Token stored. Redirecting...');
-                        window.location.href = 'index.php?action=dashboard';
+                        window.location.href = 'index.php?controller=feed&actiune=showFeed';
                     }
                 </script>
             <?php endif; ?>
