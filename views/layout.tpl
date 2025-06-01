@@ -34,10 +34,7 @@
       <a href="stats.php">Statistici</a>
       <div class="separator"></div>
     </div>
-      <div class="auth-links">
-      <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
-      <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>
-</div>
+      <div class="auth-links" id="auth-links"></div>
   </div>
 </div>
 
@@ -50,8 +47,28 @@
 </body>
 </html>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Dacă URL nu are lat/lon
+document.addEventListener('DOMContentLoaded', () => {
+const authLinks = document.getElementById('auth-links');
+const token = localStorage.getItem('jwtToken');
+
+if (token) {
+  authLinks.innerHTML = `
+    <a href="#" id="logout-button">Logout</a>
+  `;
+
+  document.getElementById('logout-button').addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('jwtToken');
+    alert('You have been logged out.');
+    location.reload(); // Reload to update the navbar
+  });
+} else {
+  authLinks.innerHTML = `
+    <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
+    <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>
+  `;
+}
+
     const urlParams = new URLSearchParams(window.location.search);
     if (!urlParams.has('lat') || !urlParams.has('lon')) {
       if (navigator.geolocation) {
@@ -59,11 +76,9 @@
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
 
-          // Construim URL nou cu parametrii
           urlParams.set('lat', lat);
           urlParams.set('lon', lon);
 
-          // Adăugăm controller și actiune dacă nu sunt prezente (exemplu)
           if (!urlParams.has('controller')) urlParams.set('controller', 'feed');
           if (!urlParams.has('actiune')) urlParams.set('actiune', 'search');
 
@@ -71,7 +86,6 @@
           window.location.href = newUrl;
         }, error => {
           console.log('Geolocația nu a fost permisă sau eșuată.', error);
-          // Dacă vrei, poți afișa mesaj aici sau continua fără locație
         });
       }
     }
