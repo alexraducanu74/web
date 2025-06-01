@@ -43,3 +43,6 @@ INSERT INTO books (title, author, genre, cover_image) VALUES
 ('Book Title 18', 'Author Thriller', 'Psychological Thriller', 'covers/1984.jpg'),
 ('Book Title 19', 'Author Thriller', 'Thriller', 'covers/1984.jpg'),
 ('Book Title 20', 'Author Thriller', 'Crime Thriller', 'covers/1984.jpg');
+
+ALTER TABLE users ADD is_admin BOOLEAN DEFAULT FALSE;
+INSERT INTO users (users_uid, users_email, is_admin, users_pwd) VALUES ('admin', 'admin@admin.com', 1, '$2y$10$INvQoLFmST6ewSBItlkXVOR8Q1sTzGRxkOU7TPiNvLOiLZ01nYhvG');

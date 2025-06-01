@@ -4,7 +4,8 @@ class ModelLogin
     public function getUser(string $uid, string $pwd)
     {
         $dbh = Dbh::getInstance()->getConnection();
-        $stmt = $dbh->prepare('SELECT users_id, users_uid, users_pwd FROM users WHERE users_uid = ? OR users_email = ?;');
+        $stmt = $dbh->prepare('SELECT users_id, users_uid, users_pwd, is_admin FROM users WHERE users_uid = ? OR users_email = ?;');
+
         if (!$stmt->execute([$uid, $uid])) {
             $stmt = null;
             return "stmtfailed";
@@ -19,7 +20,11 @@ class ModelLogin
             return "wrongpassword";
         }
         $stmt = null;
-        return ['users_id' => $user['users_id'], 'users_uid' => $user['users_uid']];
+        return [
+            'users_id' => $user['users_id'],
+            'users_uid' => $user['users_uid'],
+            'is_admin' => $user['is_admin']
+        ];
     }
     protected function connect()
     {

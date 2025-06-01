@@ -74,17 +74,28 @@ class ControllerAuth extends Controller
         }
         $userId = $userDataOrError['users_id'];
         $username = $userDataOrError['users_uid'];
+        $isAdmin = $userDataOrError['is_admin'];
+
         $issuedAt = time();
         $expirationTime = $issuedAt + JWT_EXPIRATION_TIME_SECONDS;
+
         $payload = [
             'iss' => JWT_ISSUER,
             'aud' => JWT_AUDIENCE,
             'iat' => $issuedAt,
             'exp' => $expirationTime,
-            'data' => ['userId' => $userId, 'username' => $username]
+            'data' => [
+                'userId' => $userId,
+                'username' => $username,
+                'is_admin' => $isAdmin
+            ]
         ];
         try {
             $jwt = JWT::encode($payload, JWT_SECRET_KEY, JWT_ALGORITHM);
+            $_SESSION['jwt'] = $jwt;
+            $_SESSION['user_id'] = $userId;
+            $_SESSION['username'] = $username;
+            $_SESSION['is_admin'] = $isAdmin;
             $this->showLoginForm(['jwt_token' => $jwt]);
         } catch (Exception $e) {
             $this->showLoginForm(['error_message' => 'Could not process login. Please try again.']);
@@ -126,9 +137,22 @@ class ControllerAuth extends Controller
             $this->showRegisterForm(['error_message' => "An error occurred during registration. Please try again."]);
         }
     }
-    public function logout(): void
+   public function logout(): void
     {
-        header("Location: index.php?action=showLogin&status=loggedout");
+        // Make sure session is started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Clear all session variables
+        $_SESSION = array();
+        
+        // Destroy the session
+        session_destroy();
+        
+        // Redirect to login page
+        // header("Location: index.php?controller=auth&actiune=showLoginForm&status=loggedout");
+        header("Location: index.php");
         exit();
     }
 }

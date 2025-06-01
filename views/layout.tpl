@@ -34,7 +34,9 @@
       <a href="stats.php">Statistici</a>
       <div class="separator"></div>
     </div>
-      <div class="auth-links" id="auth-links"></div>
+      <div class="auth-links" id="auth-links">
+      {$authLinks}
+      </div>
   </div>
 </div>
 
@@ -43,51 +45,6 @@
 <main>
     {$content}
 </main>
-
+<script src="assets/js/geolocation.js"></script>
 </body>
 </html>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-const authLinks = document.getElementById('auth-links');
-const token = localStorage.getItem('jwtToken');
-
-if (token) {
-  authLinks.innerHTML = `
-    <a href="#" id="logout-button">Logout</a>
-  `;
-
-  document.getElementById('logout-button').addEventListener('click', (e) => {
-    e.preventDefault();
-    localStorage.removeItem('jwtToken');
-    alert('You have been logged out.');
-    location.reload(); // Reload to update the navbar
-  });
-} else {
-  authLinks.innerHTML = `
-    <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
-    <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>
-  `;
-}
-
-    const urlParams = new URLSearchParams(window.location.search);
-    if (!urlParams.has('lat') || !urlParams.has('lon')) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-
-          urlParams.set('lat', lat);
-          urlParams.set('lon', lon);
-
-          if (!urlParams.has('controller')) urlParams.set('controller', 'feed');
-          if (!urlParams.has('actiune')) urlParams.set('actiune', 'search');
-
-          const newUrl = window.location.pathname + '?' + urlParams.toString();
-          window.location.href = newUrl;
-        }, error => {
-          console.log('Geolocația nu a fost permisă sau eșuată.', error);
-        });
-      }
-    }
-  });
-</script>

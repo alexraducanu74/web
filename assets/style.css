@@ -6,7 +6,7 @@
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f0f2f5;
   color: #333;
   line-height: 1.6;
@@ -548,8 +548,8 @@ h2 {
   background-color: #0056b3;
 }
 
-.index-login p[style*='color:red'],
-.index-login p[style*='color:green'] {
+.index-login p[style*="color:red"],
+.index-login p[style*="color:green"] {
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 20px;
@@ -558,14 +558,37 @@ h2 {
   width: 100%;
 }
 
-.index-login p[style*='color:red'] {
+.index-login p[style*="color:red"] {
   background-color: #f8d7da;
   color: #721c24 !important;
   border: 1px solid #f5c6cb;
 }
 
-.index-login p[style*='color:green'] {
+.index-login p[style*="color:green"] {
   background-color: #d4edda;
   color: #155724 !important;
   border: 1px solid #c3e6cb;
+}
+
+.admin-buttons {
+  margin-top: 8px;
+}
+
+.edit-btn,
+.delete-btn {
+  margin-right: 10px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+.edit-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
 }

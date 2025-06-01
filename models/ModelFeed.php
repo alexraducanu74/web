@@ -124,4 +124,14 @@ class ModelFeed
 
         return $libraries;
     }
+
+    public function deleteBook($bookId) {
+        $stmt = $this->db->prepare("DELETE FROM books WHERE id = ?");
+        $stmt->execute([$bookId]);
+    }
+    
+    public function updateBook($bookId, $title, $author) {
+        $stmt = $this->db->prepare("UPDATE books SET title = ?, author = ? WHERE id = ?");
+        $stmt->execute([$title, $author, $bookId]);
+    }
 }

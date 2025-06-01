@@ -1,4 +1,5 @@
 <?php
+
 class ControllerFeed extends Controller
 {
     private ModelFeed $modelFeed;
@@ -27,13 +28,30 @@ class ControllerFeed extends Controller
             $this->handleFeedDisplay('', [], []);
         }
     }
-
+    function getAuthenticatedUser() {
+        // Make sure session is active and has required keys
+        if (session_status() === PHP_SESSION_ACTIVE && 
+            isset($_SESSION['user_id'], $_SESSION['username'])) {
+            return [
+                'user_id' => $_SESSION['user_id'],
+                'username' => $_SESSION['username'],
+                'is_admin' => $_SESSION['is_admin'] ?? false,
+            ];
+        }
+        return false;
+    }
+    
     private function handleFeedDisplay(string $query, array $authorFilter, array $genreFilter): void
     {
+       
         $books = $this->modelFeed->getBooks($query, $authorFilter, $genreFilter);
         $allAuthors = $this->modelFeed->getDistinctAuthors();
         $allGenres = $this->modelFeed->getDistinctIndividualGenres();
 
+        $user = $this->getAuthenticatedUser();
+        $isAdmin = $user !== false && isset($user['is_admin']) && $user['is_admin'] === 1;
+
+        $this->viewFeed->setIsAdmin($isAdmin);
         $this->viewFeed->setAllAuthors($allAuthors);
         $this->viewFeed->setAllGenres($allGenres);
         $this->viewFeed->setQuery($query);
@@ -82,4 +100,16 @@ class ControllerFeed extends Controller
         echo $this->viewFeed->renderBookItems($books);
         exit;
     }
+
+    public function deleteBook($bookId) {
+        if ($_SESSION['is_admin']) {
+            $model = new ModelFeed();
+            $model->deleteBook($bookId);
+            header("Location: /feed");
+        } else {
+            http_response_code(403);
+            echo "Forbidden";
+        }
+    }
+    
 }

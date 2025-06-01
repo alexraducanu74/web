@@ -8,7 +8,12 @@ class ViewFeed
     private array $libraries = [];
     private array $allAuthors = [];
     private array $allGenres = [];
+    private bool $isAdmin = false;
 
+    public function setIsAdmin(bool $isAdmin): void
+    {
+        $this->isAdmin = $isAdmin;
+    }
     public function setBooks(array $books): void
     {
         $this->books = $books;
@@ -42,11 +47,22 @@ class ViewFeed
 
     public function renderBookItems(array $booksToRender): string
     {
+
         if (empty($booksToRender)) {
             return "<p class='no-books-message-ajax'>No books found matching your filters.</p>";
         }
+
         $itemsHtml = '';
         foreach ($booksToRender as $book) {
+            $adminButtons = '';
+            if ($this->isAdmin) {
+                $adminButtons = "
+                    <div class='admin-buttons'>
+                        <a href='index.php?controller=feed&actiune=editBook&id={$book['id']}' class='edit-btn'>Edit</a>
+                        <a href='index.php?controller=feed&actiune=deleteBook&id={$book['id']}' class='delete-btn' onclick='return confirm(\"Are you sure?\");'>Delete</a>
+                    </div>
+                ";
+            }
             $itemsHtml .= "
             <a href='index.php?controller=feed&actiune=viewBook&parametrii={$book['id']}'>
                 <div class='book'>
@@ -54,11 +70,14 @@ class ViewFeed
                     <h3>" . htmlspecialchars($book['title']) . "</h3>
                     <p>by " . htmlspecialchars($book['author']) . "</p>
                     " . (!empty($book['genre']) ? "<p class='genre'>Genre: " . htmlspecialchars($book['genre']) . "</p>" : "") . "
+                    $adminButtons
                 </div>
             </a>";
         }
+
         return $itemsHtml;
     }
+    
 
     private function renderFilterBar(): string
     {
@@ -113,7 +132,7 @@ class ViewFeed
         $toggleAndWrappedFiltersHtml = "<button id='toggle-filters-button' class='toggle-filters-btn' style='margin-bottom: 10px; padding: 8px 15px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer;'>Show Filters</button>" .
             "<div id='filters-wrapper' style='display: none;'>" . $rawFilterBarHtml . "</div>";
 
-        $bookItemsHtml = $this->renderBookItems($this->books);
+        $bookItemsHtml = $this->renderBookItems($this->books, $this->isAdmin);
 
         $content = $this->loadTemplate('views/feed.tpl', [
             'header' => $header,
@@ -123,9 +142,18 @@ class ViewFeed
 
         $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>';
 
+        if (isset($_SESSION['user_id'])) {
+            $authLinks = '<a href="index.php?controller=auth&actiune=logout">Logout</a>';
+        } else {
+            $authLinks = '
+                <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
+                <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>';
+        }
+
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => 'Browse Books',
-            'content' => $content . $scriptTag
+            'content' => $content . $scriptTag,
+            'authLinks' => $authLinks
         ]);
         echo $layout;
     }
@@ -142,9 +170,18 @@ class ViewFeed
                 </div>
             </div>";
         $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
+
+        if (isset($_SESSION['user_id'])) {
+            $authLinks = '<a href="index.php?controller=auth&actiune=logout">Logout</a>';
+        } else {
+            $authLinks = '
+                <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
+                <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>';
+        }
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => htmlspecialchars($book['title']),
-            'content' => $content
+            'content' => $content,
+            'authLinks' => $authLinks
         ]);
         echo $layout;
     }
@@ -202,10 +239,18 @@ class ViewFeed
             "<div id='filters-wrapper' style='display: none;'>" . $rawFilterBarHtml . "</div>";
 
         $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>';
-
+        if (isset($_SESSION['user_id'])) {
+            $authLinks = '<a href="index.php?controller=auth&actiune=logout">Logout</a>';
+        } else {
+            $authLinks = '
+                <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
+                <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>';
+        }
+        
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => 'No Books Found',
-            'content' => $toggleAndWrappedFiltersHtml . $contentForNoBooksTpl . $scriptTag
+            'content' => $toggleAndWrappedFiltersHtml . $contentForNoBooksTpl . $scriptTag,
+            'authLinks' => $authLinks
         ]);
         echo $layout;
     }
