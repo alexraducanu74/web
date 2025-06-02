@@ -45,9 +45,8 @@ class ViewFeed
         $this->libraries = $libraries;
     }
 
-    public function renderBookItems(array $booksToRender): string
+    public function renderBookItems(array $booksToRender): string // Am eliminat $this->isAdmin ca parametru, e deja proprietate
     {
-
         if (empty($booksToRender)) {
             return "<p class='no-books-message-ajax'>No books found matching your filters.</p>";
         }
@@ -55,7 +54,7 @@ class ViewFeed
         $itemsHtml = '';
         foreach ($booksToRender as $book) {
             $adminButtons = '';
-            if ($this->isAdmin) {
+            if ($this->isAdmin) { // Folosim direct proprietatea clasei
                 $adminButtons = "
                     <div class='admin-buttons'>
                         <a href='index.php?controller=feed&actiune=editBook&id={$book['id']}' class='edit-btn'>Edit</a>
@@ -74,15 +73,12 @@ class ViewFeed
                 </div>
             </a>";
         }
-
         return $itemsHtml;
     }
-    
 
     private function renderFilterBar(): string
     {
         $filterHtml = "<div id='filter-bar-container' class='filter-form-checkbox'>";
-
         $filterHtml .= "<fieldset><legend>Authors</legend><div class='filter-options-group'>";
         if (empty($this->allAuthors)) {
             $filterHtml .= "<p>No authors available for filtering.</p>";
@@ -102,7 +98,7 @@ class ViewFeed
         } else {
             foreach ($this->allGenres as $genre) {
                 $genreHtml = htmlspecialchars($genre);
-                $genreId = 'genre_cb_' . md5($genre); // ID unic
+                $genreId = 'genre_cb_' . md5($genre);
                 $checked = in_array($genre, $this->currentGenreFilters) ? 'checked' : '';
                 $filterHtml .= "<div><input type='checkbox' name='genre_filter[]' id='{$genreId}' value='{$genreHtml}' {$checked}> <label for='{$genreId}'>{$genreHtml}</label></div>";
             }
@@ -116,6 +112,23 @@ class ViewFeed
 
         $filterHtml .= "</div>";
         return $filterHtml;
+    }
+
+    /**
+     * Generates the HTML for authentication links (Login/Register or Logout).
+     * Group navigation links are now handled directly in layout.tpl.
+     * @return string HTML links
+     */
+    private function getAuthSpecificLinks(): string
+    {
+        if (isset($_SESSION['user_id'])) {
+            $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'User';
+            return '<a href="index.php?controller=auth&actiune=logout">Logout (' . $username . ')</a>';
+        } else {
+            return '
+                <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
+                <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>';
+        }
     }
 
     public function render(): void
@@ -132,7 +145,7 @@ class ViewFeed
         $toggleAndWrappedFiltersHtml = "<button id='toggle-filters-button' class='toggle-filters-btn' style='margin-bottom: 10px; padding: 8px 15px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer;'>Show Filters</button>" .
             "<div id='filters-wrapper' style='display: none;'>" . $rawFilterBarHtml . "</div>";
 
-        $bookItemsHtml = $this->renderBookItems($this->books, $this->isAdmin);
+        $bookItemsHtml = $this->renderBookItems($this->books); // Am eliminat $this->isAdmin ca parametru
 
         $content = $this->loadTemplate('views/feed.tpl', [
             'header' => $header,
@@ -142,18 +155,12 @@ class ViewFeed
 
         $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>';
 
-        if (isset($_SESSION['user_id'])) {
-            $authLinks = '<a href="index.php?controller=auth&actiune=logout">Logout</a>';
-        } else {
-            $authLinks = '
-                <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
-                <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>';
-        }
+        $authLinksForLayout = $this->getAuthSpecificLinks();
 
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => 'Browse Books',
             'content' => $content . $scriptTag,
-            'authLinks' => $authLinks
+            'authLinks' => $authLinksForLayout
         ]);
         echo $layout;
     }
@@ -171,17 +178,12 @@ class ViewFeed
             </div>";
         $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
 
-        if (isset($_SESSION['user_id'])) {
-            $authLinks = '<a href="index.php?controller=auth&actiune=logout">Logout</a>';
-        } else {
-            $authLinks = '
-                <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
-                <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>';
-        }
+        $authLinksForLayout = $this->getAuthSpecificLinks();
+
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => htmlspecialchars($book['title']),
             'content' => $content,
-            'authLinks' => $authLinks
+            'authLinks' => $authLinksForLayout
         ]);
         echo $layout;
     }
@@ -193,7 +195,6 @@ class ViewFeed
             if (strpos($filePath, 'views/') === 0) {
                 $altFilePath = __DIR__ . '/../' . $filePath;
             }
-
 
             if (!file_exists($altFilePath) && file_exists(__DIR__ . '/../' . $filePath)) {
                 $actualFilePath = __DIR__ . '/../' . $filePath;
@@ -239,19 +240,15 @@ class ViewFeed
             "<div id='filters-wrapper' style='display: none;'>" . $rawFilterBarHtml . "</div>";
 
         $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>';
-        if (isset($_SESSION['user_id'])) {
-            $authLinks = '<a href="index.php?controller=auth&actiune=logout">Logout</a>';
-        } else {
-            $authLinks = '
-                <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
-                <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>';
-        }
-        
+
+        $authLinksForLayout = $this->getAuthSpecificLinks();
+
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => 'No Books Found',
             'content' => $toggleAndWrappedFiltersHtml . $contentForNoBooksTpl . $scriptTag,
-            'authLinks' => $authLinks
+            'authLinks' => $authLinksForLayout
         ]);
         echo $layout;
     }
 }
+?>

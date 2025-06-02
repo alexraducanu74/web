@@ -17,13 +17,6 @@ class ViewLogin
         </head>
 
         <body>
-            <?php
-            if (file_exists(__DIR__ . '/../../nav/navbar.php')) {
-                include __DIR__ . '/../../nav/navbar.php';
-            } else if (file_exists('../nav/navbar.php')) {
-                include '../nav/navbar.php';
-            }
-            ?>
             <section class="index-login">
                 <div class="wrapper">
                     <div class="index-login-login">
@@ -41,16 +34,15 @@ class ViewLogin
                     </div>
                 </div>
             </section>
+
             <?php if ($jwt_token): ?>
                 <script>
-                    const token = <?php echo json_encode($jwt_token); ?>;
-                    if (token) {
-                        localStorage.setItem('jwtToken', token);
-                        alert('Login successful! Token stored. Redirecting...');
-                        window.location.href = 'index.php?controller=feed&actiune=showFeed';
-                    }
+                    // Pass the JWT token to a global JavaScript variable
+                    var jwtTokenToStore = <?php echo json_encode($jwt_token); ?>;
                 </script>
             <?php endif; ?>
+
+            <script src="assets/js/auth.js" defer></script>
         </body>
 
         </html>

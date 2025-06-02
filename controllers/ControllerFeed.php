@@ -28,10 +28,12 @@ class ControllerFeed extends Controller
             $this->handleFeedDisplay('', [], []);
         }
     }
-    function getAuthenticatedUser() {
-        // Make sure session is active and has required keys
-        if (session_status() === PHP_SESSION_ACTIVE && 
-            isset($_SESSION['user_id'], $_SESSION['username'])) {
+    function getAuthenticatedUser()
+    {
+        if (
+            session_status() === PHP_SESSION_ACTIVE &&
+            isset($_SESSION['user_id'], $_SESSION['username'])
+        ) {
             return [
                 'user_id' => $_SESSION['user_id'],
                 'username' => $_SESSION['username'],
@@ -40,10 +42,10 @@ class ControllerFeed extends Controller
         }
         return false;
     }
-    
+
     private function handleFeedDisplay(string $query, array $authorFilter, array $genreFilter): void
     {
-       
+
         $books = $this->modelFeed->getBooks($query, $authorFilter, $genreFilter);
         $allAuthors = $this->modelFeed->getDistinctAuthors();
         $allGenres = $this->modelFeed->getDistinctIndividualGenres();
@@ -101,7 +103,8 @@ class ControllerFeed extends Controller
         exit;
     }
 
-    public function deleteBook($bookId) {
+    public function deleteBook($bookId)
+    {
         if ($_SESSION['is_admin']) {
             $model = new ModelFeed();
             $model->deleteBook($bookId);
@@ -111,5 +114,5 @@ class ControllerFeed extends Controller
             echo "Forbidden";
         }
     }
-    
+
 }
