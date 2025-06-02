@@ -46,3 +46,49 @@ INSERT INTO books (title, author, genre, cover_image) VALUES
 
 ALTER TABLE users ADD is_admin BOOLEAN DEFAULT FALSE;
 INSERT INTO users (users_uid, users_email, is_admin, users_pwd) VALUES ('admin', 'admin@admin.com', 1, '$2y$10$INvQoLFmST6ewSBItlkXVOR8Q1sTzGRxkOU7TPiNvLOiLZ01nYhvG');
+
+
+-- -----------------------------------------------------
+-- Table `groups`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `groups` (
+  `group_id` INT NOT NULL AUTO_INCREMENT,
+  `group_name` VARCHAR(255) NOT NULL,
+  `group_description` TEXT NULL,
+  `creator_user_id` INT(11) NOT NULL,
+  `secret_code` VARCHAR(64) NOT NULL UNIQUE,
+  `requires_approval` BOOLEAN NOT NULL DEFAULT FALSE,
+  `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`group_id`),
+  INDEX `fk_groups_users_idx` (`creator_user_id` ASC),
+  CONSTRAINT `fk_groups_users`
+    FOREIGN KEY (`creator_user_id`)
+    REFERENCES `users` (`users_id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `group_members`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `group_members` (
+  `group_member_id` INT NOT NULL AUTO_INCREMENT,
+  `group_id` INT NOT NULL,
+  `user_id` INT(11) NOT NULL,
+  `join_date` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `member_status` ENUM('approved', 'pending', 'denied', 'invited') NOT NULL DEFAULT 'pending',
+  PRIMARY KEY (`group_member_id`),
+  INDEX `fk_group_members_groups_idx` (`group_id` ASC),
+  INDEX `fk_group_members_users_idx` (`user_id` ASC),
+  UNIQUE INDEX `uq_group_user_idx` (`group_id` ASC, `user_id` ASC), -- User can only be in a group once
+  CONSTRAINT `fk_group_members_groups`
+    FOREIGN KEY (`group_id`)
+    REFERENCES `groups` (`group_id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_group_members_users`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `users` (`users_id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
