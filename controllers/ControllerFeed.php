@@ -24,10 +24,20 @@ class ControllerFeed extends Controller
             $this->viewBook((int) $parametri[0]);
         } elseif ($actiune == "ajaxFilterBooks") {
             $this->ajaxFilterBooks();
+        } elseif ($actiune == "genereazaRss") {
+            $this->genereazaRss();
         } else {
             $this->handleFeedDisplay('', [], []);
         }
     }
+    private function genereazaRss() {
+        include __DIR__ . '/../assets/rss/generate_rss.php';
+
+
+        header("Location: /web/assets/rss/anunturi.xml");
+        exit;
+    }
+
     function getAuthenticatedUser()
     {
         if (

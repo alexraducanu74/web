@@ -23,7 +23,7 @@
 
   <div class="nav-right">
     <div class="secondary-links">
-      <a href="/web/assets/rss/anunturi.xml" aria-label="RSS Feed" class="rss-icon">
+      <a href="/web/index.php?controller=feed&actiune=genereazaRss" aria-label="RSS Feed" class="rss-icon">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
         <path d="M4 11a9 9 0 0 1 9 9"/>
         <path d="M4 4a16 16 0 0 1 16 16"/>

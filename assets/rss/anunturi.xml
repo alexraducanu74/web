@@ -1,31 +1,171 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Anunțuri Cărți</title>
-    <link>http://exemplu.ro/anunturi</link>
-    <description>Flux de anunțuri legate de cărți, recenzii și clasamente.</description>
-    <language>ro-ro</language>
-
+    <title>Feed StoryGraph - Cărți Adăugate Recent</title>
+    <link>http://localhost/rss/anunturi.xml</link>
+    <description>Cele mai recente cărți adăugate în aplicația StoryGraph Clone.</description>
+    <language>ro</language>
+    <pubDate>Mon, 02 Jun 2025 19:09:47 +0200</pubDate>
     <item>
-      <title>Recenzie: „Solenoid” de Mircea Cărtărescu</title>
-      <link>http://exemplu.ro/articole/recenzie-solenoid</link>
-      <description>O analiză detaliată a romanului „Solenoid”, una dintre cele mai apreciate lucrări ale literaturii contemporane românești.</description>
-      <pubDate>Thu, 02 May 2025 14:00:00 +0300</pubDate>
+      <title>The Midnight Library</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=1</link>
+      <description>Autor: Matt Haig | Gen: Contemporary Fiction, Magical Realism</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=1</guid>
     </item>
-
     <item>
-      <title>A apărut volumul 3 din seria „Arhiva Luminii”</title>
-      <link>http://exemplu.ro/noutati/volumul-3-arhiva-luminii</link>
-      <description>Noul volum extinde universul fantastic creat de autoarea Ana Popescu, cu personaje noi și intrigi surprinzătoare.</description>
-      <pubDate>Wed, 01 May 2025 10:00:00 +0300</pubDate>
+      <title>1984</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=2</link>
+      <description>Autor: George Orwell | Gen: Dystopian, Political Fiction, Science Fiction</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=2</guid>
     </item>
-
     <item>
-      <title>Top 10 cărți științifice: o nouă lideră</title>
-      <link>http://exemplu.ro/clasamente/top-10-stiinta-2025</link>
-      <description>„O scurtă istorie a timpului” a fost detronată de „Universul Elegant” în clasamentul celor mai apreciate cărți științifice ale anului.</description>
-      <pubDate>Tue, 30 Apr 2025 18:30:00 +0300</pubDate>
+      <title>The Name of the Wind</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=3</link>
+      <description>Autor: Patrick Rothfuss | Gen: Epic Fantasy, Adventure</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=3</guid>
     </item>
-
+    <item>
+      <title>Book Title 1</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=4</link>
+      <description>Autor: Author Horror | Gen: Horror</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=4</guid>
+    </item>
+    <item>
+      <title>Book Title 2</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=5</link>
+      <description>Autor: Author Horror | Gen: Horror, Thriller</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=5</guid>
+    </item>
+    <item>
+      <title>Book Title 3</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=6</link>
+      <description>Autor: Author Horror | Gen: Supernatural Horror</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=6</guid>
+    </item>
+    <item>
+      <title>Book Title 4</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=7</link>
+      <description>Autor: Author Horror | Gen: Horror</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=7</guid>
+    </item>
+    <item>
+      <title>Book Title 5</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=8</link>
+      <description>Autor: Author Horror | Gen: Psychological Horror</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=8</guid>
+    </item>
+    <item>
+      <title>Book Title 6</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=9</link>
+      <description>Autor: Author Comedy | Gen: Comedy, Satire</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=9</guid>
+    </item>
+    <item>
+      <title>Book Title 7</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=10</link>
+      <description>Autor: Author Comedy | Gen: Comedy</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=10</guid>
+    </item>
+    <item>
+      <title>Book Title 8</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=11</link>
+      <description>Autor: Author Comedy | Gen: Dark Comedy</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=11</guid>
+    </item>
+    <item>
+      <title>Book Title 9</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=12</link>
+      <description>Autor: Author Comedy | Gen: Comedy</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=12</guid>
+    </item>
+    <item>
+      <title>Book Title 10</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=13</link>
+      <description>Autor: Author Comedy | Gen: Romantic Comedy</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=13</guid>
+    </item>
+    <item>
+      <title>Book Title 11</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=14</link>
+      <description>Autor: Author SciFi | Gen: Science Fiction, Space Opera</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=14</guid>
+    </item>
+    <item>
+      <title>Book Title 12</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=15</link>
+      <description>Autor: Author SciFi | Gen: Science Fiction</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=15</guid>
+    </item>
+    <item>
+      <title>Book Title 13</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=16</link>
+      <description>Autor: Author SciFi | Gen: Cyberpunk, Science Fiction</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=16</guid>
+    </item>
+    <item>
+      <title>Book Title 14</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=17</link>
+      <description>Autor: Author SciFi | Gen: Science Fiction</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=17</guid>
+    </item>
+    <item>
+      <title>Book Title 15</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=18</link>
+      <description>Autor: Author SciFi | Gen: Hard Science Fiction</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=18</guid>
+    </item>
+    <item>
+      <title>Book Title 16</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=19</link>
+      <description>Autor: Author Thriller | Gen: Thriller, Mystery</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=19</guid>
+    </item>
+    <item>
+      <title>Book Title 17</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=20</link>
+      <description>Autor: Author Thriller | Gen: Thriller</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=20</guid>
+    </item>
+    <item>
+      <title>Book Title 18</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=21</link>
+      <description>Autor: Author Thriller | Gen: Psychological Thriller</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=21</guid>
+    </item>
+    <item>
+      <title>Book Title 19</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=22</link>
+      <description>Autor: Author Thriller | Gen: Thriller</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=22</guid>
+    </item>
+    <item>
+      <title>Book Title 20</title>
+      <link>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=23</link>
+      <description>Autor: Author Thriller | Gen: Crime Thriller</description>
+      <pubDate>Sun, 01 Jun 2025 16:32:36 +0200</pubDate>
+      <guid>http://localhost/web/index.php?controller=feed&amp;actiune=viewBook&amp;parametrii=23</guid>
+    </item>
   </channel>
 </rss>
