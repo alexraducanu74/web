@@ -54,27 +54,40 @@ class ViewFeed
         $itemsHtml = '';
         foreach ($booksToRender as $book) {
             $adminButtons = '';
-            if ($this->isAdmin) { // Folosim direct proprietatea clasei
+            if ($this->isAdmin) {
                 $adminButtons = "
-                    <div class='admin-buttons'>
-                        <a href='index.php?controller=feed&actiune=editBook&id={$book['id']}' class='edit-btn'>Edit</a>
-                        <a href='index.php?controller=feed&actiune=deleteBook&id={$book['id']}' class='delete-btn' onclick='return confirm(\"Are you sure?\");'>Delete</a>
-                    </div>
-                ";
+                <div class='admin-buttons'>
+                    <a href='index.php?controller=feed&actiune=editBook&parametrii={$book['id']}' class='edit-btn'>Edit</a>
+                    <a href='#' class='delete-btn' data-id='{$book['id']}' data-url='index.php?controller=feed&actiune=deleteBook&parametrii={$book['id']}'>Delete</a>
+                </div>
+            ";
             }
             $itemsHtml .= "
-            <a href='index.php?controller=feed&actiune=viewBook&parametrii={$book['id']}'>
                 <div class='book'>
-                    <img src='assets/{$book['cover_image']}' alt='Cover of " . htmlspecialchars($book['title']) . "'>
-                    <h3>" . htmlspecialchars($book['title']) . "</h3>
-                    <p>by " . htmlspecialchars($book['author']) . "</p>
-                    " . (!empty($book['genre']) ? "<p class='genre'>Genre: " . htmlspecialchars($book['genre']) . "</p>" : "") . "
+                    <a href='index.php?controller=feed&actiune=viewBook&parametrii={$book['id']}' class='book-link'>
+                        <img src='assets/{$book['cover_image']}' alt='Cover of " . htmlspecialchars($book['title']) . "'>
+                        <h3>" . htmlspecialchars($book['title']) . "</h3>
+                        <p>by " . htmlspecialchars($book['author']) . "</p>
+                        " . (!empty($book['genre']) ? "<p class='genre'>Genre: " . htmlspecialchars($book['genre']) . "</p>" : "") . "
+                    </a>
                     $adminButtons
                 </div>
-            </a>";
+            ";
         }
         return $itemsHtml;
+
     }
+    public function loadEditFormTemplate(array $book): string
+    {
+        $templateData = [
+            'id' => htmlspecialchars($book['id']),
+            'title' => htmlspecialchars($book['title']),
+            'author' => htmlspecialchars($book['author']),
+            'genre' => htmlspecialchars($book['genre']),
+            'cover_image' => htmlspecialchars($book['cover_image']),
+        ];
+        return $this->loadTemplate('views/edit-book.tpl', $templateData);
+}
 
     private function renderFilterBar(): string
     {
@@ -119,7 +132,7 @@ class ViewFeed
      * Group navigation links are now handled directly in layout.tpl.
      * @return string HTML links
      */
-    private function getAuthSpecificLinks(): string
+    public function getAuthSpecificLinks(): string
     {
         if (isset($_SESSION['user_id'])) {
             $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'User';
@@ -153,15 +166,19 @@ class ViewFeed
             'books' => $bookItemsHtml
         ]);
 
-        $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>';
+        $adminInsertFormHtml = $this->renderAdminInsertForm();
+
+        $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>
+                      <script src="assets/js/geolocation.js" defer></script>
+                      <script src="assets/js/feed_delete.js" defer></script>';
 
         $authLinksForLayout = $this->getAuthSpecificLinks();
 
         $layout = $this->loadTemplate('views/layout.tpl', [
-            'title' => 'Browse Books',
-            'content' => $content . $scriptTag,
-            'authLinks' => $authLinksForLayout
-        ]);
+        'title' => 'Browse Books',
+        'content' => $adminInsertFormHtml . $content  . $scriptTag,
+        'authLinks' => $authLinksForLayout
+    ]);
         echo $layout;
     }
 
@@ -188,7 +205,7 @@ class ViewFeed
         echo $layout;
     }
 
-    private function loadTemplate(string $filePath, array $data): string
+    public function loadTemplate(string $filePath, array $data): string
     {
         if (!file_exists($filePath)) {
             $altFilePath = __DIR__ . '/' . basename($filePath);
@@ -213,7 +230,26 @@ class ViewFeed
         }
         return $template;
     }
+    private function renderAdminInsertForm(): string
+    {
+        if (!$this->isAdmin) {
+            return '';
+        }
 
+        return '
+            <section id="admin-insert-book" style="margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 6px;">
+                <h3>Add New Book</h3>
+                <form method="POST" action="index.php?controller=feed&actiune=insertBook" enctype="multipart/form-data">
+                <input type="text" name="title" placeholder="Book Title" required>
+                <input type="text" name="author" placeholder="Author" required>
+                <input type="text" name="genre" placeholder="Genre">
+                <!-- File input for image upload -->
+                <input type="file" name="cover_image" accept="image/*" required>
+                <button type="submit">Add Book</button>
+            </form>
+            </section>
+        ';
+    }
     public function renderNoBooks(): void
     {
         $libsHtml = '<h3>No books matched your search/filters.</h3>';
@@ -239,7 +275,9 @@ class ViewFeed
         $toggleAndWrappedFiltersHtml = "<button id='toggle-filters-button' class='toggle-filters-btn' style='margin-bottom: 10px; padding: 8px 15px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer;'>Show Filters</button>" .
             "<div id='filters-wrapper' style='display: none;'>" . $rawFilterBarHtml . "</div>";
 
-        $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>';
+        $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>
+                      <script src="assets/js/geolocation.js" defer></script>
+                      <script src="assets/js/feed_delete.js" defer></script>';
 
         $authLinksForLayout = $this->getAuthSpecificLinks();
 

@@ -48,12 +48,19 @@ class ModelFeed
             $sql .= " WHERE " . implode(" AND ", $conditions);
         }
 
-        $sql .= " ORDER BY title ASC";
+        $sql .= " ORDER BY id desc";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countBooksUsingCover(string $coverImage, int $excludeBookId): int
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM books WHERE cover_image = ? AND id != ?");
+        $stmt->execute([$coverImage, $excludeBookId]);
+        return (int)$stmt->fetchColumn();
     }
 
     public function getBookById(int $id): ?array
@@ -70,7 +77,18 @@ class ModelFeed
         $stmt = $this->db->query("SELECT DISTINCT author FROM books WHERE author IS NOT NULL AND author != '' ORDER BY author ASC");
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
-
+    public function updateBook(int $id, array $bookData): bool
+    {
+        $stmt = $this->db->prepare("UPDATE books SET title = :title, author = :author, genre = :genre, cover_image = :cover_image WHERE id = :id");
+        return $stmt->execute([
+            ':title' => $bookData['title'],
+            ':author' => $bookData['author'],
+            ':genre' => $bookData['genre'],
+            ':cover_image' => $bookData['cover_image'],
+            ':id' => $id
+        ]);
+    }
+    
     public function getDistinctIndividualGenres(): array
     {
         $stmt = $this->db->query("SELECT genre FROM books WHERE genre IS NOT NULL AND genre != ''");
@@ -125,13 +143,40 @@ class ModelFeed
         return $libraries;
     }
 
-    public function deleteBook($bookId) {
-        $stmt = $this->db->prepare("DELETE FROM books WHERE id = ?");
+    public function deleteBook($bookId): bool
+    {
+        $stmt = $this->db->prepare("SELECT cover_image FROM books WHERE id = ?");
         $stmt->execute([$bookId]);
+        $coverImage = $stmt->fetchColumn();
+
+        if ($coverImage) {
+            // Check if any other books use this image
+            $stmt = $this->db->prepare("SELECT COUNT(*) FROM books WHERE cover_image = ? AND id != ?");
+            $stmt->execute([$coverImage, $bookId]);
+            $count = (int) $stmt->fetchColumn();
+
+
+            if ($count === 0) {
+                $imagePath = __DIR__ . '/../assets/' . $coverImage;
+
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+        }
+
+        $stmt = $this->db->prepare("DELETE FROM books WHERE id = ?");
+        return $stmt->execute([$bookId]);
     }
-    
-    public function updateBook($bookId, $title, $author) {
-        $stmt = $this->db->prepare("UPDATE books SET title = ?, author = ? WHERE id = ?");
-        $stmt->execute([$title, $author, $bookId]);
+    public function insertBook(array $bookData): bool
+    {
+        $stmt = $this->db->prepare("INSERT INTO books (title, author, genre, cover_image) VALUES (:title, :author, :genre, :cover_image)");
+        return $stmt->execute([
+            ':title' => $bookData['title'],
+            ':author' => $bookData['author'],
+            ':genre' => $bookData['genre'],
+            ':cover_image' => $bookData['cover_image']
+        ]);
     }
+
 }

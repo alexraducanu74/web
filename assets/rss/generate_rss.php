@@ -32,7 +32,6 @@ while ($book = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $item->appendChild($doc->createElement("link", htmlspecialchars($linkText, ENT_XML1, 'UTF-8')));
     $item->appendChild($doc->createElement("description", htmlspecialchars($descText, ENT_XML1, 'UTF-8')));
     $item->appendChild($doc->createElement("pubDate", date(DATE_RSS, strtotime($book['created_at']))));
-    $item->appendChild($doc->createElement("guid", htmlspecialchars($linkText, ENT_XML1, 'UTF-8')));
 
     $channel->appendChild($item);
 }

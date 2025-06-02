@@ -127,7 +127,13 @@ main {
   padding-right: 20px;
   padding-bottom: 40px;
 }
-
+.book img {
+  width: 100%;
+  height: auto; /* maintain aspect ratio */
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
 .book-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -571,7 +577,11 @@ h2 {
 }
 
 .admin-buttons {
-  margin-top: 8px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
 }
 
 .edit-btn,
@@ -645,7 +655,7 @@ h2 {
   padding: 4px 8px;
   border-radius: 4px;
   border: 1px solid #a8d1ff;
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
   color: #1c4c7a;
 }
 

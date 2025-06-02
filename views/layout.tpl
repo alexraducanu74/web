@@ -53,6 +53,5 @@
 <main>
     {$content}
 </main>
-<script src="assets/js/geolocation.js"></script>
 </body>
 </html>

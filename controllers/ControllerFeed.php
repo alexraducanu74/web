@@ -26,6 +26,14 @@ class ControllerFeed extends Controller
             $this->ajaxFilterBooks();
         } elseif ($actiune == "genereazaRss") {
             $this->genereazaRss();
+        } elseif ($actiune == "deleteBook" && isset($parametri[0])) {
+            $this->deleteBook((int) $parametri[0]);
+        } elseif ($actiune == "insertBook" && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->insertBook();
+        } elseif ($actiune == "editBook" && isset($parametri[0])) {
+            $this->editBookForm((int) $parametri[0]);
+        } elseif ($actiune == "updateBook" && isset($parametri[0])) {
+            $this->updateBook((int) $parametri[0]);
         } else {
             $this->handleFeedDisplay('', [], []);
         }
@@ -52,7 +60,153 @@ class ControllerFeed extends Controller
         }
         return false;
     }
+    private function editBookForm(int $id): void
+    {
+        $book = $this->modelFeed->getBookById($id);
+        if (!$book) {
+            echo "Book not found.";
+            return;
+        }
 
+        $isAdmin = $this->getAuthenticatedUser()['is_admin'] ?? false;
+        if (!$isAdmin) {
+            http_response_code(403);
+            echo "Forbidden";
+            return;
+        }
+
+        $formHtml = $this->view->loadEditFormTemplate($book);
+        $authLinksForLayout = $this->view->getAuthSpecificLinks();
+
+        $layout = $this->view->loadTemplate('views/layout.tpl', [
+            'title' => "Edit Book - " . htmlspecialchars($book['title']),
+            'content' => $formHtml,
+            'authLinks' => $authLinksForLayout
+        ]);
+        echo $layout;
+    }
+    private function updateBook(int $id): void
+    {
+        $user = $this->getAuthenticatedUser();
+        if (!$user || !$user['is_admin']) {
+            http_response_code(403);
+            echo "Forbidden";
+            return;
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        $author = trim($_POST['author'] ?? '');
+        $genre = trim($_POST['genre'] ?? '');
+
+        if ($title === '' || $author === '') {
+            echo "Title and Author are required.";
+            return;
+        }
+
+        $model = $this->modelFeed;
+        $oldBook = $model->getBookById($id);
+        if (!$oldBook) {
+            echo "Book not found.";
+            return;
+        }
+
+        $coverImage = $oldBook['cover_image']; // default to old image
+
+        // Handle new cover image upload if any
+        if (!empty($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
+            $tmpName = $_FILES['cover_image']['tmp_name'];
+            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+
+            $newFileName = time() . '.' . $ext;
+            $destination = __DIR__ . '/../assets/covers/' . $newFileName;
+
+            if (move_uploaded_file($tmpName, $destination)) {
+                $coverImage = 'covers/' . $newFileName;
+
+                // Use model method to check if old image is used elsewhere
+                $count = $model->countBooksUsingCover($oldBook['cover_image'], $id);
+                if ($oldBook['cover_image'] && $count === 0) {
+                    $oldImagePath = __DIR__ . '/../assets/' . $oldBook['cover_image'];
+                    if (file_exists($oldImagePath)) unlink($oldImagePath);
+                }
+            } else {
+                echo "Failed to upload new cover image.";
+                return;
+            }
+        }
+
+        $updateSuccess = $model->updateBook($id, [
+            'title' => $title,
+            'author' => $author,
+            'genre' => $genre,
+            'cover_image' => $coverImage,
+        ]);
+
+        if ($updateSuccess) {
+            header("Location: index.php?controller=feed&actiune=viewBook&parametrii={$id}");
+            exit;
+        } else {
+            echo "Failed to update book.";
+        }
+    }
+
+
+    private function insertBook(): void
+    {
+        if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+            http_response_code(403);
+            echo "Forbidden";
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $title = trim($_POST['title'] ?? '');
+            $author = trim($_POST['author'] ?? '');
+            $genre = trim($_POST['genre'] ?? '');
+
+            if (empty($title) || empty($author)) {
+                echo "Title and author are required.";
+                exit;
+            }
+
+            if (!isset($_FILES['cover_image']) || $_FILES['cover_image']['error'] !== UPLOAD_ERR_OK) {
+                echo "Error uploading image.";
+                exit;
+            }
+
+            $uploadDir = __DIR__ . '/../assets/covers/'; 
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $extension = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+            $newFileName = time() . '.' . $extension;
+
+            $destPath = $uploadDir . $newFileName;
+            $fileTmpPath = $_FILES['cover_image']['tmp_name'];
+            if (!move_uploaded_file($fileTmpPath, $destPath)) {
+                echo "Failed to save uploaded image.";
+                exit;
+            }
+
+            $bookData = [
+                'title' => $title,
+                'author' => $author,
+                'genre' => $genre,
+                'cover_image' => 'covers/' . $newFileName,  
+            ];
+
+            $success = $this->modelFeed->insertBook($bookData);
+            if ($success) {
+                header('Location: index.php?controller=feed&actiune=showFeed');
+                exit;
+            } else {
+                echo "Failed to save book to database.";
+            }
+        }
+    }
+
+    
     private function handleFeedDisplay(string $query, array $authorFilter, array $genreFilter): void
     {
 
@@ -118,11 +272,21 @@ class ControllerFeed extends Controller
         if ($_SESSION['is_admin']) {
             $model = new ModelFeed();
             $model->deleteBook($bookId);
-            header("Location: /feed");
+    
+            // Check if AJAX
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                exit;
+            } else {
+                header("Location: /web/index.php");
+                exit;
+            }
         } else {
             http_response_code(403);
             echo "Forbidden";
+            exit;
         }
     }
+    
 
 }
