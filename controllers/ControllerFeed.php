@@ -215,7 +215,7 @@ class ControllerFeed extends Controller
         $allGenres = $this->modelFeed->getDistinctIndividualGenres();
 
         $user = $this->getAuthenticatedUser();
-        $isAdmin = $user !== false && isset($user['is_admin']) && $user['is_admin'] === 1;
+        $isAdmin = $user !== false && isset($user['is_admin']) && $user['is_admin'] === true;
 
         $this->viewFeed->setIsAdmin($isAdmin);
         $this->viewFeed->setAllAuthors($allAuthors);

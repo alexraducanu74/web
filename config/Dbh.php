@@ -12,17 +12,17 @@ class Dbh {
         try {
             $host = 'localhost';
             $dbname = 'ooplogin';
-            $username = 'root';
-            $password = '';
-            $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-
+            $username = 'postgres';
+            $password = 'postgres'; // Replace with your actual password
+            $dsn = "pgsql:host=$host;port=5432;dbname=$dbname";
+    
             $this->connection = new PDO($dsn, $username, $password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             die('Database connection failed: ' . $e->getMessage());
         }
     }
-
+    
     // Prevent cloning of the instance
     private function __clone() {}
 

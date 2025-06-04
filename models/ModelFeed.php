@@ -15,7 +15,7 @@ class ModelFeed
         $params = [];
 
         if (!empty($generalQuery)) {
-            $conditions[] = "(title LIKE :generalQuery OR author LIKE :generalQueryAuthor)"; // Changed param name for clarity
+            $conditions[] = "(title ILIKE :generalQuery OR author ILIKE :generalQueryAuthor)"; // Changed param name for clarity
             $params[':generalQuery'] = '%' . $generalQuery . '%';
             $params[':generalQueryAuthor'] = '%' . $generalQuery . '%';
         }
@@ -36,7 +36,7 @@ class ModelFeed
             $genrePlaceholders = [];
             foreach ($genreFilters as $index => $genre) {
                 $paramName = ':genreFilter' . $index;
-                $genrePlaceholders[] = "genre LIKE " . $paramName;
+                $genrePlaceholders[] = "genre ILIKE " . $paramName;
                 $params[$paramName] = '%' . $genre . '%';
             }
             if (!empty($genrePlaceholders)) {

@@ -20,7 +20,7 @@ class ModelGroup
             $secretCode = $this->generateSecretCode();
         }
 
-        $sql = "INSERT INTO `groups` (group_name, group_description, creator_user_id, secret_code, requires_approval) 
+        $sql = "INSERT INTO groups (group_name, group_description, creator_user_id, secret_code, requires_approval) 
                 VALUES (:name, :description, :creator_user_id, :secret_code, :requires_approval)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':name', $name);
@@ -40,8 +40,8 @@ class ModelGroup
     public function getGroupById(int $groupId): ?array
     {
         $sql = "SELECT g.*, u.users_uid as creator_username 
-                FROM `groups` g 
-                JOIN `users` u ON g.creator_user_id = u.users_id
+                FROM groups g 
+                JOIN users u ON g.creator_user_id = u.users_id
                 WHERE g.group_id = :group_id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
@@ -52,7 +52,7 @@ class ModelGroup
 
     public function getGroupBySecretCode(string $secretCode): ?array
     {
-        $sql = "SELECT * FROM `groups` WHERE secret_code = :secret_code";
+        $sql = "SELECT * FROM groups WHERE secret_code = :secret_code";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':secret_code', $secretCode);
         $stmt->execute();
@@ -62,7 +62,7 @@ class ModelGroup
 
     public function addMemberToGroup(int $groupId, int $userId, string $initialStatus = 'pending'): ?int
     {
-        $sqlCheck = "SELECT group_member_id FROM `group_members` WHERE group_id = :group_id AND user_id = :user_id";
+        $sqlCheck = "SELECT group_member_id FROM group_members WHERE group_id = :group_id AND user_id = :user_id";
         $stmtCheck = $this->db->prepare($sqlCheck);
         $stmtCheck->bindParam(':group_id', $groupId, PDO::PARAM_INT);
         $stmtCheck->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -71,7 +71,7 @@ class ModelGroup
             return null;
         }
 
-        $sql = "INSERT INTO `group_members` (group_id, user_id, member_status) VALUES (:group_id, :user_id, :member_status)";
+        $sql = "INSERT INTO group_members (group_id, user_id, member_status) VALUES (:group_id, :user_id, :member_status)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -85,7 +85,7 @@ class ModelGroup
 
     public function isUserMember(int $groupId, int $userId, string $status = 'approved'): bool
     {
-        $sql = "SELECT COUNT(*) FROM `group_members` WHERE group_id = :group_id AND user_id = :user_id AND member_status = :status";
+        $sql = "SELECT COUNT(*) FROM group_members WHERE group_id = :group_id AND user_id = :user_id AND member_status = :status";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -96,7 +96,7 @@ class ModelGroup
 
     public function getUserMembershipStatus(int $groupId, int $userId): ?string
     {
-        $sql = "SELECT member_status FROM `group_members` WHERE group_id = :group_id AND user_id = :user_id";
+        $sql = "SELECT member_status FROM group_members WHERE group_id = :group_id AND user_id = :user_id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -109,8 +109,8 @@ class ModelGroup
     public function getGroupMembers(int $groupId, string $status = 'approved'): array
     {
         $sql = "SELECT u.users_id, u.users_uid, gm.join_date, gm.member_status, gm.group_member_id
-                FROM `group_members` gm
-                JOIN `users` u ON gm.user_id = u.users_id
+                FROM group_members gm
+                JOIN users u ON gm.user_id = u.users_id
                 WHERE gm.group_id = :group_id AND gm.member_status = :status
                 ORDER BY u.users_uid ASC";
         $stmt = $this->db->prepare($sql);
@@ -122,7 +122,7 @@ class ModelGroup
 
     public function updateMemberStatus(int $groupMemberId, string $status): bool
     {
-        $sql = "UPDATE `group_members` SET member_status = :status WHERE group_member_id = :group_member_id";
+        $sql = "UPDATE group_members SET member_status = :status WHERE group_member_id = :group_member_id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':status', $status);
         $stmt->bindParam(':group_member_id', $groupMemberId, PDO::PARAM_INT);
@@ -131,7 +131,7 @@ class ModelGroup
 
     public function getGroupMemberEntry(int $groupId, int $userId): ?array
     {
-        $sql = "SELECT * FROM `group_members` WHERE group_id = :group_id AND user_id = :user_id";
+        $sql = "SELECT * FROM group_members WHERE group_id = :group_id AND user_id = :user_id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -142,7 +142,7 @@ class ModelGroup
 
     public function isUserGroupCreator(int $groupId, int $userId): bool
     {
-        $sql = "SELECT COUNT(*) FROM `groups` WHERE group_id = :group_id AND creator_user_id = :user_id";
+        $sql = "SELECT COUNT(*) FROM groups WHERE group_id = :group_id AND creator_user_id = :user_id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -153,8 +153,8 @@ class ModelGroup
     public function getUserGroups(int $userId): array
     {
         $sql = "SELECT g.group_id, g.group_name, g.secret_code
-                FROM `groups` g
-                JOIN `group_members` gm ON g.group_id = gm.group_id
+                FROM groups g
+                JOIN group_members gm ON g.group_id = gm.group_id
                 WHERE gm.user_id = :user_id AND gm.member_status = 'approved'
                 ORDER BY g.group_name ASC";
         $stmt = $this->db->prepare($sql);
@@ -165,7 +165,7 @@ class ModelGroup
 
     public function getGroupMemberEntryById(int $groupMemberId): ?array
     {
-        $sql = "SELECT * FROM `group_members` WHERE group_member_id = :group_member_id";
+        $sql = "SELECT * FROM group_members WHERE group_member_id = :group_member_id";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':group_member_id', $groupMemberId, PDO::PARAM_INT);
         $stmt->execute();
