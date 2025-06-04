@@ -35,16 +35,6 @@
       <div class="separator"></div>
     </div>
     <div class="auth-links" id="auth-links">
-        <?php 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start(); 
-        }
-        ?>
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <a href="index.php?controller=group&actiune=myGroups">My Groups</a>
-            <a href="index.php?controller=group&actiune=showCreateForm">Create Group</a>
-            <div class="separator"></div>
-        <?php endif; ?>
         {$authLinks}
     </div>
   </div>

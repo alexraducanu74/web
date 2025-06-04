@@ -13,7 +13,7 @@ class Dbh {
             $host = 'localhost';
             $dbname = 'ooplogin';
             $username = 'postgres';
-            $password = 'postgres'; // Replace with your actual password
+            $password = 'postgres'; 
             $dsn = "pgsql:host=$host;port=5432;dbname=$dbname";
     
             $this->connection = new PDO($dsn, $username, $password);

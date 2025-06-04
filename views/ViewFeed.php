@@ -136,7 +136,10 @@ class ViewFeed
     {
         if (isset($_SESSION['user_id'])) {
             $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'User';
-            return '<a href="index.php?controller=auth&actiune=logout">Logout (' . $username . ')</a>';
+            return '<a href="index.php?controller=group&actiune=myGroups">My Groups</a>
+                    <a href="index.php?controller=group&actiune=showCreateForm">Create Group</a>
+                    <div class="separator"></div>
+                    <a href="index.php?controller=auth&actiune=logout">Logout (' . $username . ')</a>';
         } else {
             return '
                 <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>

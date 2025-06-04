@@ -19,7 +19,10 @@ class ViewGroup
     private function getAuthLinks(): string
     {
         if (isset($_SESSION['user_id'])) {
-            return '<a href="index.php?controller=auth&actiune=logout">Logout (' . htmlspecialchars($_SESSION['username'] ?? '') . ')</a>';
+            return '<a href="index.php?controller=group&actiune=myGroups">My Groups</a>
+                    <a href="index.php?controller=group&actiune=showCreateForm">Create Group</a>
+                    <div class="separator"></div>
+                    <a href="index.php?controller=auth&actiune=logout">Logout (' . htmlspecialchars($_SESSION['username'] ?? '') . ')</a>';
         } else {
             return '
                 <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
