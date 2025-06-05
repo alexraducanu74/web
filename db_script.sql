@@ -132,3 +132,19 @@ CREATE TRIGGER trg_lowercase_email
 BEFORE INSERT OR UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION lowercase_email();
+
+
+CREATE OR REPLACE FUNCTION generate_unique_secret_code() RETURNS VARCHAR AS $$
+DECLARE
+    candidate VARCHAR(10);
+    exists_count INTEGER;
+BEGIN
+    LOOP
+        candidate := substring(md5(random()::text), 1, 10);
+        SELECT COUNT(*) INTO exists_count FROM groups WHERE secret_code = candidate;
+        IF exists_count = 0 THEN
+            RETURN candidate;
+        END IF;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;

@@ -8,17 +8,11 @@ class ModelGroup
         $this->db = Dbh::getInstance()->getConnection();
     }
 
-    private function generateSecretCode(int $length = 10): string
-    {
-        return substr(bin2hex(random_bytes(ceil($length / 2))), 0, $length);
-    }
-
     public function createGroup(string $name, ?string $description, int $creatorUserId, bool $requiresApproval): ?int
     {
-        $secretCode = $this->generateSecretCode();
-        while ($this->getGroupBySecretCode($secretCode)) {
-            $secretCode = $this->generateSecretCode();
-        }
+        $stmtCode = $this->db->prepare("SELECT generate_unique_secret_code() as secret_code");
+        $stmtCode->execute();
+        $secretCode = $stmtCode->fetchColumn();
 
         $sql = "INSERT INTO groups (group_name, group_description, creator_user_id, secret_code, requires_approval) 
                 VALUES (:name, :description, :creator_user_id, :secret_code, :requires_approval)";
