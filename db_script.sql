@@ -119,3 +119,15 @@ CREATE TRIGGER trg_validate_username_length
 BEFORE INSERT OR UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION validate_username_length();
+CREATE OR REPLACE FUNCTION lowercase_email()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.users_email := LOWER(NEW.users_email);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_lowercase_email
+BEFORE INSERT OR UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION lowercase_email();
