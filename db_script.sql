@@ -82,14 +82,7 @@ INSERT INTO books (title, author, genre, cover_image) VALUES
 ('Book Title 20', 'Author Thriller', 'Crime Thriller',                 'covers/1984.jpg');
 
 
-
-
 DROP TRIGGER IF EXISTS trg_validate_group_name_length ON groups;
-DROP FUNCTION IF EXISTS validate_group_name_length();
-
-
-DROP TRIGGER IF EXISTS trg_validate_username_length ON users;
-DROP FUNCTION IF EXISTS validate_username_length();
 
 CREATE OR REPLACE FUNCTION validate_group_name_length()
 RETURNS TRIGGER AS $$
@@ -105,6 +98,10 @@ CREATE TRIGGER trg_validate_group_name_length
 BEFORE INSERT OR UPDATE ON groups
 FOR EACH ROW
 EXECUTE FUNCTION validate_group_name_length();
+
+
+DROP TRIGGER IF EXISTS trg_validate_username_length ON users;
+
 CREATE OR REPLACE FUNCTION validate_username_length()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -119,6 +116,10 @@ CREATE TRIGGER trg_validate_username_length
 BEFORE INSERT OR UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION validate_username_length();
+
+
+DROP TRIGGER IF EXISTS trg_lowercase_email ON users;
+
 CREATE OR REPLACE FUNCTION lowercase_email()
 RETURNS TRIGGER AS $$
 BEGIN
