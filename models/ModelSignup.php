@@ -20,13 +20,12 @@ class ModelSignup
         $stmt = $this->connect()->prepare('INSERT INTO users (users_uid, users_pwd, users_email) VALUES (?, ?, ?);');
         $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
         if (!$stmt->execute([$uid, $hashed_pwd, $email])) {
-            // Executarea a eșuat dar nu s-a aruncat excepție (rar)
             $errorInfo = $stmt->errorInfo();
             throw new Exception("Database error: " . $errorInfo[2]);
         }
         return true;
     } catch (PDOException $e) {
-        // Re-aruncăm pentru a fi prins la nivelul controllerului
+        // rethrow pt controller
         throw $e;
     }
 }
