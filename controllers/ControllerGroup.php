@@ -7,6 +7,8 @@ class ControllerGroup extends Controller
     public function __construct(string $actiune, array $parametri)
     {
         parent::__construct();
+
+        try{
         $this->modelGroup = new ModelGroup();
         $this->ViewGroup = new ViewGroup();
 
@@ -60,6 +62,17 @@ class ControllerGroup extends Controller
                 $this->ViewGroup->renderError("The requested group action was not found.", "Action Not Found");
                 break;
         }
+    } catch (PDOException $e) {
+        $errorMsg = $e->getMessage();
+        if (strpos($errorMsg, 'Numele grupului este prea scurt') !== false) {
+            $message = "Numele grupului trebuie să aibă cel puțin 3 caractere.";
+        }  else {
+            $message = "Eroare la înregistrare. Încearcă din nou.";
+        }
+    
+        $this->ViewGroup->renderError($message, "Database Error");
+        exit;
+    } 
     }
 
     private function showCreateForm(): void

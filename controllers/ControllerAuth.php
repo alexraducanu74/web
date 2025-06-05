@@ -131,10 +131,22 @@ class ControllerAuth extends Controller
             $this->showRegisterForm(['error_message' => "Username or email already taken."]);
             return;
         }
-        if ($this->modelSignup->setUser($uid, $pwd, $email)) {
-            $this->showRegisterForm(['success_message' => "Signup successful! You can now login."]);
-        } else {
-            $this->showRegisterForm(['error_message' => "An error occurred during registration. Please try again."]);
+        try {
+            if ($this->modelSignup->setUser($uid, $pwd, $email)) {
+                $this->showRegisterForm(['success_message' => "Signup successful! You can now login."]);
+            } else {
+                $this->showRegisterForm(['error_message' => "An error occurred during registration. Please try again."]);
+            }
+        } catch (PDOException $e) {
+            $errorMsg = $e->getMessage();
+    
+            if (strpos($errorMsg, 'Numele de utilizator este prea scurt') !== false) {
+                $message = "Numele de utilizator trebuie să aibă cel puțin 3 caractere.";
+            }  else {
+                $message = "Eroare la înregistrare. Încearcă din nou.";
+            }
+    
+            $this->showRegisterForm(['error_message' => $message]);
         }
     }
    public function logout(): void

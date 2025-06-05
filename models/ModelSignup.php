@@ -15,17 +15,20 @@ class ModelSignup
         return $stmt->rowCount() === 0;
     }
     public function setUser(string $uid, string $pwd, string $email): bool
-    {
+{
+    try {
         $stmt = $this->connect()->prepare('INSERT INTO users (users_uid, users_pwd, users_email) VALUES (?, ?, ?);');
         $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
         if (!$stmt->execute([$uid, $hashed_pwd, $email])) {
+            // Executarea a eșuat dar nu s-a aruncat excepție (rar)
             $errorInfo = $stmt->errorInfo();
-            echo "Eroare la inserare: " . $errorInfo[2] . "<br>";
-            $stmt = null;
-            return false;
+            throw new Exception("Database error: " . $errorInfo[2]);
         }
-        $stmt = null;
         return true;
+    } catch (PDOException $e) {
+        // Re-aruncăm pentru a fi prins la nivelul controllerului
+        throw $e;
     }
+}
 }
 ?>
