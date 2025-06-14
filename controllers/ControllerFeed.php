@@ -315,6 +315,10 @@ class ControllerFeed extends Controller
             exit;
         }
 
+        if (empty(trim($_POST['review'] ?? ''))) {
+            die("Review cannot be empty.");
+        }
+        
         $pagesRead = (int)($_POST['pages_read'] ?? 0);
         $review = trim($_POST['review'] ?? '');
 
