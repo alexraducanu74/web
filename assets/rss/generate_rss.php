@@ -37,7 +37,7 @@ while ($book = $stmt->fetch(PDO::FETCH_ASSOC)) {
 }
 
 $reviewStmt = $pdo->query("
-    SELECT p.review, p.pages_read, p.updated_at, b.id as book_id, b.title, u.users_uid 
+    SELECT p.review, p.pages_read, p.updated_at, p.rating, b.id as book_id, b.title, u.users_uid 
     FROM user_book_progress p
     JOIN books b ON p.book_id = b.id
     JOIN users u ON p.user_id = u.users_id
@@ -51,8 +51,12 @@ while ($review = $reviewStmt->fetch(PDO::FETCH_ASSOC)) {
 
     $titleText = "Review for: " . $review['title'] . " by " . $review['users_uid'];
     $linkText = "http://localhost/web/index.php?controller=feed&actiune=viewBook&parametrii=" . $review['book_id'];
+    $ratingValue = (int)$review['rating'];
     $descText = htmlspecialchars($review['review'], ENT_XML1, 'UTF-8') 
-            . " | Pages read: " . $review['pages_read'];
+            . " | Pages read: " . $review['pages_read'] . " | Rating: " . $ratingValue;
+
+    
+
     $item->appendChild($doc->createElement("title", htmlspecialchars($titleText, ENT_XML1, 'UTF-8')));
     $item->appendChild($doc->createElement("link", htmlspecialchars($linkText, ENT_XML1, 'UTF-8')));
     $item->appendChild($doc->createElement("description", $descText));

@@ -859,3 +859,56 @@ h2 {
   white-space: nowrap;
   transition: width 0.3s ease;
 }
+.star-rating {
+  direction: rtl;
+  font-size: 1.5rem;
+  unicode-bidi: bidi-override;
+  display: inline-flex;
+}
+
+.star-rating input[type="radio"] {
+  position: absolute;   /* keep it in layout flow */
+  opacity: 0;            /* fully transparent but focusable */
+  width: 1px;
+  height: 1px;
+}
+
+.star-rating label {
+  color: #ccc; /* light gray for unselected */
+  cursor: pointer;
+  padding: 0 5px;
+  transition: color 0.2s;
+}
+
+/* Color stars gold on hover */
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: gold;
+}
+
+/* Color stars gold for checked */
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating input[type="radio"]:checked + label {
+  color: gold;
+}
+.book-reviews {
+  margin-top: 2em;
+}
+
+.review-list {
+  list-style: none;
+  padding: 0;
+}
+
+.review-item {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 0.4em;
+  padding: 1em;
+  margin-bottom: 1em;
+}
+
+.review-rating {
+  color: gold;
+  font-weight: bold;
+}

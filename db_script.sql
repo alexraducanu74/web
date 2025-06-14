@@ -60,6 +60,7 @@ CREATE TABLE user_book_progress (
     book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     pages_read INTEGER DEFAULT 0,
     review TEXT,
+    rating DECIMAL(2,1) NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (user_id, book_id)
 );

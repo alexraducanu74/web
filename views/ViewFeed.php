@@ -186,71 +186,126 @@ class ViewFeed
         echo $layout;
     }
 
-    public function renderBook(array $book, ?array $userBookData = null): void
-{
-    $isLoggedIn = isset($_SESSION['user_id']);
-    $userId = $isLoggedIn ? $_SESSION['user_id'] : null;
+    function generateStarRatingHtml(int $rating): string
+    {
+        $starsHtml = [];
 
-    $review = $userBookData['review'] ?? '';
-    $pagesRead = $userBookData['pages_read'] ?? 0;
-    $totalPages = $book['total_pages'] ?? 0; 
+        for ($star = 5; $star >= 1; $star--) {
+            // Apply required only on the highest star input
+            $required = ($star === 5) ? 'required' : '';
+            $checked = ($star === $rating) ? 'checked' : '';
 
-    $progressPercentage = ($totalPages > 0) ? round(($pagesRead / $totalPages) * 100) : 0;
+            $input = "<input type='radio' id='star$star' name='rating' value='$star' $checked $required>";
+            $label = "<label for='star$star' title='$star star" . ($star > 1 ? 's' : '') . "'>★</label>";
 
-    $reviewForm = '';
-    if ($isLoggedIn) {
-        $reviewForm = "
-        <form method='post' action='index.php?controller=feed&actiune=saveReview&parametrii={$book['id']}'>
-            <div>
-                <label for='review'>Your Review:</label><br>
-                <textarea name='review' id='review' rows='5' cols='50' required>" . htmlspecialchars($review) . "</textarea>
+            $starsHtml[] = $input . $label;
+        }
+
+        return "
+        <fieldset class='star-rating-group'>
+            <legend>Please select a rating:</legend>
+            <div class='star-rating'>
+                " . implode('', $starsHtml) . "
             </div>
-            <div>
-                <label for='pages_read'>Pages Read:</label>
-                <input type='number' name='pages_read' id='pages_read' value='" . htmlspecialchars($pagesRead) . "' min='0' max='" . (int)$totalPages . "'>
-                <p><strong>Total Pages:</strong> " . htmlspecialchars($totalPages) . "</p>
-            </div>
-            <div>
-                <button type='submit'>Save Progress & Review</button>
-            </div>
-        </form>
+        </fieldset>
         ";
-    } else {
-        $reviewForm = "<p><em><a href='index.php?controller=auth&actiune=showLoginForm'>Login</a> to leave a review or track progress.</em></p>";
+    }
+    public function renderBook(array $book, ?array $userBookData = null, array $allReviews = []): void
+    {
+        $isLoggedIn = isset($_SESSION['user_id']);
+        $userId = $isLoggedIn ? $_SESSION['user_id'] : null;
+
+        $review = $userBookData['review'] ?? '';
+        $pagesRead = $userBookData['pages_read'] ?? 0;
+        $totalPages = $book['total_pages'] ?? 0;
+        $rating = $userBookData['rating'] ?? 0;  // New rating value
+
+        $progressPercentage = ($totalPages > 0) ? round(($pagesRead / $totalPages) * 100) : 0;
+
+        // Star rating widget HTML with pre-selected rating
+        $starRatingHtml = $this->generateStarRatingHtml($rating);
+
+        $reviewForm = '';
+        if ($isLoggedIn) {
+            $reviewForm = "
+            <form method='post' action='index.php?controller=feed&actiune=saveReview&parametrii={$book['id']}'>
+                <div>
+                    <label for='review'>Your Review:</label><br>
+                    <textarea name='review' id='review' rows='5' cols='50' required>" . htmlspecialchars($review) . "</textarea>
+                </div>
+                <div>
+                    <label for='pages_read'>Pages Read:</label>
+                    <input type='number' name='pages_read' id='pages_read' value='" . htmlspecialchars($pagesRead) . "' min='0' max='" . (int)$totalPages . "'>
+                    <p><strong>Total Pages:</strong> " . htmlspecialchars($totalPages) . "</p>
+                </div>
+                <div>
+                    <label>Your Rating:</label><br>
+                    $starRatingHtml
+                </div>
+                <div>
+                    <button type='submit'>Save Progress & Review</button>
+                </div>
+            </form>
+            ";
+        } else {
+            $reviewForm = "<p><em><a href='index.php?controller=auth&actiune=showLoginForm'>Login</a> to leave a review or track progress.</em></p>";
+        }
+
+        $progressBar = ($isLoggedIn && $totalPages > 0) ? "
+            <div class='progress-bar' style='border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 100%; margin-top: 10px;'>
+                <div class='progress' style='width: {$progressPercentage}%; background-color: #4CAF50; color: white; padding: 2px;'>
+                    {$progressPercentage}% read
+                </div>
+            </div>" : "";
+
+        $bookHtml = "
+            <div class='book-detail'>
+                <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
+                <div class='book-info'>
+                    <h2>" . htmlspecialchars($book['title']) . "</h2>
+                    <p><strong>Author:</strong> " . htmlspecialchars($book['author']) . "</p>
+                    " . (!empty($book['genre']) ? "<p><strong>Genre:</strong> " . htmlspecialchars($book['genre']) . "</p>" : "") . "
+                    $progressBar
+                </div>
+                <div class='user-interaction'>
+                    $reviewForm
+                </div>
+            </div>
+        ";
+        $reviewsHtml = '';
+        $sum = 0;
+        $count = 0;
+
+        foreach ($allReviews as $review) {
+            $rating = (int)$review['rating'];
+            $sum += $rating;
+            $count++;
+
+            $reviewsHtml .= "
+                <div class='review-block'>
+                    <p><strong>" . htmlspecialchars($review['users_uid']) . "</strong> rated: $rating / 5 ★</p>
+                    <p>" . nl2br(htmlspecialchars($review['review'])) . "</p>
+                    <small><em>Reviewed on " . date('F j, Y', strtotime($review['updated_at'])) . "</em></small>
+                </div><hr>";
+        }
+
+        $avgRatingHtml = $count > 0
+            ? "<p><strong>Average Rating:</strong> " . round($sum / $count, 2) . " / 5</p>"
+            : "<p><strong>Average Rating:</strong> Not rated yet.</p>";
+        $bookHtml .= $avgRatingHtml;
+        $bookHtml .= $reviewsHtml;
+        $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
+        $authLinksForLayout = $this->getAuthSpecificLinks();
+
+        $layout = $this->loadTemplate('views/layout.tpl', [
+            'title' => htmlspecialchars($book['title']),
+            'content' => $content,
+            'authLinks' => $authLinksForLayout
+        ]);
+        echo $layout;
     }
 
-    $progressBar = ($isLoggedIn && $totalPages > 0) ? "
-        <div class='progress-bar' style='border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 100%; margin-top: 10px;'>
-            <div class='progress' style='width: {$progressPercentage}%; background-color: #4CAF50; color: white; padding: 2px;'>
-                {$progressPercentage}% read
-            </div>
-        </div>" : "";
 
-    $bookHtml = "
-        <div class='book-detail'>
-            <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
-            <div class='book-info'>
-                <h2>" . htmlspecialchars($book['title']) . "</h2>
-                <p><strong>Author:</strong> " . htmlspecialchars($book['author']) . "</p>
-                " . (!empty($book['genre']) ? "<p><strong>Genre:</strong> " . htmlspecialchars($book['genre']) . "</p>" : "") . "
-                $progressBar
-            </div>
-            <div class='user-interaction'>
-                $reviewForm
-            </div>
-        </div>
-    ";
-
-    $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
-    $authLinksForLayout = $this->getAuthSpecificLinks();
-
-    $layout = $this->loadTemplate('views/layout.tpl', [
-        'title' => htmlspecialchars($book['title']),
-        'content' => $content,
-        'authLinks' => $authLinksForLayout
-    ]);
-    echo $layout;
-}
 
     public function loadTemplate(string $filePath, array $data): string
     {

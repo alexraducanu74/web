@@ -260,7 +260,7 @@ class ControllerFeed extends Controller
         if ($user) {
             $progress = $this->modelFeed->getUserProgress($user['user_id'], $id);
         }
-
+        
         $this->viewFeed->renderBook($book, $progress, $allReviews);
     }
 
@@ -280,12 +280,14 @@ class ControllerFeed extends Controller
                 ? round(($book['pages_read'] / $book['total_pages']) * 100)
                 : 0;
 
+            $ratingDisplay = isset($book['rating']) ? "Your Rating: " . htmlspecialchars($book['rating']) . " / 5" : "No rating yet";
             $bookHtml .= "
                 <div class='book-entry'>
                     <h3>" . htmlspecialchars($book['title']) . "</h3>
                     <p><strong>Author:</strong> " . htmlspecialchars($book['author']) . "</p>
                     <p><strong>Progress:</strong> {$book['pages_read']} / {$book['total_pages']} pages ({$progress}%)</p>
                     <p><strong>Your Review:</strong> " . nl2br(htmlspecialchars($book['review'])) . "</p>
+                    <p><strong>{$ratingDisplay}</strong></p>
                     <a href='index.php?controller=feed&actiune=viewBook&parametrii={$book['id']}'>View Book</a>
                     <hr>
                 </div>
@@ -315,12 +317,17 @@ class ControllerFeed extends Controller
             exit;
         }
 
-        if (empty(trim($_POST['review'] ?? ''))) {
+        $review = trim($_POST['review'] ?? '');
+        $pagesRead = (int)($_POST['pages_read'] ?? 0);
+        $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : null;
+
+        if ($review === '') {
             die("Review cannot be empty.");
         }
-        
-        $pagesRead = (int)($_POST['pages_read'] ?? 0);
-        $review = trim($_POST['review'] ?? '');
+
+        if ($rating === null || $rating < 1 || $rating > 5) {
+            die("Rating must be provided and between 1 and 5.");
+        }
 
         $book = $this->modelFeed->getBookById($bookId);
         if (!$book) {
@@ -333,11 +340,12 @@ class ControllerFeed extends Controller
             die("Pages read cannot exceed total pages.");
         }
 
-        $this->modelFeed->saveUserProgress($userId, $bookId, $pagesRead, $review);
+        $this->modelFeed->saveUserProgress($userId, $bookId, $pagesRead, $review, $rating);
 
         header("Location: index.php?controller=feed&actiune=myBooks");
         exit;
     }
+
 
     public function updateProgress(int $bookId): void
     {
@@ -350,6 +358,12 @@ class ControllerFeed extends Controller
 
         $pagesRead = (int) ($_POST['pages_read'] ?? 0);
         $review = trim($_POST['review'] ?? '');
+        $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : null;
+
+        if ($rating === null || $rating < 1 || $rating > 5) {
+            echo "Rating must be provided and between 1 and 5.";
+            return;
+        }
 
         $book = $this->modelFeed->getBookById($bookId);
         if (!$book) {
@@ -364,7 +378,7 @@ class ControllerFeed extends Controller
             return;
         }
 
-        $success = $this->modelFeed->saveUserProgress($user['user_id'], $bookId, $pagesRead, $review);
+        $success = $this->modelFeed->saveUserProgress($user['user_id'], $bookId, $pagesRead, $review, $rating);
         if ($success) {
             header("Location: index.php?controller=feed&actiune=viewBook&parametrii={$bookId}");
             exit;
@@ -372,6 +386,8 @@ class ControllerFeed extends Controller
             echo "Failed to update progress.";
         }
     }
+
+
 
     private function ajaxFilterBooks(): void
     {

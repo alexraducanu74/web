@@ -182,14 +182,14 @@ class ModelFeed
     public function getUserProgress(int $userId, int $bookId): ?array
     {
         $stmt = $this->db->prepare("
-            SELECT ub.pages_read, ub.review, b.total_pages
+            SELECT ub.pages_read, ub.review, ub.rating, b.total_pages
             FROM user_book_progress ub
             JOIN books b ON ub.book_id = b.id
             WHERE ub.user_id = ? AND ub.book_id = ?
         ");
         $stmt->execute([$userId, $bookId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
         return $result ?: null;
     }
     
@@ -197,39 +197,49 @@ class ModelFeed
     {
         $stmt = $this->db->prepare("
             SELECT b.id, b.title, b.author, b.total_pages,
-                   ub.pages_read, ub.review
+                   ub.pages_read, ub.review, ub.rating, ub.updated_at
             FROM books b
             JOIN user_book_progress ub ON b.id = ub.book_id
             WHERE ub.user_id = ?
-            ORDER BY b.title
+            ORDER BY ub.updated_at DESC
         ");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     
-    public function saveUserProgress(int $userId, int $bookId, int $pagesRead, string $review): void
+    public function saveUserProgress(int $userId, int $bookId, int $pagesRead, string $review, int $rating): bool
     {
         $stmt = $this->db->prepare("
-            INSERT INTO user_book_progress (user_id, book_id, pages_read, review, updated_at)
-            VALUES (?, ?, ?, ?, NOW())
+            INSERT INTO user_book_progress (user_id, book_id, pages_read, review, rating, updated_at)
+            VALUES (?, ?, ?, ?, ?, NOW())
             ON CONFLICT (user_id, book_id) DO UPDATE
             SET pages_read = EXCLUDED.pages_read,
                 review = EXCLUDED.review,
+                rating = EXCLUDED.rating,
                 updated_at = NOW()
         ");
-        $stmt->execute([$userId, $bookId, $pagesRead, $review]);
+        return $stmt->execute([$userId, $bookId, $pagesRead, $review, $rating]);
     }
+
     
-    public function getAllReviewsForBook(int $bookId): array
-    {
+    public function getAllReviewsForBook(int $bookId): array {
         $stmt = $this->db->prepare("
-            SELECT u.users_uid AS username, p.pages_read, p.review, p.updated_at, b.total_pages
+            SELECT p.review, p.rating, p.updated_at, u.users_uid
             FROM user_book_progress p
-            JOIN users u ON u.users_id = p.user_id
-            JOIN books b ON b.id = p.book_id
-            WHERE p.book_id = ?
+            JOIN users u ON p.user_id = u.users_id
+            WHERE p.book_id = ? AND p.review IS NOT NULL AND TRIM(p.review) <> ''
+            ORDER BY p.updated_at DESC
         ");
         $stmt->execute([$bookId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getAverageRatingForBook(int $bookId): ?float {
+        $stmt = $this->db->prepare("SELECT AVG(rating) AS avg_rating FROM user_book_progress WHERE book_id = ? AND rating IS NOT NULL");
+        $stmt->execute([$bookId]);
+        $avg = $stmt->fetchColumn();
+    
+        // Check if we got a numeric value
+        return is_numeric($avg) ? round((float)$avg, 2) : null;
     }
 }
