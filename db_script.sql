@@ -1,4 +1,5 @@
 -- Drop tables if they exist (in the correct dependency order)
+DROP TABLE IF EXISTS user_book_progress CASCADE;
 DROP TABLE IF EXISTS group_members CASCADE;
 DROP TABLE IF EXISTS groups CASCADE;
 DROP TABLE IF EXISTS books CASCADE;
@@ -49,37 +50,48 @@ CREATE TABLE books (
     author VARCHAR(255) NOT NULL,
     genre VARCHAR(255),
     cover_image VARCHAR(255),
+    total_pages INTEGER CHECK (total_pages > 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO books (title, author, genre, cover_image) VALUES
-('The Midnight Library', 'Matt Haig', 'Contemporary Fiction, Magical Realism', 'covers/midnight-library.jpg'),
-('1984', 'George Orwell', 'Dystopian, Political Fiction, Science Fiction', 'covers/1984.jpg'),
-('The Name of the Wind', 'Patrick Rothfuss', 'Epic Fantasy, Adventure', 'covers/name-of-the-wind.jpg'),
+CREATE TABLE user_book_progress (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(users_id) ON DELETE CASCADE,
+    book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    pages_read INTEGER DEFAULT 0,
+    review TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, book_id)
+);
 
-('Book Title 1',  'Author Horror',   'Horror',                          'covers/1984.jpg'),
-('Book Title 2',  'Author Horror',   'Horror, Thriller',               'covers/1984.jpg'),
-('Book Title 3',  'Author Horror',   'Supernatural Horror',            'covers/1984.jpg'),
-('Book Title 4',  'Author Horror',   'Horror',                          'covers/1984.jpg'),
-('Book Title 5',  'Author Horror',   'Psychological Horror',           'covers/1984.jpg'),
+INSERT INTO books (title, author, genre, cover_image, total_pages) VALUES
+('The Midnight Library', 'Matt Haig', 'Contemporary Fiction, Magical Realism', 'covers/midnight-library.jpg', 304),
+('1984', 'George Orwell', 'Dystopian, Political Fiction, Science Fiction', 'covers/1984.jpg', 328),
+('The Name of the Wind', 'Patrick Rothfuss', 'Epic Fantasy, Adventure', 'covers/name-of-the-wind.jpg', 662),
 
-('Book Title 6',  'Author Comedy',   'Comedy, Satire',                 'covers/1984.jpg'),
-('Book Title 7',  'Author Comedy',   'Comedy',                         'covers/1984.jpg'),
-('Book Title 8',  'Author Comedy',   'Dark Comedy',                    'covers/1984.jpg'),
-('Book Title 9',  'Author Comedy',   'Comedy',                         'covers/1984.jpg'),
-('Book Title 10', 'Author Comedy',   'Romantic Comedy',                'covers/1984.jpg'),
+('Book Title 1',  'Author Horror',   'Horror',                          'covers/1984.jpg', 220),
+('Book Title 2',  'Author Horror',   'Horror, Thriller',               'covers/1984.jpg', 245),
+('Book Title 3',  'Author Horror',   'Supernatural Horror',            'covers/1984.jpg', 260),
+('Book Title 4',  'Author Horror',   'Horror',                         'covers/1984.jpg', 230),
+('Book Title 5',  'Author Horror',   'Psychological Horror',           'covers/1984.jpg', 250),
 
-('Book Title 11', 'Author SciFi',    'Science Fiction, Space Opera',   'covers/1984.jpg'),
-('Book Title 12', 'Author SciFi',    'Science Fiction',                'covers/1984.jpg'),
-('Book Title 13', 'Author SciFi',    'Cyberpunk, Science Fiction',     'covers/1984.jpg'),
-('Book Title 14', 'Author SciFi',    'Science Fiction',                'covers/1984.jpg'),
-('Book Title 15', 'Author SciFi',    'Hard Science Fiction',           'covers/1984.jpg'),
+('Book Title 6',  'Author Comedy',   'Comedy, Satire',                 'covers/1984.jpg', 210),
+('Book Title 7',  'Author Comedy',   'Comedy',                         'covers/1984.jpg', 190),
+('Book Title 8',  'Author Comedy',   'Dark Comedy',                    'covers/1984.jpg', 200),
+('Book Title 9',  'Author Comedy',   'Comedy',                         'covers/1984.jpg', 195),
+('Book Title 10', 'Author Comedy',   'Romantic Comedy',                'covers/1984.jpg', 225),
 
-('Book Title 16', 'Author Thriller', 'Thriller, Mystery',              'covers/1984.jpg'),
-('Book Title 17', 'Author Thriller', 'Thriller',                       'covers/1984.jpg'),
-('Book Title 18', 'Author Thriller', 'Psychological Thriller',         'covers/1984.jpg'),
-('Book Title 19', 'Author Thriller', 'Thriller',                       'covers/1984.jpg'),
-('Book Title 20', 'Author Thriller', 'Crime Thriller',                 'covers/1984.jpg');
+('Book Title 11', 'Author SciFi',    'Science Fiction, Space Opera',   'covers/1984.jpg', 310),
+('Book Title 12', 'Author SciFi',    'Science Fiction',                'covers/1984.jpg', 295),
+('Book Title 13', 'Author SciFi',    'Cyberpunk, Science Fiction',     'covers/1984.jpg', 275),
+('Book Title 14', 'Author SciFi',    'Science Fiction',                'covers/1984.jpg', 285),
+('Book Title 15', 'Author SciFi',    'Hard Science Fiction',           'covers/1984.jpg', 320),
+
+('Book Title 16', 'Author Thriller', 'Thriller, Mystery',              'covers/1984.jpg', 340),
+('Book Title 17', 'Author Thriller', 'Thriller',                       'covers/1984.jpg', 300),
+('Book Title 18', 'Author Thriller', 'Psychological Thriller',         'covers/1984.jpg', 310),
+('Book Title 19', 'Author Thriller', 'Thriller',                       'covers/1984.jpg', 295),
+('Book Title 20', 'Author Thriller', 'Crime Thriller',                 'covers/1984.jpg', 305);
 
 
 DROP TRIGGER IF EXISTS trg_validate_group_name_length ON groups;

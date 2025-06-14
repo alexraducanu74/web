@@ -178,5 +178,58 @@ class ModelFeed
             ':cover_image' => $bookData['cover_image']
         ]);
     }
-
+    
+    public function getUserProgress(int $userId, int $bookId): ?array
+    {
+        $stmt = $this->db->prepare("
+            SELECT ub.pages_read, ub.review, b.total_pages
+            FROM user_book_progress ub
+            JOIN books b ON ub.book_id = b.id
+            WHERE ub.user_id = ? AND ub.book_id = ?
+        ");
+        $stmt->execute([$userId, $bookId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        return $result ?: null;
+    }
+    
+    public function getBooksWithUserProgress(int $userId): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT b.id, b.title, b.author, b.total_pages,
+                   ub.pages_read, ub.review
+            FROM books b
+            JOIN user_book_progress ub ON b.id = ub.book_id
+            WHERE ub.user_id = ?
+            ORDER BY b.title
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function saveUserProgress(int $userId, int $bookId, int $pagesRead, string $review): void
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO user_book_progress (user_id, book_id, pages_read, review, updated_at)
+            VALUES (?, ?, ?, ?, NOW())
+            ON CONFLICT (user_id, book_id) DO UPDATE
+            SET pages_read = EXCLUDED.pages_read,
+                review = EXCLUDED.review,
+                updated_at = NOW()
+        ");
+        $stmt->execute([$userId, $bookId, $pagesRead, $review]);
+    }
+    
+    public function getAllReviewsForBook(int $bookId): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT u.users_uid AS username, p.pages_read, p.review, p.updated_at, b.total_pages
+            FROM user_book_progress p
+            JOIN users u ON u.users_id = p.user_id
+            JOIN books b ON b.id = p.book_id
+            WHERE p.book_id = ?
+        ");
+        $stmt->execute([$bookId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

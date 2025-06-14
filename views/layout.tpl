@@ -30,8 +30,6 @@
         <circle cx="5" cy="19" r="1"/>
       </svg>
       </a>
-      <a href="progress.php">Progres</a>
-      <a href="stats.php">Statistici</a>
       <div class="separator"></div>
     </div>
     <div class="auth-links" id="auth-links">

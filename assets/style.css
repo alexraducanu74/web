@@ -841,3 +841,21 @@ h2 {
     margin-top: 10px;
   }
 }
+.progress-bar {
+  width: 100%; /* full width */
+  background-color: #eee; /* light gray background */
+  border: 2px solid #4caf50; /* green outline */
+  border-radius: 5px; /* rounded corners */
+  overflow: hidden; /* to keep the inner bar contained */
+  height: 25px; /* fixed height for better appearance */
+}
+
+.progress {
+  height: 100%;
+  background-color: #4caf50; /* green fill */
+  color: white;
+  text-align: center;
+  line-height: 25px; /* vertically center text */
+  white-space: nowrap;
+  transition: width 0.3s ease;
+}

@@ -21,7 +21,13 @@ class ControllerFeed extends Controller
         if ($actiune == "showFeed" || $actiune == "search") {
             $this->handleFeedDisplay($query, $currentAuthors, $currentGenres);
         } elseif ($actiune == "viewBook" && isset($parametri[0])) {
-            $this->viewBook((int) $parametri[0]);
+            $this->viewBook((int) $parametri[0]);  
+        } elseif ($actiune == "updateProgress" && isset($parametri[0])) {
+            $this->updateProgress((int)$parametri[0]);   
+        } elseif ($actiune === 'myBooks') {
+            $this->myBooks();
+        } elseif ($actiune == "saveReview" && isset($parametri[0])) {
+            $this->saveReview((int)$parametri[0]);
         } elseif ($actiune == "ajaxFilterBooks") {
             $this->ajaxFilterBooks();
         } elseif ($actiune == "genereazaRss") {
@@ -246,7 +252,121 @@ class ControllerFeed extends Controller
             echo "Cartea nu a fost găsită.";
             return;
         }
-        $this->viewFeed->renderBook($book);
+
+        $user = $this->getAuthenticatedUser();
+        $progress = null;
+        $allReviews = $this->modelFeed->getAllReviewsForBook($id);
+
+        if ($user) {
+            $progress = $this->modelFeed->getUserProgress($user['user_id'], $id);
+        }
+
+        $this->viewFeed->renderBook($book, $progress, $allReviews);
+    }
+
+    public function myBooks(): void
+    {
+        $userId = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
+            header('Location: index.php?controller=auth&actiune=showLoginForm');
+            exit;
+        }
+
+        $books = $this->modelFeed->getBooksWithUserProgress($userId);
+
+        $bookHtml = '';
+        foreach ($books as $book) {
+            $progress = ($book['total_pages'] > 0)
+                ? round(($book['pages_read'] / $book['total_pages']) * 100)
+                : 0;
+
+            $bookHtml .= "
+                <div class='book-entry'>
+                    <h3>" . htmlspecialchars($book['title']) . "</h3>
+                    <p><strong>Author:</strong> " . htmlspecialchars($book['author']) . "</p>
+                    <p><strong>Progress:</strong> {$book['pages_read']} / {$book['total_pages']} pages ({$progress}%)</p>
+                    <p><strong>Your Review:</strong> " . nl2br(htmlspecialchars($book['review'])) . "</p>
+                    <a href='index.php?controller=feed&actiune=viewBook&parametrii={$book['id']}'>View Book</a>
+                    <hr>
+                </div>
+            ";
+        }
+
+        if (empty($bookHtml)) {
+            $bookHtml = "<p>You haven't reviewed or made progress on any books yet.</p>";
+        }
+
+        $content = $this->view->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
+
+        $layout = $this->view->loadTemplate('views/layout.tpl', [
+            'title' => 'My Books',
+            'content' => $content,
+            'authLinks' => $this->view->getAuthSpecificLinks()
+        ]);
+
+        echo $layout;
+    }
+
+    public function saveReview($bookId)
+    {
+        $userId = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
+            header('Location: index.php?controller=auth&actiune=showLoginForm');
+            exit;
+        }
+
+        $pagesRead = (int)($_POST['pages_read'] ?? 0);
+        $review = trim($_POST['review'] ?? '');
+
+        $book = $this->modelFeed->getBookById($bookId);
+        if (!$book) {
+            die("Book not found.");
+        }
+
+        $totalPages = (int)$book['total_pages'];
+
+        if ($pagesRead > $totalPages) {
+            die("Pages read cannot exceed total pages.");
+        }
+
+        $this->modelFeed->saveUserProgress($userId, $bookId, $pagesRead, $review);
+
+        header("Location: index.php?controller=feed&actiune=myBooks");
+        exit;
+    }
+
+    public function updateProgress(int $bookId): void
+    {
+        $user = $this->getAuthenticatedUser();
+        if (!$user) {
+            http_response_code(401);
+            echo "You must be logged in.";
+            return;
+        }
+
+        $pagesRead = (int) ($_POST['pages_read'] ?? 0);
+        $review = trim($_POST['review'] ?? '');
+
+        $book = $this->modelFeed->getBookById($bookId);
+        if (!$book) {
+            echo "Book not found.";
+            return;
+        }
+
+        $totalPages = (int)$book['total_pages'];
+
+        if ($pagesRead < 0 || $pagesRead > $totalPages) {
+            echo "Invalid progress input.";
+            return;
+        }
+
+        $success = $this->modelFeed->saveUserProgress($user['user_id'], $bookId, $pagesRead, $review);
+        if ($success) {
+            header("Location: index.php?controller=feed&actiune=viewBook&parametrii={$bookId}");
+            exit;
+        } else {
+            echo "Failed to update progress.";
+        }
     }
 
     private function ajaxFilterBooks(): void

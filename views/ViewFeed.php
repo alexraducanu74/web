@@ -136,7 +136,8 @@ class ViewFeed
     {
         if (isset($_SESSION['user_id'])) {
             $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'User';
-            return '<a href="index.php?controller=group&actiune=myGroups">My Groups</a>
+            return '<a href="index.php?controller=feed&actiune=myBooks">My Books</a>
+                    <a href="index.php?controller=group&actiune=myGroups">My Groups</a>
                     <a href="index.php?controller=group&actiune=showCreateForm">Create Group</a>
                     <div class="separator"></div>
                     <a href="index.php?controller=auth&actiune=logout">Logout (' . $username . ')</a>';
@@ -185,28 +186,71 @@ class ViewFeed
         echo $layout;
     }
 
-    public function renderBook(array $book): void
-    {
-        $bookHtml = "
-            <div class='book-detail'>
-                 <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
-                <div class='book-info'>
-                    <h2>" . htmlspecialchars($book['title']) . "</h2>
-                    <p><strong>Author:</strong> " . htmlspecialchars($book['author']) . "</p>
-                    " . (!empty($book['genre']) ? "<p><strong>Genre:</strong> " . htmlspecialchars($book['genre']) . "</p>" : "") . "
-                </div>
-            </div>";
-        $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
+    public function renderBook(array $book, ?array $userBookData = null): void
+{
+    $isLoggedIn = isset($_SESSION['user_id']);
+    $userId = $isLoggedIn ? $_SESSION['user_id'] : null;
 
-        $authLinksForLayout = $this->getAuthSpecificLinks();
+    $review = $userBookData['review'] ?? '';
+    $pagesRead = $userBookData['pages_read'] ?? 0;
+    $totalPages = $book['total_pages'] ?? 0; 
 
-        $layout = $this->loadTemplate('views/layout.tpl', [
-            'title' => htmlspecialchars($book['title']),
-            'content' => $content,
-            'authLinks' => $authLinksForLayout
-        ]);
-        echo $layout;
+    $progressPercentage = ($totalPages > 0) ? round(($pagesRead / $totalPages) * 100) : 0;
+
+    $reviewForm = '';
+    if ($isLoggedIn) {
+        $reviewForm = "
+        <form method='post' action='index.php?controller=feed&actiune=saveReview&parametrii={$book['id']}'>
+            <div>
+                <label for='review'>Your Review:</label><br>
+                <textarea name='review' id='review' rows='5' cols='50' required>" . htmlspecialchars($review) . "</textarea>
+            </div>
+            <div>
+                <label for='pages_read'>Pages Read:</label>
+                <input type='number' name='pages_read' id='pages_read' value='" . htmlspecialchars($pagesRead) . "' min='0' max='" . (int)$totalPages . "'>
+                <p><strong>Total Pages:</strong> " . htmlspecialchars($totalPages) . "</p>
+            </div>
+            <div>
+                <button type='submit'>Save Progress & Review</button>
+            </div>
+        </form>
+        ";
+    } else {
+        $reviewForm = "<p><em><a href='index.php?controller=auth&actiune=showLoginForm'>Login</a> to leave a review or track progress.</em></p>";
     }
+
+    $progressBar = ($isLoggedIn && $totalPages > 0) ? "
+        <div class='progress-bar' style='border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 100%; margin-top: 10px;'>
+            <div class='progress' style='width: {$progressPercentage}%; background-color: #4CAF50; color: white; padding: 2px;'>
+                {$progressPercentage}% read
+            </div>
+        </div>" : "";
+
+    $bookHtml = "
+        <div class='book-detail'>
+            <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
+            <div class='book-info'>
+                <h2>" . htmlspecialchars($book['title']) . "</h2>
+                <p><strong>Author:</strong> " . htmlspecialchars($book['author']) . "</p>
+                " . (!empty($book['genre']) ? "<p><strong>Genre:</strong> " . htmlspecialchars($book['genre']) . "</p>" : "") . "
+                $progressBar
+            </div>
+            <div class='user-interaction'>
+                $reviewForm
+            </div>
+        </div>
+    ";
+
+    $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
+    $authLinksForLayout = $this->getAuthSpecificLinks();
+
+    $layout = $this->loadTemplate('views/layout.tpl', [
+        'title' => htmlspecialchars($book['title']),
+        'content' => $content,
+        'authLinks' => $authLinksForLayout
+    ]);
+    echo $layout;
+}
 
     public function loadTemplate(string $filePath, array $data): string
     {
