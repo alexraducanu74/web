@@ -256,15 +256,15 @@ class ControllerFeed extends Controller
         $user = $this->getAuthenticatedUser();
         $progress = null;
         $allReviews = $this->modelFeed->getAllReviewsForBook($id);
+        $averageRating = $this->modelFeed->getAverageRatingForBook($id); 
 
         if ($user) {
             $progress = $this->modelFeed->getUserProgress($user['user_id'], $id);
         }
-        
-        $this->viewFeed->renderBook($book, $progress, $allReviews);
-    }
 
-    public function myBooks(): void
+        $this->viewFeed->renderBook($book, $progress, $allReviews, $averageRating); 
+    }
+        public function myBooks(): void
     {
         $userId = $_SESSION['user_id'] ?? null;
         if (!$userId) {

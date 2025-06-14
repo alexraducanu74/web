@@ -210,7 +210,7 @@ class ViewFeed
         </fieldset>
         ";
     }
-    public function renderBook(array $book, ?array $userBookData = null, array $allReviews = []): void
+    public function renderBook(array $book, ?array $userBookData = null, array $allReviews = [], ?float $averageRating = null): void
     {
         $isLoggedIn = isset($_SESSION['user_id']);
         $userId = $isLoggedIn ? $_SESSION['user_id'] : null;
@@ -289,8 +289,8 @@ class ViewFeed
                 </div><hr>";
         }
 
-        $avgRatingHtml = $count > 0
-            ? "<p><strong>Average Rating:</strong> " . round($sum / $count, 2) . " / 5</p>"
+        $avgRatingHtml = ($averageRating !== null)
+            ? "<p><strong>Average Rating:</strong> $averageRating / 5</p>"
             : "<p><strong>Average Rating:</strong> Not rated yet.</p>";
         $bookHtml .= $avgRatingHtml;
         $bookHtml .= $reviewsHtml;
