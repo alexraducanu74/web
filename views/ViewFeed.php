@@ -172,9 +172,9 @@ class ViewFeed
 
         $adminInsertFormHtml = $this->renderAdminInsertForm();
 
-        $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>
-                      <script src="assets/js/geolocation.js" defer></script>
-                      <script src="assets/js/feed_delete.js" defer></script>';
+        $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
+                      <script src="assets/js/feed_filters.js" defer></script>
+                      <script src="assets/js/geolocation.js" defer></script>';
 
         $authLinksForLayout = $this->getAuthSpecificLinks();
 
@@ -377,9 +377,9 @@ class ViewFeed
         $toggleAndWrappedFiltersHtml = "<button id='toggle-filters-button' class='toggle-filters-btn' style='margin-bottom: 10px; padding: 8px 15px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer;'>Show Filters</button>" .
             "<div id='filters-wrapper' style='display: none;'>" . $rawFilterBarHtml . "</div>";
 
-        $scriptTag = '<script src="assets/js/feed_filters.js" defer></script>
-                      <script src="assets/js/geolocation.js" defer></script>
-                      <script src="assets/js/feed_delete.js" defer></script>';
+        $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
+                      <script src="assets/js/feed_filters.js" defer></script>
+                      <script src="assets/js/geolocation.js" defer></script>';
 
         $authLinksForLayout = $this->getAuthSpecificLinks();
 

@@ -22,8 +22,6 @@ class ControllerFeed extends Controller
             $this->handleFeedDisplay($query, $currentAuthors, $currentGenres);
         } elseif ($actiune == "viewBook" && isset($parametri[0])) {
             $this->viewBook((int) $parametri[0]);  
-        } elseif ($actiune == "updateProgress" && isset($parametri[0])) {
-            $this->updateProgress((int)$parametri[0]);   
         } elseif ($actiune === 'myBooks') {
             $this->myBooks();
         } elseif ($actiune == "saveReview" && isset($parametri[0])) {
@@ -32,8 +30,6 @@ class ControllerFeed extends Controller
             $this->ajaxFilterBooks();
         } elseif ($actiune == "genereazaRss") {
             $this->genereazaRss();
-        } elseif ($actiune == "deleteBook" && isset($parametri[0])) {
-            $this->deleteBook((int) $parametri[0]);
         } elseif ($actiune == "insertBook" && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->insertBook();
         } elseif ($actiune == "editBook" && isset($parametri[0])) {
@@ -346,49 +342,6 @@ class ControllerFeed extends Controller
         exit;
     }
 
-
-    public function updateProgress(int $bookId): void
-    {
-        $user = $this->getAuthenticatedUser();
-        if (!$user) {
-            http_response_code(401);
-            echo "You must be logged in.";
-            return;
-        }
-
-        $pagesRead = (int) ($_POST['pages_read'] ?? 0);
-        $review = trim($_POST['review'] ?? '');
-        $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : null;
-
-        if ($rating === null || $rating < 1 || $rating > 5) {
-            echo "Rating must be provided and between 1 and 5.";
-            return;
-        }
-
-        $book = $this->modelFeed->getBookById($bookId);
-        if (!$book) {
-            echo "Book not found.";
-            return;
-        }
-
-        $totalPages = (int)$book['total_pages'];
-
-        if ($pagesRead < 0 || $pagesRead > $totalPages) {
-            echo "Invalid progress input.";
-            return;
-        }
-
-        $success = $this->modelFeed->saveUserProgress($user['user_id'], $bookId, $pagesRead, $review, $rating);
-        if ($success) {
-            header("Location: index.php?controller=feed&actiune=viewBook&parametrii={$bookId}");
-            exit;
-        } else {
-            echo "Failed to update progress.";
-        }
-    }
-
-
-
     private function ajaxFilterBooks(): void
     {
         header('Content-Type: text/html');
@@ -406,27 +359,5 @@ class ControllerFeed extends Controller
         echo $this->viewFeed->renderBookItems($books);
         exit;
     }
-
-    public function deleteBook($bookId)
-    {
-        if ($_SESSION['is_admin']) {
-            $model = new ModelFeed();
-            $model->deleteBook($bookId);
-    
-            // Check if AJAX
-            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-                exit;
-            } else {
-                header("Location: /web/index.php");
-                exit;
-            }
-        } else {
-            http_response_code(403);
-            echo "Forbidden";
-            exit;
-        }
-    }
-    
 
 }

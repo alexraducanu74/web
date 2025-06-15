@@ -8,19 +8,45 @@ function sanitizeKey($value)
     return preg_replace('/[^a-zA-Z0-9]/', '', $value);
 }
 
-// Sanitize and validate inputs
 $controller = isset($_GET['controller']) ? sanitizeKey($_GET['controller']) : 'feed';
 $actiune = isset($_GET['actiune']) ? sanitizeKey($_GET['actiune']) : 'showFeed';
 $parametrii = isset($_GET['parametrii']) ? $_GET['parametrii'] : '';
-
-// Process parameters
 $params = array_filter(array_map('trim', explode(',', $parametrii)));
+$bookId = (int) ($params[0] ?? 0);
 
-// Construct controller class name
-$controllerClass = 'Controller' . ucfirst(strtolower($controller));
+// Check if this is an API request
+$isApi = isset($_GET['api']) && $_GET['api'] == '1';
 
-if (class_exists($controllerClass)) {
-    $ctrl = new $controllerClass($actiune, $params);
+if ($isApi) {
+    // Handle API requests here
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    header('Content-Type: application/json');
+
+    require_once 'api/feed.php';  // Make sure this path is correct
+    $api = new ApiFeedController();
+
+    switch ($actiune) {
+    case 'filterBooksApi':     // This should match your JS
+        $api->filterBooksApi();
+        break;
+    case 'deleteBookApi':      // This should match your JS
+        $bookId = (int) ($params[0] ?? 0);
+        $api->deleteBookApi($bookId);
+        break;
+            default:
+                http_response_code(404);
+                echo json_encode(['error' => 'Unknown API action.']);
+                break;
+        }
+        exit; // Important: exit after API handling to prevent HTML output
 } else {
-    echo "Controller-ul '$controllerClass' nu există.";
+    // Normal web requests handled here
+    $controllerClass = 'Controller' . ucfirst(strtolower($controller));
+    if (class_exists($controllerClass)) {
+        $ctrl = new $controllerClass($actiune, $params);
+    } else {
+        echo "Controller-ul '$controllerClass' nu există.";
+    }
 }
