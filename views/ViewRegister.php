@@ -1,56 +1,72 @@
 <?php
 class ViewRegister
 {
-    public function render(array $data = []): string
+    private function getRegisterForm(array $data = []): string
     {
         $error_message = $data['error_message'] ?? '';
         $success_message = $data['success_message'] ?? '';
-        ob_start();
-        ?>
-        <!DOCTYPE html>
-        <html lang="en">
 
-        <head>
-            <meta charset="UTF-8">
-            <title>Sign Up</title>
-            <link rel="stylesheet" href="assets/style.css">
-        </head>
+        $formHtml = '<section class="index-login">
+            <div class="wrapper">
+                <div class="index-login-signup">
+                    <h4>SIGN UP</h4>
+                    <p>Don\'t have an account yet? Sign up here!</p>';
 
-        <body>
-            <?php
-            if (file_exists(__DIR__ . '/../../nav/navbar.php')) {
-                include __DIR__ . '/../../nav/navbar.php';
-            } else if (file_exists('../nav/navbar.php')) {
-                include '../nav/navbar.php';
-            }
-            ?>
-            <section class="index-login">
-                <div class="wrapper">
-                    <div class="index-login-signup">
-                        <h4>SIGN UP</h4>
-                        <p>Don't have an account yet? Sign up here!</p>
-                        <?php if (!empty($error_message)): ?>
-                            <p style='color:red;'><?php echo htmlspecialchars($error_message); ?></p>
-                        <?php endif; ?>
-                        <?php if (!empty($success_message)): ?>
-                            <p style='color:green;'><?php echo htmlspecialchars($success_message); ?></p>
-                        <?php endif; ?>
-                        <form action="index.php?controller=auth&actiune=register" method="post">
-                            <div><input type="text" name="uid" placeholder="Username" required></div>
-                            <div><input type="password" name="pwd" placeholder="Password" required></div>
-                            <div><input type="password" name="pwdrepeat" placeholder="Repeat Password" required></div>
-                            <div><input type="text" name="email" placeholder="E-mail" required></div>
-                            <br>
-                            <button type="submit" name="submit">SIGN UP</button>
-                        </form>
-                    </div>
+        if (!empty($error_message)) {
+            $formHtml .= "<p style='color:red;'>" . htmlspecialchars($error_message) . "</p>";
+        }
+        if (!empty($success_message)) {
+            $formHtml .= "<p style='color:green;'>" . htmlspecialchars($success_message) . "</p>";
+        }
+
+        $formHtml .= '<form action="index.php?controller=auth&actiune=register" method="post">
+                        <div><input type="text" name="uid" placeholder="Username" required></div>
+                        <div><input type="password" name="pwd" placeholder="Password" required></div>
+                        <div><input type="password" name="pwdrepeat" placeholder="Repeat Password" required></div>
+                        <div><input type="text" name="email" placeholder="E-mail" required></div>
+                        <br>
+                        <button type="submit" name="submit">SIGN UP</button>
+                    </form>
                 </div>
-            </section>
-        </body>
+            </div>
+        </section>';
 
-        </html>
-        <?php
-        return ob_get_clean();
+        return $formHtml;
+    }
+
+    private function getGuestAuthLinks(): string
+    {
+        return '
+            <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
+            <a href="index.php?controller=auth&actiune=showRegisterForm">Register</a>';
+    }
+
+    private function loadTemplate(string $filePath, array $data): string
+    {
+        $actualFilePath = __DIR__ . '/' . basename($filePath);
+        if (!file_exists($actualFilePath)) {
+            return "Error: Template file not found at {$actualFilePath}";
+        }
+
+        $template = file_get_contents($actualFilePath);
+        foreach ($data as $key => $value) {
+            $template = str_replace('{$' . $key . '}', (string) $value, $template);
+        }
+        return $template;
+    }
+
+    public function render(array $data = []): void
+    {
+        $content = $this->getRegisterForm($data);
+        $authLinks = $this->getGuestAuthLinks();
+
+        $layout = $this->loadTemplate('layout.tpl', [
+            'title' => 'Sign Up',
+            'content' => $content,
+            'authLinks' => $authLinks
+        ]);
+
+        echo $layout;
     }
 }
 ?>

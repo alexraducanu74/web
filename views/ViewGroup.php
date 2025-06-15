@@ -16,6 +16,19 @@ class ViewGroup
         return $layout;
     }
 
+    private function loadTemplate(string $filePath, array $data): string
+    {
+        if (!file_exists($filePath)) {
+            return "Error: Template file not found at {$filePath}";
+        }
+
+        $template = file_get_contents($filePath);
+        foreach ($data as $key => $value) {
+            $template = str_replace('{$' . $key . '}', (string) $value, $template);
+        }
+        return $template;
+    }
+
     private function getAuthLinks(): string
     {
         if (isset($_SESSION['user_id'])) {
@@ -67,7 +80,8 @@ class ViewGroup
         $this->renderPage('Create Group', $content);
     }
 
-    public function renderGroupPage(array $group, array $members, bool $isMember, bool $isCreator, ?string $memberStatus, ?string $message = null, ?string $errorMessage = null): void
+    // Înlocuiește signatura și conținutul metodei renderGroupPage
+    public function renderGroupPage(array $group, array $members, bool $isMember, bool $isCreator, ?string $memberStatus, array $groupBooks, ?string $message = null, ?string $errorMessage = null): void
     {
         $content = '';
         if ($message) {
@@ -81,22 +95,24 @@ class ViewGroup
         $content .= '<p class="group-description">' . nl2br(htmlspecialchars($group['group_description'] ?? 'No description.')) . '</p>';
         $content .= '<p><em>Created by: ' . htmlspecialchars($group['creator_username']) . ' on ' . date("F j, Y", strtotime($group['created_at'])) . '</em></p>';
 
+        // --- Blocul de cod adăugat/modificat ---
         if ($isCreator) {
             $content .= '<div class="admin-info">';
             $content .= '<p><strong>Secret Code: <code>' . htmlspecialchars($group['secret_code']) . '</code></strong> (Share this with friends to invite them)</p>';
             $content .= '<p><a href="index.php?controller=group&actiune=manageRequests&parametrii=' . $group['group_id'] . '" class="btn btn-admin">Manage Join Requests</a></p>';
             $content .= '</div>';
         }
+        // --- Sfârșitul blocului de cod adăugat/modificat ---
 
         $currentUserId = $_SESSION['user_id'] ?? null;
         if ($currentUserId && !$isMember && $memberStatus !== 'pending') {
             $content .= '<div class="join-group-section">
                             <h3>Join this Group</h3>
-                            <form action="index.php?controller=group&actiune=joinWithCode" method="post" class="form-inline">
+                            <form action="index.php?controller=group&actiune=joinWithCode" method="post" class="form-inline join-code-form">
                                 <input type="hidden" name="group_id_for_code_join" value="' . $group['group_id'] . '">
                                 <div class="form-group">
                                     <label for="secret_code_join">Secret Code:</label>
-                                    <input type="text" id="secret_code_join" name="secret_code" required>
+                                    <input type="text" id="secret_code_join" name="secret_code" required class="form-control">
                                 </div>
                                 <button type="submit" class="btn">Join Group</button>
                             </form>
@@ -106,7 +122,6 @@ class ViewGroup
         } elseif ($currentUserId && $isMember) {
             $content .= '<p class="status-member">You are a member of this group.</p>';
         }
-
 
         $content .= '<h3>Members (' . count($members) . ')</h3>';
         if (empty($members)) {
@@ -119,36 +134,30 @@ class ViewGroup
             $content .= '</ul>';
         }
 
-        $this->renderPage(htmlspecialchars($group['group_name']), $content);
-    }
-
-    public function renderManageRequests(array $group, array $pendingMembers, ?string $message = null): void
-    {
-        $content = '<h2>Manage Join Requests for "' . htmlspecialchars($group['group_name']) . '"</h2>';
-        if ($message) {
-            $content .= '<p style="color:green;">' . htmlspecialchars($message) . '</p>';
+        $content .= '<hr><h3>Group Bookshelf</h3>';
+        if ($isCreator) {
+            $content .= '<a href="index.php?controller=group&actiune=showAddBookForm&parametrii=' . $group['group_id'] . '" class="btn" style="margin-bottom: 15px; display: inline-block;">Add a Book to Shelf</a>';
         }
 
-        if (empty($pendingMembers)) {
-            $content .= '<p>No pending requests.</p>';
+        if (empty($groupBooks)) {
+            $content .= '<p>No books have been added to this group yet.</p>';
         } else {
-            $content .= '<ul class="request-list">';
-            foreach ($pendingMembers as $member) {
-                $content .= '<li>
-                                User: <strong>' . htmlspecialchars($member['users_uid']) . '</strong> (Requested on: ' . date("F j, Y", strtotime($member['join_date'])) . ')
-                                <form action="index.php?controller=group&actiune=processRequest" method="post" style="display:inline; margin-left: 10px;">
-                                    <input type="hidden" name="group_member_id" value="' . $member['group_member_id'] . '">
-                                    <input type="hidden" name="group_id_for_redirect" value="' . $group['group_id'] . '">
-                                    <button type="submit" name="request_action" value="approve" class="btn btn-approve">Approve</button>
-                                    <button type="submit" name="request_action" value="deny" class="btn btn-deny">Deny</button>
-                                </form>
-                             </li>';
+            $content .= '<div class="book-list">';
+            foreach ($groupBooks as $book) {
+                $content .= "
+                    <div class='book'>
+                        <a href='index.php?controller=group&actiune=viewBook&parametrii={$group['group_id']},{$book['id']}' class='book-link'>
+                            <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
+                            <h3>" . htmlspecialchars($book['title']) . "</h3>
+                            <p>by " . htmlspecialchars($book['author']) . "</p>
+                        </a>
+                    </div>
+                ";
             }
-            $content .= '</ul>';
+            $content .= '</div>';
         }
-        $content .= '<p style="margin-top: 20px;"><a href="index.php?controller=group&actiune=view&parametrii=' . $group['group_id'] . '" class="btn">Back to Group</a></p>';
 
-        $this->renderPage('Manage Join Requests', $content);
+        $this->renderPage(htmlspecialchars($group['group_name']), $content);
     }
 
 
@@ -191,6 +200,86 @@ class ViewGroup
         $content = '<h2>Error</h2><p style="color:red;">' . htmlspecialchars($errorMessage) . '</p>';
         $content .= '<p><a href="index.php">Go to Homepage</a></p>';
         $this->renderPage($title, $content);
+    }
+
+    public function renderAddBookForm(array $group, array $books, string $searchTerm): void
+    {
+        $searchResultsHtml = '';
+        if (!empty($searchTerm)) {
+            if (empty($books)) {
+                $searchResultsHtml = '<p>No books found matching your search.</p>';
+            } else {
+                $searchResultsHtml .= '<h3>Search Results:</h3><ul class="request-list">';
+                foreach ($books as $book) {
+                    $searchResultsHtml .= '<li>
+                        ' . htmlspecialchars($book['title']) . ' by ' . htmlspecialchars($book['author']) . '
+                        <form action="index.php?controller=group&actiune=addBook" method="post" style="display:inline; margin-left: 10px;">
+                            <input type="hidden" name="group_id" value="' . $group['group_id'] . '">
+                            <input type="hidden" name="book_id" value="' . $book['id'] . '">
+                            <button type="submit" class="btn btn-approve">Add to Group</button>
+                        </form>
+                    </li>';
+                }
+                $searchResultsHtml .= '</ul>';
+            }
+        }
+
+        // Folosim o metodă ajutătoare pentru a încărca șablonul, dacă nu există deja una
+        $viewContent = $this->loadTemplate(__DIR__ . '/add-book-form.tpl', [
+            'group_name' => htmlspecialchars($group['group_name']),
+            'group_id' => $group['group_id'],
+            'search_term' => htmlspecialchars($searchTerm),
+            'search_results_html' => $searchResultsHtml
+        ]);
+
+        $this->renderPage('Add Book to Group', $viewContent);
+    }
+
+    public function renderGroupBookProgressPage(array $group, array $book, array $membersProgress): void
+    {
+        $membersProgressHtml = '';
+        if (empty($membersProgress)) {
+            $membersProgressHtml = '<p>No progress recorded from members yet.</p>';
+        } else {
+            foreach ($membersProgress as $progress) {
+                $progressPercent = 0;
+                if (!empty($progress['total_pages']) && $progress['total_pages'] > 0) {
+                    $progressPercent = round(((int) ($progress['pages_read'] ?? 0) / (int) $progress['total_pages']) * 100);
+                }
+
+                $membersProgressHtml .= '<div class="review-item" style="border-bottom: 1px solid #ccc; padding-bottom: 15px; margin-bottom: 15px;">';
+                $membersProgressHtml .= '<h4>' . htmlspecialchars($progress['users_uid']) . '</h4>';
+
+                $pagesRead = (int) ($progress['pages_read'] ?? 0);
+                $totalPages = (int) ($book['total_pages'] ?? 0);
+
+                if ($totalPages > 0) {
+                    $membersProgressHtml .= '<div class="progress-bar">';
+                    $membersProgressHtml .= '<div class="progress" style="width: ' . $progressPercent . '%;">' . $progressPercent . '%</div>';
+                    $membersProgressHtml .= '</div>';
+                    $membersProgressHtml .= '<p>' . $pagesRead . ' / ' . $totalPages . ' pages read</p>';
+                }
+
+                if (!empty($progress['review'])) {
+                    $rating = (int) ($progress['rating'] ?? 0);
+                    $ratingStars = str_repeat('★', $rating) . str_repeat('☆', 5 - $rating);
+                    $membersProgressHtml .= '<p><strong>Rating:</strong> <span class="review-rating">' . $ratingStars . '</span></p>';
+                    $membersProgressHtml .= '<blockquote><p>' . nl2br(htmlspecialchars($progress['review'])) . '</p></blockquote>';
+                } else {
+                    $membersProgressHtml .= '<p><em>No review submitted yet.</em></p>';
+                }
+
+                $membersProgressHtml .= '</div>';
+            }
+        }
+
+        $viewContent = $this->loadTemplate(__DIR__ . '/group-book-progress.tpl', [
+            'book_title' => htmlspecialchars($book['title']),
+            'group_name' => htmlspecialchars($group['group_name']),
+            'members_progress_html' => $membersProgressHtml,
+        ]);
+
+        $this->renderPage($book['title'] . ' - Group Progress', $viewContent);
     }
 }
 ?>

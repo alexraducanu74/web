@@ -133,37 +133,33 @@ class ControllerAuth extends Controller
         }
         try {
             if ($this->modelSignup->setUser($uid, $pwd, $email)) {
-                $this->showRegisterForm(['success_message' => "Signup successful! You can now login."]);
+                header("Location: index.php");
+                exit();
             } else {
                 $this->showRegisterForm(['error_message' => "An error occurred during registration. Please try again."]);
             }
         } catch (PDOException $e) {
             $errorMsg = $e->getMessage();
-    
+
             if (strpos($errorMsg, 'Numele de utilizator este prea scurt') !== false) {
                 $message = "Numele de utilizator trebuie să aibă cel puțin 3 caractere.";
-            }  else {
+            } else {
                 $message = "Eroare la înregistrare. Încearcă din nou.";
             }
-    
+
             $this->showRegisterForm(['error_message' => $message]);
         }
     }
-   public function logout(): void
+    public function logout(): void
     {
-        // Make sure session is started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        
-        // Clear all session variables
+
         $_SESSION = array();
-        
-        // Destroy the session
+
         session_destroy();
-        
-        // Redirect to login page
-        // header("Location: index.php?controller=auth&actiune=showLoginForm&status=loggedout");
+
         header("Location: index.php");
         exit();
     }

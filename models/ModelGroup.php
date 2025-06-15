@@ -166,5 +166,52 @@ class ModelGroup
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ?: null;
     }
+
+
+    public function addBookToGroup(int $groupId, int $bookId, int $adminUserId): bool
+    {
+        $sql = "INSERT INTO group_books (group_id, book_id, added_by_user_id) VALUES (:group_id, :book_id, :admin_user_id)
+                ON CONFLICT (group_id, book_id) DO NOTHING";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
+        $stmt->bindParam(':book_id', $bookId, PDO::PARAM_INT);
+        $stmt->bindParam(':admin_user_id', $adminUserId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function getGroupBooks(int $groupId): array
+    {
+        $sql = "SELECT b.id, b.title, b.author, b.cover_image
+                FROM books b
+                JOIN group_books gb ON b.id = gb.book_id
+                WHERE gb.group_id = :group_id
+                ORDER BY gb.added_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getMembersProgressForBook(int $groupId, int $bookId): array
+    {
+        $sql = "SELECT 
+                    u.users_uid,
+                    b.total_pages,
+                    ubp.pages_read,
+                    ubp.review,
+                    ubp.rating
+                FROM group_members gm
+                JOIN users u ON gm.user_id = u.users_id
+                LEFT JOIN user_book_progress ubp ON u.users_id = ubp.user_id AND ubp.book_id = :book_id
+                LEFT JOIN books b ON ubp.book_id = b.id
+                WHERE gm.group_id = :group_id AND gm.member_status = 'approved'
+                ORDER BY u.users_uid";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
+        $stmt->bindParam(':book_id', $bookId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

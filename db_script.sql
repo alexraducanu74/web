@@ -65,6 +65,15 @@ CREATE TABLE user_book_progress (
     UNIQUE (user_id, book_id)
 );
 
+CREATE TABLE group_books (
+    group_book_id SERIAL PRIMARY KEY,
+    group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE,
+    book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    added_by_user_id INTEGER NOT NULL REFERENCES users(users_id) ON DELETE SET NULL,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (group_id, book_id)
+);
+
 INSERT INTO books (title, author, genre, cover_image, total_pages) VALUES
 ('The Midnight Library', 'Matt Haig', 'Contemporary Fiction, Magical Realism', 'covers/midnight-library.jpg', 304),
 ('1984', 'George Orwell', 'Dystopian, Political Fiction, Science Fiction', 'covers/1984.jpg', 328),

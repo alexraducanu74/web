@@ -8,71 +8,93 @@ class ControllerGroup extends Controller
     {
         parent::__construct();
 
-        try{
-        $this->modelGroup = new ModelGroup();
-        $this->ViewGroup = new ViewGroup();
+        try {
+            $this->modelGroup = new ModelGroup();
+            $this->ViewGroup = new ViewGroup();
 
-        $currentUserId = $_SESSION['user_id'] ?? null;
+            $currentUserId = $_SESSION['user_id'] ?? null;
 
-        if (!$currentUserId && !in_array($actiune, ['view'])) {
-            $this->ViewGroup->renderError("You must be logged in to access this page.", "Login Required");
+            if (!$currentUserId && !in_array($actiune, ['view'])) {
+                $this->ViewGroup->renderError("You must be logged in to access this page.", "Login Required");
+                exit;
+            }
+
+            $message = isset($_GET['status']) ? $this->getFlashMessage($_GET['status']) : null;
+            $errorMessage = isset($_GET['error']) ? $this->getFlashMessage($_GET['error'], true) : null;
+
+
+            switch ($actiune) {
+                case 'showCreateForm':
+                    $this->showCreateForm();
+                    break;
+                case 'create':
+                    $this->createGroup();
+                    break;
+                case 'view':
+                    if (isset($parametri[0])) {
+                        $this->viewGroup((int) $parametri[0], $message, $errorMessage);
+                    } else {
+                        $this->listUserGroups($message, $errorMessage);
+                    }
+                    break;
+                case 'joinWithCode':
+                    $this->joinGroupWithCode();
+                    break;
+                case 'manageRequests':
+                    if (isset($parametri[0]) && $currentUserId) {
+                        $this->manageRequests((int) $parametri[0], $currentUserId, $message);
+                    } else {
+                        $this->ViewGroup->renderError("Group ID not provided or user not logged in.", "Access Error");
+                    }
+                    break;
+                case 'processRequest':
+                    $groupIdForRedirect = isset($_POST['group_id_for_redirect']) ? (int) $_POST['group_id_for_redirect'] : null;
+                    if (isset($_POST['group_member_id'], $_POST['request_action']) && $currentUserId) {
+                        $this->processJoinRequest((int) $_POST['group_member_id'], $_POST['request_action'], $currentUserId, $groupIdForRedirect);
+                    } else {
+                        $this->ViewGroup->renderError("Missing parameters for processing request.", "Processing Error");
+                    }
+                    break;
+                case 'myGroups':
+                    $this->listUserGroups($message, $errorMessage);
+                    break;
+                case 'showAddBookForm':
+                    if (isset($parametri[0]) && $currentUserId) {
+                        $this->showAddBookForm((int) $parametri[0]);
+                    } else {
+                        $this->ViewGroup->renderError("Group ID not provided or user not logged in.", "Access Error");
+                    }
+                    break;
+                case 'addBook':
+                    if (isset($_POST['group_id'], $_POST['book_id']) && $currentUserId) {
+                        $this->addBookToGroup((int) $_POST['group_id'], (int) $_POST['book_id'], $currentUserId);
+                    } else {
+                        $this->ViewGroup->renderError("Missing parameters for adding a book.", "Processing Error");
+                    }
+                    break;
+                case 'viewBook':
+                    if (isset($parametri[0], $parametri[1]) && $currentUserId) {
+                        $this->viewGroupBook((int) $parametri[0], (int) $parametri[1], $currentUserId);
+                    } else {
+                        $this->ViewGroup->renderError("Group or Book ID not provided.", "Access Error");
+                    }
+                    break;
+                // ... restul cazurilor
+                default:
+                    $this->ViewGroup->renderError("The requested group action was not found.", "Action Not Found");
+                    break;
+            }
+        } catch (PDOException $e) {
+            $errorMsg = $e->getMessage();
+            if (strpos($errorMsg, 'Numele grupului este prea scurt') !== false) {
+                $message = "Numele grupului trebuie să aibă cel puțin 3 caractere.";
+            } else {
+                $message = "Eroare la înregistrare. Încearcă din nou.";
+            }
+
+            $this->ViewGroup->renderError($message, "Database Error");
             exit;
         }
-
-        $message = isset($_GET['status']) ? $this->getFlashMessage($_GET['status']) : null;
-        $errorMessage = isset($_GET['error']) ? $this->getFlashMessage($_GET['error'], true) : null;
-
-
-        switch ($actiune) {
-            case 'showCreateForm':
-                $this->showCreateForm();
-                break;
-            case 'create':
-                $this->createGroup();
-                break;
-            case 'view':
-                if (isset($parametri[0])) {
-                    $this->viewGroup((int) $parametri[0], $message, $errorMessage);
-                } else {
-                    $this->listUserGroups($message, $errorMessage);
-                }
-                break;
-            case 'joinWithCode':
-                $this->joinGroupWithCode();
-                break;
-            case 'manageRequests':
-                if (isset($parametri[0]) && $currentUserId) {
-                    $this->manageRequests((int) $parametri[0], $currentUserId, $message);
-                } else {
-                    $this->ViewGroup->renderError("Group ID not provided or user not logged in.", "Access Error");
-                }
-                break;
-            case 'processRequest':
-                $groupIdForRedirect = isset($_POST['group_id_for_redirect']) ? (int) $_POST['group_id_for_redirect'] : null;
-                if (isset($_POST['group_member_id'], $_POST['request_action']) && $currentUserId) {
-                    $this->processJoinRequest((int) $_POST['group_member_id'], $_POST['request_action'], $currentUserId, $groupIdForRedirect);
-                } else {
-                    $this->ViewGroup->renderError("Missing parameters for processing request.", "Processing Error");
-                }
-                break;
-            case 'myGroups':
-                $this->listUserGroups($message, $errorMessage);
-                break;
-            default:
-                $this->ViewGroup->renderError("The requested group action was not found.", "Action Not Found");
-                break;
-        }
-    } catch (PDOException $e) {
-        $errorMsg = $e->getMessage();
-        if (strpos($errorMsg, 'Numele grupului este prea scurt') !== false) {
-            $message = "Numele grupului trebuie să aibă cel puțin 3 caractere.";
-        }  else {
-            $message = "Eroare la înregistrare. Încearcă din nou.";
-        }
-    
-        $this->ViewGroup->renderError($message, "Database Error");
-        exit;
-    } 
     }
 
     private function showCreateForm(): void
@@ -132,8 +154,9 @@ class ControllerGroup extends Controller
         }
 
         $members = $this->modelGroup->getGroupMembers($groupId, 'approved');
+        $groupBooks = $this->modelGroup->getGroupBooks($groupId);
 
-        $this->ViewGroup->renderGroupPage($group, $members, $isMember, $isCreator, $memberStatus, $message, $errorMessage);
+        $this->ViewGroup->renderGroupPage($group, $members, $isMember, $isCreator, $memberStatus, $groupBooks, $message, $errorMessage);
     }
 
     private function joinGroupWithCode(): void
@@ -269,6 +292,57 @@ class ControllerGroup extends Controller
             return $messages[$key];
         }
         return $isError ? "An unknown error occurred." : "Action completed.";
+    }
+
+    private function showAddBookForm(int $groupId): void
+    {
+        $currentUserId = $_SESSION['user_id'];
+        if (!$this->modelGroup->isUserGroupCreator($groupId, $currentUserId)) {
+            $this->ViewGroup->renderError("You do not have permission to add books to this group.", "Access Denied");
+            exit;
+        }
+
+        $group = $this->modelGroup->getGroupById($groupId);
+        $searchTerm = trim($_GET['search'] ?? '');
+        $books = [];
+        if (!empty($searchTerm)) {
+            $modelFeed = new ModelFeed();
+            $books = $modelFeed->getBooks($searchTerm);
+        }
+
+        $this->ViewGroup->renderAddBookForm($group, $books, $searchTerm);
+    }
+
+    private function addBookToGroup(int $groupId, int $bookId, int $currentUserId): void
+    {
+        if (!$this->modelGroup->isUserGroupCreator($groupId, $currentUserId)) {
+            $this->ViewGroup->renderError("You do not have permission to add books to this group.", "Access Denied");
+            exit;
+        }
+
+        $this->modelGroup->addBookToGroup($groupId, $bookId, $currentUserId);
+        header('Location: index.php?controller=group&actiune=view&parametrii=' . $groupId . '&status=book_added');
+        exit;
+    }
+
+    private function viewGroupBook(int $groupId, int $bookId, int $currentUserId): void
+    {
+        if (!$this->modelGroup->isUserMember($groupId, $currentUserId)) {
+            $this->ViewGroup->renderError("You must be a member of the group to view this content.", "Access Denied");
+            exit;
+        }
+
+        $modelFeed = new ModelFeed();
+        $book = $modelFeed->getBookById($bookId);
+        if (!$book) {
+            $this->ViewGroup->renderError("Book not found.", "Error");
+            exit;
+        }
+
+        $group = $this->modelGroup->getGroupById($groupId);
+        $membersProgress = $this->modelGroup->getMembersProgressForBook($groupId, $bookId);
+
+        $this->ViewGroup->renderGroupBookProgressPage($group, $book, $membersProgress);
     }
 }
 ?>

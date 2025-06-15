@@ -1,6 +1,7 @@
 <?php
 
-class Dbh {
+class Dbh
+{
     // Holds the single instance of the class
     private static $instance = null;
 
@@ -8,26 +9,29 @@ class Dbh {
     private $connection;
 
     // Private constructor prevents direct instantiation
-    private function __construct() {
+    private function __construct()
+    {
         try {
             $host = 'localhost';
             $dbname = 'ooplogin';
             $username = 'postgres';
-            $password = 'postgres'; 
+            $password = 'postgres';
             $dsn = "pgsql:host=$host;port=5432;dbname=$dbname";
-    
             $this->connection = new PDO($dsn, $username, $password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             die('Database connection failed: ' . $e->getMessage());
         }
     }
-    
+
     // Prevent cloning of the instance
-    private function __clone() {}
+    private function __clone()
+    {
+    }
 
     // Public method to get the singleton instance
-    public static function getInstance(): Dbh {
+    public static function getInstance(): Dbh
+    {
         if (self::$instance === null) {
             self::$instance = new Dbh();
         }
@@ -35,7 +39,8 @@ class Dbh {
     }
 
     // Method to access the PDO connection
-    public function getConnection(): PDO {
+    public function getConnection(): PDO
+    {
         return $this->connection;
     }
 }
