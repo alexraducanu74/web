@@ -32,8 +32,6 @@ class ControllerFeed extends Controller
             $this->genereazaRss();
         } elseif ($actiune == "editBook" && isset($parametri[0])) {
             $this->editBookForm((int) $parametri[0]);
-        } elseif ($actiune == "updateBook" && isset($parametri[0])) {
-            $this->updateBook((int) $parametri[0]);
         } else {
             $this->handleFeedDisplay('', [], []);
         }
@@ -67,6 +65,10 @@ class ControllerFeed extends Controller
             echo "Book not found.";
             return;
         }
+        $book['title'] = htmlspecialchars($book['title']);
+        $book['author'] = htmlspecialchars($book['author']);
+        $book['genre'] = htmlspecialchars($book['genre']);
+        $book['cover_image'] = htmlspecialchars($book['cover_image']);
 
         $isAdmin = $this->getAuthenticatedUser()['is_admin'] ?? false;
         if (!$isAdmin) {
@@ -77,82 +79,17 @@ class ControllerFeed extends Controller
 
         $formHtml = $this->view->loadEditFormTemplate($book);
         $authLinksForLayout = $this->view->getAuthSpecificLinks();
-
+        $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
+        <script src="assets/js/feed_filters.js" defer></script>
+        <script src="assets/js/geolocation.js" defer></script>';
+        
         $layout = $this->view->loadTemplate('views/layout.tpl', [
             'title' => "Edit Book - " . htmlspecialchars($book['title']),
-            'content' => $formHtml,
+            'content' => $formHtml . $scriptTag,
             'authLinks' => $authLinksForLayout
         ]);
         echo $layout;
     }
-    private function updateBook(int $id): void
-    {
-        $user = $this->getAuthenticatedUser();
-        if (!$user || !$user['is_admin']) {
-            http_response_code(403);
-            echo "Forbidden";
-            return;
-        }
-
-        $title = trim($_POST['title'] ?? '');
-        $author = trim($_POST['author'] ?? '');
-        $genre = trim($_POST['genre'] ?? '');
-
-        if ($title === '' || $author === '') {
-            echo "Title and Author are required.";
-            return;
-        }
-
-        $model = $this->modelFeed;
-        $oldBook = $model->getBookById($id);
-        if (!$oldBook) {
-            echo "Book not found.";
-            return;
-        }
-
-        $coverImage = $oldBook['cover_image']; // default to old image
-
-        // Handle new cover image upload if any
-        if (!empty($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
-            $tmpName = $_FILES['cover_image']['tmp_name'];
-            $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
-
-            $newFileName = time() . '.' . $ext;
-            $destination = __DIR__ . '/../assets/covers/' . $newFileName;
-
-            if (move_uploaded_file($tmpName, $destination)) {
-                $coverImage = 'covers/' . $newFileName;
-
-                // Use model method to check if old image is used elsewhere
-                $count = $model->countBooksUsingCover($oldBook['cover_image'], $id);
-                if ($oldBook['cover_image'] && $count === 0) {
-                    $oldImagePath = __DIR__ . '/../assets/' . $oldBook['cover_image'];
-                    if (file_exists($oldImagePath)) unlink($oldImagePath);
-                }
-            } else {
-                echo "Failed to upload new cover image.";
-                return;
-            }
-        }
-
-        $updateSuccess = $model->updateBook($id, [
-            'title' => $title,
-            'author' => $author,
-            'genre' => $genre,
-            'cover_image' => $coverImage,
-        ]);
-
-        if ($updateSuccess) {
-            header("Location: index.php?controller=feed&actiune=viewBook&parametrii={$id}");
-            exit;
-        } else {
-            echo "Failed to update book.";
-        }
-    }
-
-
-    
-
     
     private function handleFeedDisplay(string $query, array $authorFilter, array $genreFilter): void
     {

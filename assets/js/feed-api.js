@@ -10,7 +10,55 @@ document.addEventListener("DOMContentLoaded", () => {
       await deleteBook(bookId)
     })
   })
+
+  const form = document.getElementById("updateBookForm")
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault()
+  
+      const formData = new FormData(this)
+  
+      fetch(this.action, {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            window.location.href =
+              "index.php?controller=feed&actiune=showBook&parametrii=" +
+              data.bookId
+          } else {
+            alert("Update failed.")
+          }
+        })
+        .catch(() => alert("Network error"))
+    })
+  }
+
+  const insertForm = document.getElementById("insertBookForm")
+  if (insertForm) {
+    insertForm.addEventListener("submit", async function (e) {
+      e.preventDefault()
+
+      const formData = new FormData(this)
+
+      const response = await fetch("index.php?api=1&actiune=insertBookApi", {
+        method: "POST",
+        body: formData,
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        location.reload()
+      } else {
+        alert(result.error || "Failed to add book.")
+      }
+    })
+  }
 })
+
 async function deleteBook(bookId) {
   try {
     const response = await fetch(
@@ -40,24 +88,3 @@ async function deleteBook(bookId) {
     alert("Error deleting book: " + error.message)
   }
 }
-document
-  .getElementById("insertBookForm")
-  .addEventListener("submit", async function (e) {
-    e.preventDefault()
-
-    const form = e.target
-    const formData = new FormData(form)
-
-    const response = await fetch("index.php?api=1&actiune=insertBookApi", {
-      method: "POST",
-      body: formData,
-    })
-
-    const result = await response.json()
-
-    if (response.ok) {
-      location.reload() 
-    } else {
-      alert(result.error || "Failed to add book.")
-    }
-  })

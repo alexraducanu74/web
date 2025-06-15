@@ -1,4 +1,9 @@
-<form action="index.php?controller=feed&actiune=updateBook&parametrii={$id}" method="POST" enctype="multipart/form-data">
+<form 
+  id="updateBookForm"
+  action="index.php?controller=apiFeed&actiune=updateBookApi&parametrii={$id}&api=1" 
+  method="POST" 
+  enctype="multipart/form-data"
+>
     <label>Title:<input type="text" name="title" value="{$title}" required></label><br>
     <label>Author:<input type="text" name="author" value="{$author}" required></label><br>
     <label>Genre:<input type="text" name="genre" value="{$genre}"></label><br>

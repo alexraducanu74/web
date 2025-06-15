@@ -16,7 +16,7 @@
     <form action="/web/index.php" method="get" class="search-form">
       <input type="hidden" name="controller" value="feed">
       <input type="hidden" name="actiune" value="search">
-      <input type="text" name="q" placeholder="Caută o carte..." />
+      <input type="text" name="q" placeholder="Caută o carte...">
       <button type="submit">🔍</button>
     </form>
   </div>

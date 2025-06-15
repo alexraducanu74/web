@@ -24,23 +24,29 @@ if ($isApi) {
     header('Access-Control-Allow-Headers: Content-Type');
     header('Content-Type: application/json');
 
-    require_once 'api/feed.php';  // Make sure this path is correct
-    $api = new ApiFeedController();
+
+    $api = new ControllerApiFeed();
 
     switch ($actiune) {
         case 'insertBookApi':
             $api->insertBookApi();
             break;
-    case 'deleteBookApi':      // This should match your JS
-        $bookId = (int) ($params[0] ?? 0);
-        $api->deleteBookApi($bookId);
-        break;
-            default:
-                http_response_code(404);
-                echo json_encode(['error' => 'Unknown API action.']);
-                break;
-        }
-        exit; // Important: exit after API handling to prevent HTML output
+
+        case 'deleteBookApi':
+            $api->deleteBookApi($bookId);
+            break;
+
+        case 'updateBookApi':
+            $api->updateBookApi($bookId);
+            break;
+
+        default:
+            http_response_code(404);
+            echo json_encode(['error' => 'Unknown API action.']);
+            break;
+    }
+    exit; // Important: exit after API handling to prevent HTML output
+
 } else {
     // Normal web requests handled here
     $controllerClass = 'Controller' . ucfirst(strtolower($controller));
