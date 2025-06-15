@@ -1,6 +1,7 @@
 -- Drop tables if they exist (in the correct dependency order)
 DROP TABLE IF EXISTS user_book_progress CASCADE;
 DROP TABLE IF EXISTS group_members CASCADE;
+DROP TABLE IF EXISTS group_books CASCADE;
 DROP TABLE IF EXISTS groups CASCADE;
 DROP TABLE IF EXISTS books CASCADE;
 DROP TABLE IF EXISTS users CASCADE;

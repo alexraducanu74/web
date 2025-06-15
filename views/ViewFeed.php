@@ -341,7 +341,7 @@ class ViewFeed
         return '
             <section id="admin-insert-book" style="margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 6px;">
                 <h3>Add New Book</h3>
-                <form method="POST" action="index.php?controller=feed&actiune=insertBook" enctype="multipart/form-data">
+                <form id="insertBookForm" enctype="multipart/form-data">
                 <input type="text" name="title" placeholder="Book Title" required>
                 <input type="text" name="author" placeholder="Author" required>
                 <input type="text" name="genre" placeholder="Genre">

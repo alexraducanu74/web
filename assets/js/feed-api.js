@@ -1,61 +1,63 @@
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".delete-btn").forEach(btn => {
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", async (event) => {
-      event.preventDefault();
-      const bookId = btn.dataset.id;
+      event.preventDefault()
+      const bookId = btn.dataset.id
       if (!bookId) {
-        alert("Book ID not found!");
-        return;
+        alert("Book ID not found!")
+        return
       }
-      await deleteBook(bookId);
-    });
-  });
-});
-async function updateProgress(bookId, pagesRead, review, rating) {
-const response = await fetch(`index.php?api=1&controller=feed&actiune=updateProgressApi&parametrii=${bookId}`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        pages_read: pagesRead,
-        review: review,
-        rating: rating
+      await deleteBook(bookId)
     })
-});
-  const data = await response.json();
-
-  if (data.success) {
-      alert("Progress updated successfully.");
-  } else {
-      alert("Error: " + (data.error || "Unknown error"));
-  }
-}
-
+  })
+})
 async function deleteBook(bookId) {
   try {
-    // Fixed URL structure - removed /api/ prefix since index.php handles API routing
-    const response = await fetch(`index.php?api=1&controller=feed&actiune=deleteBookApi&parametrii=${bookId}`, {
-        method: 'POST',
+    const response = await fetch(
+      `index.php?api=1&controller=feed&actiune=deleteBookApi&parametrii=${bookId}`,
+      {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({})
-    });
+        body: JSON.stringify({}),
+      }
+    )
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (data.success) {
-        location.reload();
+      location.reload()
     } else {
-        alert("Error: " + (data.error || "Unknown error"));
+      alert("Error: " + (data.error || "Unknown error"))
     }
   } catch (error) {
-    console.error('Delete error:', error);
-    alert("Error deleting book: " + error.message);
+    console.error("Delete error:", error)
+    alert("Error deleting book: " + error.message)
   }
 }
+document
+  .getElementById("insertBookForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault()
+
+    const form = e.target
+    const formData = new FormData(form)
+
+    const response = await fetch("index.php?api=1&actiune=insertBookApi", {
+      method: "POST",
+      body: formData,
+    })
+
+    const result = await response.json()
+
+    if (response.ok) {
+      location.reload() 
+    } else {
+      alert(result.error || "Failed to add book.")
+    }
+  })

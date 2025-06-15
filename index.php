@@ -28,9 +28,9 @@ if ($isApi) {
     $api = new ApiFeedController();
 
     switch ($actiune) {
-    case 'filterBooksApi':     // This should match your JS
-        $api->filterBooksApi();
-        break;
+        case 'insertBookApi':
+            $api->insertBookApi();
+            break;
     case 'deleteBookApi':      // This should match your JS
         $bookId = (int) ($params[0] ?? 0);
         $api->deleteBookApi($bookId);

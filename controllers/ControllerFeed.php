@@ -30,8 +30,6 @@ class ControllerFeed extends Controller
             $this->ajaxFilterBooks();
         } elseif ($actiune == "genereazaRss") {
             $this->genereazaRss();
-        } elseif ($actiune == "insertBook" && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->insertBook();
         } elseif ($actiune == "editBook" && isset($parametri[0])) {
             $this->editBookForm((int) $parametri[0]);
         } elseif ($actiune == "updateBook" && isset($parametri[0])) {
@@ -153,60 +151,7 @@ class ControllerFeed extends Controller
     }
 
 
-    private function insertBook(): void
-    {
-        if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
-            http_response_code(403);
-            echo "Forbidden";
-            exit;
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $title = trim($_POST['title'] ?? '');
-            $author = trim($_POST['author'] ?? '');
-            $genre = trim($_POST['genre'] ?? '');
-
-            if (empty($title) || empty($author)) {
-                echo "Title and author are required.";
-                exit;
-            }
-
-            if (!isset($_FILES['cover_image']) || $_FILES['cover_image']['error'] !== UPLOAD_ERR_OK) {
-                echo "Error uploading image.";
-                exit;
-            }
-
-            $uploadDir = __DIR__ . '/../assets/covers/'; 
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            $extension = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
-            $newFileName = time() . '.' . $extension;
-
-            $destPath = $uploadDir . $newFileName;
-            $fileTmpPath = $_FILES['cover_image']['tmp_name'];
-            if (!move_uploaded_file($fileTmpPath, $destPath)) {
-                echo "Failed to save uploaded image.";
-                exit;
-            }
-
-            $bookData = [
-                'title' => $title,
-                'author' => $author,
-                'genre' => $genre,
-                'cover_image' => 'covers/' . $newFileName,  
-            ];
-
-            $success = $this->modelFeed->insertBook($bookData);
-            if ($success) {
-                header('Location: index.php?controller=feed&actiune=showFeed');
-                exit;
-            } else {
-                echo "Failed to save book to database.";
-            }
-        }
-    }
+    
 
     
     private function handleFeedDisplay(string $query, array $authorFilter, array $genreFilter): void
