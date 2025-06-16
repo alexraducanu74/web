@@ -192,6 +192,21 @@ class ModelGroup
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getGroupBooksFromMembersProgress(int $groupId): array
+    {
+        $sql = "SELECT DISTINCT b.id, b.title, b.author, b.cover_image
+                FROM books b
+                JOIN user_book_progress ubp ON b.id = ubp.book_id
+                JOIN group_members gm ON ubp.user_id = gm.user_id
+                WHERE gm.group_id = :group_id AND gm.member_status = 'approved'
+                ORDER BY b.title ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':group_id', $groupId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getMembersProgressForBook(int $groupId, int $bookId): array
     {
         $sql = "SELECT 

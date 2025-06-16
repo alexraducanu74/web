@@ -80,7 +80,6 @@ class ViewGroup
         $this->renderPage('Create Group', $content);
     }
 
-    // Înlocuiește signatura și conținutul metodei renderGroupPage
     public function renderGroupPage(array $group, array $members, bool $isMember, bool $isCreator, ?string $memberStatus, array $groupBooks, ?string $message = null, ?string $errorMessage = null): void
     {
         $content = '';
@@ -95,14 +94,12 @@ class ViewGroup
         $content .= '<p class="group-description">' . nl2br(htmlspecialchars($group['group_description'] ?? 'No description.')) . '</p>';
         $content .= '<p><em>Created by: ' . htmlspecialchars($group['creator_username']) . ' on ' . date("F j, Y", strtotime($group['created_at'])) . '</em></p>';
 
-        // --- Blocul de cod adăugat/modificat ---
         if ($isCreator) {
             $content .= '<div class="admin-info">';
             $content .= '<p><strong>Secret Code: <code>' . htmlspecialchars($group['secret_code']) . '</code></strong> (Share this with friends to invite them)</p>';
             $content .= '<p><a href="index.php?controller=group&actiune=manageRequests&parametrii=' . $group['group_id'] . '" class="btn btn-admin">Manage Join Requests</a></p>';
             $content .= '</div>';
         }
-        // --- Sfârșitul blocului de cod adăugat/modificat ---
 
         $currentUserId = $_SESSION['user_id'] ?? null;
         if ($currentUserId && !$isMember && $memberStatus !== 'pending') {
@@ -135,9 +132,6 @@ class ViewGroup
         }
 
         $content .= '<hr><h3>Group Bookshelf</h3>';
-        if ($isCreator) {
-            $content .= '<a href="index.php?controller=group&actiune=showAddBookForm&parametrii=' . $group['group_id'] . '" class="btn" style="margin-bottom: 15px; display: inline-block;">Add a Book to Shelf</a>';
-        }
 
         if (empty($groupBooks)) {
             $content .= '<p>No books have been added to this group yet.</p>';
@@ -224,7 +218,6 @@ class ViewGroup
             }
         }
 
-        // Folosim o metodă ajutătoare pentru a încărca șablonul, dacă nu există deja una
         $viewContent = $this->loadTemplate(__DIR__ . '/add-book-form.tpl', [
             'group_name' => htmlspecialchars($group['group_name']),
             'group_id' => $group['group_id'],
