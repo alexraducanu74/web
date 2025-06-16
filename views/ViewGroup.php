@@ -97,7 +97,7 @@ class ViewGroup
         if ($isCreator) {
             $content .= '<div class="admin-info">';
             $content .= '<p><strong>Secret Code: <code>' . htmlspecialchars($group['secret_code']) . '</code></strong> (Share this with friends to invite them)</p>';
-            $content .= '<p><a href="index.php?controller=group&actiune=manageRequests&parametrii=' . $group['group_id'] . '" class="btn btn-admin">Manage Join Requests</a></p>';
+            $content .= '<p><a href="index.php?controller=group&actiune=manageRequests&parametri=' . $group['group_id'] . '" class="btn btn-admin">Manage Join Requests</a></p>';
             $content .= '</div>';
         }
 
@@ -140,7 +140,7 @@ class ViewGroup
             foreach ($groupBooks as $book) {
                 $content .= "
                     <div class='book'>
-                        <a href='index.php?controller=group&actiune=viewBook&parametrii={$group['group_id']},{$book['id']}' class='book-link'>
+                        <a href='index.php?controller=group&actiune=viewBook&parametri={$group['group_id']},{$book['id']}' class='book-link'>
                             <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
                             <h3>" . htmlspecialchars($book['title']) . "</h3>
                             <p>by " . htmlspecialchars($book['author']) . "</p>
@@ -182,7 +182,7 @@ class ViewGroup
         } else {
             $content .= '<h3>Your Groups:</h3><ul class="group-list">';
             foreach ($groups as $group) {
-                $content .= '<li><a href="index.php?controller=group&actiune=view&parametrii=' . $group['group_id'] . '">' . htmlspecialchars($group['group_name']) . '</a></li>';
+                $content .= '<li><a href="index.php?controller=group&actiune=view&parametri=' . $group['group_id'] . '">' . htmlspecialchars($group['group_name']) . '</a></li>';
             }
             $content .= '</ul>';
         }
@@ -310,7 +310,7 @@ class ViewGroup
             $content .= '</ul>';
         }
 
-        $content .= '<p style="margin-top: 20px;"><a href="index.php?controller=group&actiune=view&parametrii=' . $group['group_id'] . '">Back to Group</a></p>';
+        $content .= '<p style="margin-top: 20px;"><a href="index.php?controller=group&actiune=view&parametri=' . $group['group_id'] . '">Back to Group</a></p>';
 
         $this->renderPage('Manage Requests - ' . htmlspecialchars($group['group_name']), $content);
     }

@@ -1,6 +1,6 @@
 <form 
   id="updateBookForm"
-  action="index.php?controller=apiFeed&actiune=updateBookApi&parametrii={$id}&api=1" 
+  action="index.php?controller=apiFeed&actiune=updateBookApi&parametri={$id}&api=1" 
   method="POST" 
   enctype="multipart/form-data"
 >

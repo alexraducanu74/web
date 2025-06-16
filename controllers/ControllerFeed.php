@@ -28,22 +28,13 @@ class ControllerFeed extends Controller
             $this->saveReview((int) $parametri[0]);
         } elseif ($actiune == "ajaxFilterBooks") {
             $this->ajaxFilterBooks();
-        } elseif ($actiune == "genereazaRss") {
-            $this->genereazaRss();
         } elseif ($actiune == "editBook" && isset($parametri[0])) {
             $this->editBookForm((int) $parametri[0]);
         } else {
             $this->handleFeedDisplay('', [], []);
         }
     }
-    private function genereazaRss()
-    {
-        include __DIR__ . '/../assets/rss/generate_rss.php';
 
-
-        header("Location: /web/assets/rss/anunturi.xml");
-        exit;
-    }
 
     function getAuthenticatedUser()
     {
@@ -167,7 +158,7 @@ class ControllerFeed extends Controller
                     <p><strong>Progress:</strong> {$book['pages_read']} / {$book['total_pages']} pages ({$progress}%)</p>
                     <p><strong>Your Review:</strong> " . nl2br(htmlspecialchars($book['review'])) . "</p>
                     <p><strong>{$ratingDisplay}</strong></p>
-                    <a href='index.php?controller=feed&actiune=viewBook&parametrii={$book['id']}'>View Book</a>
+                    <a href='index.php?controller=feed&actiune=viewBook&parametri={$book['id']}'>View Book</a>
                     <hr>
                 </div>
             ";

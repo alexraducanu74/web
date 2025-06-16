@@ -111,7 +111,7 @@ class ControllerGroup extends Controller
         $groupId = $this->modelGroup->createGroup($name, $description, $creatorUserId, $requiresApproval);
 
         if ($groupId) {
-            header('Location: index.php?controller=group&actiune=view&parametrii=' . $groupId . '&status=created');
+            header('Location: index.php?controller=group&actiune=view&parametri=' . $groupId . '&status=created');
             exit;
         } else {
             header('Location: index.php?controller=group&actiune=showCreateForm&error=create_failed');
@@ -156,7 +156,7 @@ class ControllerGroup extends Controller
         $groupIdForContext = isset($_POST['group_id_for_code_join']) ? (int) $_POST['group_id_for_code_join'] : null;
 
         if (empty($secretCode)) {
-            $redirectTarget = $groupIdForContext ? 'index.php?controller=group&actiune=view&parametrii=' . $groupIdForContext . '&error=code_required' : 'index.php?controller=group&actiune=myGroups&error=code_required';
+            $redirectTarget = $groupIdForContext ? 'index.php?controller=group&actiune=view&parametri=' . $groupIdForContext . '&error=code_required' : 'index.php?controller=group&actiune=myGroups&error=code_required';
             header('Location: ' . $redirectTarget);
             exit;
         }
@@ -164,19 +164,19 @@ class ControllerGroup extends Controller
         $group = $this->modelGroup->getGroupBySecretCode($secretCode);
 
         if (!$group) {
-            $redirectTarget = $groupIdForContext ? 'index.php?controller=group&actiune=view&parametrii=' . $groupIdForContext . '&error=invalid_code' : 'index.php?controller=group&actiune=myGroups&error=invalid_code';
+            $redirectTarget = $groupIdForContext ? 'index.php?controller=group&actiune=view&parametri=' . $groupIdForContext . '&error=invalid_code' : 'index.php?controller=group&actiune=myGroups&error=invalid_code';
             header('Location: ' . $redirectTarget);
             exit;
         }
 
         $groupIdToJoin = (int) $group['group_id'];
         if ($groupIdForContext && $groupIdForContext !== $groupIdToJoin) {
-            header('Location: index.php?controller=group&actiune=view&parametrii=' . $groupIdForContext . '&error=code_mismatch');
+            header('Location: index.php?controller=group&actiune=view&parametri=' . $groupIdForContext . '&error=code_mismatch');
             exit;
         }
 
         if ($this->modelGroup->isUserMember($groupIdToJoin, $currentUserId)) {
-            header('Location: index.php?controller=group&actiune=view&parametrii=' . $groupIdToJoin . '&status=already_member');
+            header('Location: index.php?controller=group&actiune=view&parametri=' . $groupIdToJoin . '&status=already_member');
             exit;
         }
 
@@ -185,9 +185,9 @@ class ControllerGroup extends Controller
 
         if ($joinAttempt) {
             $statusMessage = $initialStatus === 'pending' ? 'request_sent' : 'joined_successfully';
-            header('Location: index.php?controller=group&actiune=view&parametrii=' . $groupIdToJoin . '&status=' . $statusMessage);
+            header('Location: index.php?controller=group&actiune=view&parametri=' . $groupIdToJoin . '&status=' . $statusMessage);
         } else {
-            header('Location: index.php?controller=group&actiune=view&parametrii=' . $groupIdToJoin . '&error=join_failed_or_pending');
+            header('Location: index.php?controller=group&actiune=view&parametri=' . $groupIdToJoin . '&error=join_failed_or_pending');
         }
         exit;
     }
@@ -234,9 +234,9 @@ class ControllerGroup extends Controller
         $redirectGroupId = $groupIdForRedirect ?? $groupId;
 
         if ($success) {
-            header('Location: index.php?controller=group&actiune=manageRequests&parametrii=' . $redirectGroupId . '&status=request_processed');
+            header('Location: index.php?controller=group&actiune=manageRequests&parametri=' . $redirectGroupId . '&status=request_processed');
         } else {
-            header('Location: index.php?controller=group&actiune=manageRequests&parametrii=' . $redirectGroupId . '&error=processing_failed');
+            header('Location: index.php?controller=group&actiune=manageRequests&parametri=' . $redirectGroupId . '&error=processing_failed');
         }
         exit;
     }

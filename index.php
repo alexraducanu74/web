@@ -9,8 +9,8 @@ function sanitizeKey($value)
 
 $controller = isset($_GET['controller']) ? sanitizeKey($_GET['controller']) : 'feed';
 $actiune = isset($_GET['actiune']) ? sanitizeKey($_GET['actiune']) : 'showFeed';
-$parametrii = isset($_GET['parametrii']) ? $_GET['parametrii'] : '';
-$params = array_filter(array_map('trim', explode(',', $parametrii)));
+$parametri = isset($_GET['parametri']) ? $_GET['parametri'] : '';
+$params = array_filter(array_map('trim', explode(',', $parametri)));
 $bookId = (int) ($params[0] ?? 0);
 
 $isApi = isset($_GET['api']) && $_GET['api'] == '1';
@@ -36,10 +36,10 @@ if ($isApi) {
             $api->updateBookApi($bookId);
             break;
 
-        case 'filterBooksApi':
-            $api->filterBooksApi();
+        case 'genereazaRssApi':
+            $api->genereazaRssApi();
             break;
-
+            
         default:
             http_response_code(404);
             echo json_encode(['error' => 'Unknown API action.']);

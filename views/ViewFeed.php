@@ -57,13 +57,13 @@ class ViewFeed
             if ($this->isAdmin) {
                 $adminButtons = "
                 <div class='admin-buttons'>
-                    <a href='index.php?controller=feed&actiune=editBook&parametrii={$book['id']}' class='edit-btn'>Edit</a>
+                    <a href='index.php?controller=feed&actiune=editBook&parametri={$book['id']}' class='edit-btn'>Edit</a>
                     <a href='#' class='delete-btn' data-id='{$book['id']}'>Delete</a>
                 </div>";
             }
             $itemsHtml .= "
                 <div class='book'>
-                    <a href='index.php?controller=feed&actiune=viewBook&parametrii={$book['id']}' class='book-link'>
+                    <a href='index.php?controller=feed&actiune=viewBook&parametri={$book['id']}' class='book-link'>
                         <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
                         <h3>" . htmlspecialchars($book['title']) . "</h3>
                         <p>by " . htmlspecialchars($book['author']) . "</p>
@@ -210,7 +210,7 @@ class ViewFeed
         $reviewForm = '';
         if ($isLoggedIn) {
             $reviewForm = "
-            <form method='post' action='index.php?controller=feed&actiune=saveReview&parametrii={$book['id']}'>
+            <form method='post' action='index.php?controller=feed&actiune=saveReview&parametri={$book['id']}'>
                 <div>
                     <label for='review'>Your Review:</label><br>
                     <textarea name='review' id='review' rows='5' cols='50' required>" . htmlspecialchars($review) . "</textarea>

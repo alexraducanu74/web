@@ -15,9 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (form) {
     form.addEventListener("submit", function (e) {
       e.preventDefault()
-  
+
       const formData = new FormData(this)
-  
+
       fetch(this.action, {
         method: "POST",
         body: formData,
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then((data) => {
           if (data.success) {
             window.location.href =
-              "index.php?controller=feed&actiune=showBook&parametrii=" +
+              "index.php?controller=feed&actiune=showBook&parametri=" +
               data.bookId
           } else {
             alert("Update failed.")
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function deleteBook(bookId) {
   try {
     const response = await fetch(
-      `index.php?api=1&controller=feed&actiune=deleteBookApi&parametrii=${bookId}`,
+      `index.php?api=1&controller=feed&actiune=deleteBookApi&parametri=${bookId}`,
       {
         method: "POST",
         headers: {
