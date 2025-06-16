@@ -274,5 +274,45 @@ class ViewGroup
 
         $this->renderPage($book['title'] . ' - Group Progress', $viewContent);
     }
+
+
+    public function renderManageRequests(array $group, array $pendingMembers, ?string $message = null): void
+    {
+        $content = '<h2>Manage Join Requests for ' . htmlspecialchars($group['group_name']) . '</h2>';
+
+        if ($message) {
+            $content .= '<p style="color:green;">' . htmlspecialchars($message) . '</p>';
+        }
+
+        if (empty($pendingMembers)) {
+            $content .= '<p>There are no pending join requests.</p>';
+        } else {
+            $content .= '<ul class="request-list">';
+            foreach ($pendingMembers as $member) {
+                $content .= '<li>
+                            <span>' . htmlspecialchars($member['users_uid']) . '</span>
+                            <div class="request-actions">
+                                <form action="index.php?controller=group&actiune=processRequest" method="post" style="display: inline;">
+                                    <input type="hidden" name="group_member_id" value="' . $member['group_member_id'] . '">
+                                    <input type="hidden" name="group_id_for_redirect" value="' . $group['group_id'] . '">
+                                    <input type="hidden" name="request_action" value="approve">
+                                    <button type="submit" class="btn btn-approve">Approve</button>
+                                </form>
+                                <form action="index.php?controller=group&actiune=processRequest" method="post" style="display: inline;">
+                                    <input type="hidden" name="group_member_id" value="' . $member['group_member_id'] . '">
+                                    <input type="hidden" name="group_id_for_redirect" value="' . $group['group_id'] . '">
+                                    <input type="hidden" name="request_action" value="deny">
+                                    <button type="submit" class="btn btn-deny">Deny</button>
+                                </form>
+                            </div>
+                        </li>';
+            }
+            $content .= '</ul>';
+        }
+
+        $content .= '<p style="margin-top: 20px;"><a href="index.php?controller=group&actiune=view&parametrii=' . $group['group_id'] . '">Back to Group</a></p>';
+
+        $this->renderPage('Manage Requests - ' . htmlspecialchars($group['group_name']), $content);
+    }
 }
 ?>

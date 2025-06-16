@@ -45,7 +45,7 @@ class ViewFeed
         $this->libraries = $libraries;
     }
 
-    public function renderBookItems(array $booksToRender): string // Am eliminat $this->isAdmin ca parametru, e deja proprietate
+    public function renderBookItems(array $booksToRender): string
     {
         if (empty($booksToRender)) {
             return "<p class='no-books-message-ajax'>No books found matching your filters.</p>";
@@ -58,25 +58,23 @@ class ViewFeed
                 $adminButtons = "
                 <div class='admin-buttons'>
                     <a href='index.php?controller=feed&actiune=editBook&parametrii={$book['id']}' class='edit-btn'>Edit</a>
-                    <a href='#' class='delete-btn' data-id='{$book['id']}' data-url='index.php?controller=feed&actiune=deleteBook&parametrii={$book['id']}'>Delete</a>
-                </div>
-            ";
+                    <a href='#' class='delete-btn' data-id='{$book['id']}'>Delete</a>
+                </div>";
             }
             $itemsHtml .= "
                 <div class='book'>
                     <a href='index.php?controller=feed&actiune=viewBook&parametrii={$book['id']}' class='book-link'>
-                        <img src='assets/{$book['cover_image']}' alt='Cover of " . htmlspecialchars($book['title']) . "'>
+                        <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
                         <h3>" . htmlspecialchars($book['title']) . "</h3>
                         <p>by " . htmlspecialchars($book['author']) . "</p>
                         " . (!empty($book['genre']) ? "<p class='genre'>Genre: " . htmlspecialchars($book['genre']) . "</p>" : "") . "
                     </a>
                     $adminButtons
-                </div>
-            ";
+                </div>";
         }
         return $itemsHtml;
-
     }
+
     public function loadEditFormTemplate(array $book): string
     {
         $templateData = [
@@ -87,7 +85,7 @@ class ViewFeed
             'cover_image' => htmlspecialchars($book['cover_image']),
         ];
         return $this->loadTemplate('views/edit-book.tpl', $templateData);
-}
+    }
 
     private function renderFilterBar(): string
     {
@@ -127,11 +125,6 @@ class ViewFeed
         return $filterHtml;
     }
 
-    /**
-     * Generates the HTML for authentication links (Login/Register or Logout).
-     * Group navigation links are now handled directly in layout.tpl.
-     * @return string HTML links
-     */
     public function getAuthSpecificLinks(): string
     {
         if (isset($_SESSION['user_id'])) {
@@ -156,21 +149,20 @@ class ViewFeed
         } elseif (!empty($this->currentAuthorFilters) || !empty($this->currentGenreFilters)) {
             $headerText = "Filtered Books";
         }
-        $header = "<h2>{$headerText}</h2>";
+
+        $adminInsertFormHtml = $this->renderAdminInsertForm();
 
         $rawFilterBarHtml = $this->renderFilterBar();
         $toggleAndWrappedFiltersHtml = "<button id='toggle-filters-button' class='toggle-filters-btn' style='margin-bottom: 10px; padding: 8px 15px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer;'>Show Filters</button>" .
             "<div id='filters-wrapper' style='display: none;'>" . $rawFilterBarHtml . "</div>";
 
-        $bookItemsHtml = $this->renderBookItems($this->books); // Am eliminat $this->isAdmin ca parametru
+        $bookItemsHtml = $this->renderBookItems($this->books);
 
-        $content = $this->loadTemplate('views/feed.tpl', [
-            'header' => $header,
-            'filterBar' => $toggleAndWrappedFiltersHtml,
-            'books' => $bookItemsHtml
-        ]);
+        $pageContent = "<h2>{$headerText}</h2>";
+        $pageContent .= $toggleAndWrappedFiltersHtml;
+        $pageContent .= "<div class='book-list'>{$bookItemsHtml}</div>";
 
-        $adminInsertFormHtml = $this->renderAdminInsertForm();
+        $contentForLayout = $adminInsertFormHtml . $pageContent;
 
         $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
                       <script src="assets/js/feed_filters.js" defer></script>
@@ -179,52 +171,42 @@ class ViewFeed
         $authLinksForLayout = $this->getAuthSpecificLinks();
 
         $layout = $this->loadTemplate('views/layout.tpl', [
-        'title' => 'Browse Books',
-        'content' => $adminInsertFormHtml . $content  . $scriptTag,
-        'authLinks' => $authLinksForLayout
-    ]);
+            'title' => 'Browse Books',
+            'content' => $contentForLayout . $scriptTag,
+            'authLinks' => $authLinksForLayout
+        ]);
+
         echo $layout;
     }
 
     function generateStarRatingHtml(int $rating): string
     {
         $starsHtml = [];
-
         for ($star = 5; $star >= 1; $star--) {
-            // Apply required only on the highest star input
             $required = ($star === 5) ? 'required' : '';
             $checked = ($star === $rating) ? 'checked' : '';
-
             $input = "<input type='radio' id='star$star' name='rating' value='$star' $checked $required>";
             $label = "<label for='star$star' title='$star star" . ($star > 1 ? 's' : '') . "'>★</label>";
-
             $starsHtml[] = $input . $label;
         }
-
         return "
         <fieldset class='star-rating-group'>
             <legend>Please select a rating:</legend>
             <div class='star-rating'>
                 " . implode('', $starsHtml) . "
             </div>
-        </fieldset>
-        ";
+        </fieldset>";
     }
+
     public function renderBook(array $book, ?array $userBookData = null, array $allReviews = [], ?float $averageRating = null): void
     {
         $isLoggedIn = isset($_SESSION['user_id']);
-        $userId = $isLoggedIn ? $_SESSION['user_id'] : null;
-
         $review = $userBookData['review'] ?? '';
         $pagesRead = $userBookData['pages_read'] ?? 0;
         $totalPages = $book['total_pages'] ?? 0;
-        $rating = $userBookData['rating'] ?? 0;  // New rating value
-
+        $rating = $userBookData['rating'] ?? 0;
         $progressPercentage = ($totalPages > 0) ? round(($pagesRead / $totalPages) * 100) : 0;
-
-        // Star rating widget HTML with pre-selected rating
         $starRatingHtml = $this->generateStarRatingHtml($rating);
-
         $reviewForm = '';
         if ($isLoggedIn) {
             $reviewForm = "
@@ -235,7 +217,7 @@ class ViewFeed
                 </div>
                 <div>
                     <label for='pages_read'>Pages Read:</label>
-                    <input type='number' name='pages_read' id='pages_read' value='" . htmlspecialchars($pagesRead) . "' min='0' max='" . (int)$totalPages . "'>
+                    <input type='number' name='pages_read' id='pages_read' value='" . htmlspecialchars($pagesRead) . "' min='0' max='" . (int) $totalPages . "'>
                     <p><strong>Total Pages:</strong> " . htmlspecialchars($totalPages) . "</p>
                 </div>
                 <div>
@@ -245,19 +227,16 @@ class ViewFeed
                 <div>
                     <button type='submit'>Save Progress & Review</button>
                 </div>
-            </form>
-            ";
+            </form>";
         } else {
             $reviewForm = "<p><em><a href='index.php?controller=auth&actiune=showLoginForm'>Login</a> to leave a review or track progress.</em></p>";
         }
-
         $progressBar = ($isLoggedIn && $totalPages > 0) ? "
             <div class='progress-bar' style='border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 100%; margin-top: 10px;'>
                 <div class='progress' style='width: {$progressPercentage}%; background-color: #4CAF50; color: white; padding: 2px;'>
                     {$progressPercentage}% read
                 </div>
             </div>" : "";
-
         $bookHtml = "
             <div class='book-detail'>
                 <img src='assets/" . htmlspecialchars($book['cover_image']) . "' alt='Cover of " . htmlspecialchars($book['title']) . "'>
@@ -270,17 +249,10 @@ class ViewFeed
                 <div class='user-interaction'>
                     $reviewForm
                 </div>
-            </div>
-        ";
+            </div>";
         $reviewsHtml = '';
-        $sum = 0;
-        $count = 0;
-
         foreach ($allReviews as $review) {
-            $rating = (int)$review['rating'];
-            $sum += $rating;
-            $count++;
-
+            $rating = (int) $review['rating'];
             $reviewsHtml .= "
                 <div class='review-block'>
                     <p><strong>" . htmlspecialchars($review['users_uid']) . "</strong> rated: $rating / 5 ★</p>
@@ -288,7 +260,6 @@ class ViewFeed
                     <small><em>Reviewed on " . date('F j, Y', strtotime($review['updated_at'])) . "</em></small>
                 </div><hr>";
         }
-
         $avgRatingHtml = ($averageRating !== null)
             ? "<p><strong>Average Rating:</strong> $averageRating / 5</p>"
             : "<p><strong>Average Rating:</strong> Not rated yet.</p>";
@@ -296,7 +267,6 @@ class ViewFeed
         $bookHtml .= $reviewsHtml;
         $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
         $authLinksForLayout = $this->getAuthSpecificLinks();
-
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => htmlspecialchars($book['title']),
             'content' => $content,
@@ -305,8 +275,6 @@ class ViewFeed
         echo $layout;
     }
 
-
-
     public function loadTemplate(string $filePath, array $data): string
     {
         if (!file_exists($filePath)) {
@@ -314,7 +282,6 @@ class ViewFeed
             if (strpos($filePath, 'views/') === 0) {
                 $altFilePath = __DIR__ . '/../' . $filePath;
             }
-
             if (!file_exists($altFilePath) && file_exists(__DIR__ . '/../' . $filePath)) {
                 $actualFilePath = __DIR__ . '/../' . $filePath;
             } else if (file_exists($altFilePath)) {
@@ -325,19 +292,18 @@ class ViewFeed
         } else {
             $actualFilePath = $filePath;
         }
-
         $template = file_get_contents($actualFilePath);
         foreach ($data as $key => $value) {
             $template = str_replace('{$' . $key . '}', (string) $value, $template);
         }
         return $template;
     }
+
     private function renderAdminInsertForm(): string
     {
         if (!$this->isAdmin) {
             return '';
         }
-
         return '
             <section id="admin-insert-book" style="margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 6px;">
                 <h3>Add New Book</h3>
@@ -345,13 +311,12 @@ class ViewFeed
                 <input type="text" name="title" placeholder="Book Title" required>
                 <input type="text" name="author" placeholder="Author" required>
                 <input type="text" name="genre" placeholder="Genre">
-                <!-- File input for image upload -->
                 <input type="file" name="cover_image" accept="image/*" required>
                 <button type="submit">Add Book</button>
             </form>
-            </section>
-        ';
+            </section>';
     }
+
     public function renderNoBooks(): void
     {
         $libsHtml = '<h3>No books matched your search/filters.</h3>';
@@ -367,22 +332,17 @@ class ViewFeed
         } else {
             $libsHtml .= "<p>We couldn't find any libraries nearby at the moment, or there was an issue fetching them.</p>";
         }
-
         $contentForNoBooksTpl = $this->loadTemplate('views/no-books.tpl', [
             'libraries' => $libsHtml,
             'query' => htmlspecialchars($this->query)
         ]);
-
         $rawFilterBarHtml = $this->renderFilterBar();
         $toggleAndWrappedFiltersHtml = "<button id='toggle-filters-button' class='toggle-filters-btn' style='margin-bottom: 10px; padding: 8px 15px; background-color: #555; color: white; border: none; border-radius: 4px; cursor: pointer;'>Show Filters</button>" .
             "<div id='filters-wrapper' style='display: none;'>" . $rawFilterBarHtml . "</div>";
-
         $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
                       <script src="assets/js/feed_filters.js" defer></script>
                       <script src="assets/js/geolocation.js" defer></script>';
-
         $authLinksForLayout = $this->getAuthSpecificLinks();
-
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => 'No Books Found',
             'content' => $toggleAndWrappedFiltersHtml . $contentForNoBooksTpl . $scriptTag,

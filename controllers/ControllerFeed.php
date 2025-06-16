@@ -21,11 +21,11 @@ class ControllerFeed extends Controller
         if ($actiune == "showFeed" || $actiune == "search") {
             $this->handleFeedDisplay($query, $currentAuthors, $currentGenres);
         } elseif ($actiune == "viewBook" && isset($parametri[0])) {
-            $this->viewBook((int) $parametri[0]);  
+            $this->viewBook((int) $parametri[0]);
         } elseif ($actiune === 'myBooks') {
             $this->myBooks();
         } elseif ($actiune == "saveReview" && isset($parametri[0])) {
-            $this->saveReview((int)$parametri[0]);
+            $this->saveReview((int) $parametri[0]);
         } elseif ($actiune == "ajaxFilterBooks") {
             $this->ajaxFilterBooks();
         } elseif ($actiune == "genereazaRss") {
@@ -36,7 +36,8 @@ class ControllerFeed extends Controller
             $this->handleFeedDisplay('', [], []);
         }
     }
-    private function genereazaRss() {
+    private function genereazaRss()
+    {
         include __DIR__ . '/../assets/rss/generate_rss.php';
 
 
@@ -82,7 +83,7 @@ class ControllerFeed extends Controller
         $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
         <script src="assets/js/feed_filters.js" defer></script>
         <script src="assets/js/geolocation.js" defer></script>';
-        
+
         $layout = $this->view->loadTemplate('views/layout.tpl', [
             'title' => "Edit Book - " . htmlspecialchars($book['title']),
             'content' => $formHtml . $scriptTag,
@@ -90,7 +91,7 @@ class ControllerFeed extends Controller
         ]);
         echo $layout;
     }
-    
+
     private function handleFeedDisplay(string $query, array $authorFilter, array $genreFilter): void
     {
 
@@ -134,15 +135,15 @@ class ControllerFeed extends Controller
         $user = $this->getAuthenticatedUser();
         $progress = null;
         $allReviews = $this->modelFeed->getAllReviewsForBook($id);
-        $averageRating = $this->modelFeed->getAverageRatingForBook($id); 
+        $averageRating = $this->modelFeed->getAverageRatingForBook($id);
 
         if ($user) {
             $progress = $this->modelFeed->getUserProgress($user['user_id'], $id);
         }
 
-        $this->viewFeed->renderBook($book, $progress, $allReviews, $averageRating); 
+        $this->viewFeed->renderBook($book, $progress, $allReviews, $averageRating);
     }
-        public function myBooks(): void
+    public function myBooks(): void
     {
         $userId = $_SESSION['user_id'] ?? null;
         if (!$userId) {
@@ -196,8 +197,8 @@ class ControllerFeed extends Controller
         }
 
         $review = trim($_POST['review'] ?? '');
-        $pagesRead = (int)($_POST['pages_read'] ?? 0);
-        $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : null;
+        $pagesRead = (int) ($_POST['pages_read'] ?? 0);
+        $rating = isset($_POST['rating']) ? (int) $_POST['rating'] : null;
 
         if ($review === '') {
             die("Review cannot be empty.");
@@ -212,7 +213,7 @@ class ControllerFeed extends Controller
             die("Book not found.");
         }
 
-        $totalPages = (int)$book['total_pages'];
+        $totalPages = (int) $book['total_pages'];
 
         if ($pagesRead > $totalPages) {
             die("Pages read cannot exceed total pages.");

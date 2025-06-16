@@ -60,7 +60,7 @@ class ModelFeed
     {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM books WHERE cover_image = ? AND id != ?");
         $stmt->execute([$coverImage, $excludeBookId]);
-        return (int)$stmt->fetchColumn();
+        return (int) $stmt->fetchColumn();
     }
 
     public function getBookById(int $id): ?array
@@ -88,7 +88,7 @@ class ModelFeed
             ':id' => $id
         ]);
     }
-    
+
     public function getDistinctIndividualGenres(): array
     {
         $stmt = $this->db->query("SELECT genre FROM books WHERE genre IS NOT NULL AND genre != ''");
@@ -178,7 +178,7 @@ class ModelFeed
             ':cover_image' => $bookData['cover_image']
         ]);
     }
-    
+
     public function getUserProgress(int $userId, int $bookId): ?array
     {
         $stmt = $this->db->prepare("
@@ -192,7 +192,7 @@ class ModelFeed
 
         return $result ?: null;
     }
-    
+
     public function getBooksWithUserProgress(int $userId): array
     {
         $stmt = $this->db->prepare("
@@ -207,7 +207,7 @@ class ModelFeed
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    
+
     public function saveUserProgress(int $userId, int $bookId, int $pagesRead, string $review, int $rating): bool
     {
         $stmt = $this->db->prepare("
@@ -222,8 +222,9 @@ class ModelFeed
         return $stmt->execute([$userId, $bookId, $pagesRead, $review, $rating]);
     }
 
-    
-    public function getAllReviewsForBook(int $bookId): array {
+
+    public function getAllReviewsForBook(int $bookId): array
+    {
         $stmt = $this->db->prepare("
             SELECT p.review, p.rating, p.updated_at, u.users_uid
             FROM user_book_progress p
@@ -234,12 +235,13 @@ class ModelFeed
         $stmt->execute([$bookId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function getAverageRatingForBook(int $bookId): ?float {
+    public function getAverageRatingForBook(int $bookId): ?float
+    {
         $stmt = $this->db->prepare("SELECT AVG(rating) AS avg_rating FROM user_book_progress WHERE book_id = ? AND rating IS NOT NULL");
         $stmt->execute([$bookId]);
         $avg = $stmt->fetchColumn();
-    
+
         // Check if we got a numeric value
-        return is_numeric($avg) ? round((float)$avg, 2) : null;
+        return is_numeric($avg) ? round((float) $avg, 2) : null;
     }
 }

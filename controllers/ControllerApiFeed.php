@@ -1,44 +1,44 @@
 <?php
 class ControllerApiFeed
 {
-  private ModelFeed $modelFeed;
+    private ModelFeed $modelFeed;
 
-  function getAuthenticatedUser()
-  {
-      if (
-          session_status() === PHP_SESSION_ACTIVE &&
-          isset($_SESSION['user_id'], $_SESSION['username'])
-      ) {
-          return [
-              'user_id' => $_SESSION['user_id'],
-              'username' => $_SESSION['username'],
-              'is_admin' => $_SESSION['is_admin'] ?? false,
-          ];
-      }
-      return false;
-  }
-    
-  public function deleteBookApi(int $bookId): void
-  {
-    $this->modelFeed = new ModelFeed();
-    header('Content-Type: application/json');
-
-    $user = $this->getAuthenticatedUser();
-    if (!$user || !$user['is_admin']) {
-        http_response_code(403);
-        echo json_encode(['error' => 'Forbidden']);
-        return;
+    function getAuthenticatedUser()
+    {
+        if (
+            session_status() === PHP_SESSION_ACTIVE &&
+            isset($_SESSION['user_id'], $_SESSION['username'])
+        ) {
+            return [
+                'user_id' => $_SESSION['user_id'],
+                'username' => $_SESSION['username'],
+                'is_admin' => $_SESSION['is_admin'] ?? false,
+            ];
+        }
+        return false;
     }
 
-    $success = $this->modelFeed->deleteBook($bookId);
-    if ($success) {
-        echo json_encode(['success' => true]);
-    } else {
-        http_response_code(500);
-        echo json_encode(['error' => 'Failed to delete book.']);
+    public function deleteBookApi(int $bookId): void
+    {
+        $this->modelFeed = new ModelFeed();
+        header('Content-Type: application/json');
+
+        $user = $this->getAuthenticatedUser();
+        if (!$user || !$user['is_admin']) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            return;
+        }
+
+        $success = $this->modelFeed->deleteBook($bookId);
+        if ($success) {
+            echo json_encode(['success' => true]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to delete book.']);
+        }
     }
-  }
-  public function updateBookApi(int $id): void
+    public function updateBookApi(int $id): void
     {
         header('Content-Type: application/json');
 
@@ -88,7 +88,8 @@ class ControllerApiFeed
             $count = $model->countBooksUsingCover($oldBook['cover_image'], $id);
             if ($oldBook['cover_image'] && $count === 0) {
                 $oldImagePath = __DIR__ . '/../assets/' . $oldBook['cover_image'];
-                if (file_exists($oldImagePath)) unlink($oldImagePath);
+                if (file_exists($oldImagePath))
+                    unlink($oldImagePath);
             }
         }
 
@@ -107,7 +108,7 @@ class ControllerApiFeed
         }
     }
 
-  public function insertBookApi(): void
+    public function insertBookApi(): void
     {
         $user = $this->getAuthenticatedUser();
         if (!$user || !$user['is_admin']) {
