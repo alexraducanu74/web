@@ -79,31 +79,22 @@ INSERT INTO books (title, author, genre, cover_image, total_pages) VALUES
 ('The Midnight Library', 'Matt Haig', 'Contemporary Fiction, Magical Realism', 'covers/midnight-library.jpg', 304),
 ('1984', 'George Orwell', 'Dystopian, Political Fiction, Science Fiction', 'covers/1984.jpg', 328),
 ('The Name of the Wind', 'Patrick Rothfuss', 'Epic Fantasy, Adventure', 'covers/name-of-the-wind.jpg', 662),
-
-('Book Title 1',  'Author Horror',   'Horror',                          'covers/1984.jpg', 220),
-('Book Title 2',  'Author Horror',   'Horror, Thriller',               'covers/1984.jpg', 245),
-('Book Title 3',  'Author Horror',   'Supernatural Horror',            'covers/1984.jpg', 260),
-('Book Title 4',  'Author Horror',   'Horror',                         'covers/1984.jpg', 230),
-('Book Title 5',  'Author Horror',   'Psychological Horror',           'covers/1984.jpg', 250),
-
-('Book Title 6',  'Author Comedy',   'Comedy, Satire',                 'covers/1984.jpg', 210),
-('Book Title 7',  'Author Comedy',   'Comedy',                         'covers/1984.jpg', 190),
-('Book Title 8',  'Author Comedy',   'Dark Comedy',                    'covers/1984.jpg', 200),
-('Book Title 9',  'Author Comedy',   'Comedy',                         'covers/1984.jpg', 195),
-('Book Title 10', 'Author Comedy',   'Romantic Comedy',                'covers/1984.jpg', 225),
-
-('Book Title 11', 'Author SciFi',    'Science Fiction, Space Opera',   'covers/1984.jpg', 310),
-('Book Title 12', 'Author SciFi',    'Science Fiction',                'covers/1984.jpg', 295),
-('Book Title 13', 'Author SciFi',    'Cyberpunk, Science Fiction',     'covers/1984.jpg', 275),
-('Book Title 14', 'Author SciFi',    'Science Fiction',                'covers/1984.jpg', 285),
-('Book Title 15', 'Author SciFi',    'Hard Science Fiction',           'covers/1984.jpg', 320),
-
-('Book Title 16', 'Author Thriller', 'Thriller, Mystery',              'covers/1984.jpg', 340),
-('Book Title 17', 'Author Thriller', 'Thriller',                       'covers/1984.jpg', 300),
-('Book Title 18', 'Author Thriller', 'Psychological Thriller',         'covers/1984.jpg', 310),
-('Book Title 19', 'Author Thriller', 'Thriller',                       'covers/1984.jpg', 295),
-('Book Title 20', 'Author Thriller', 'Crime Thriller',                 'covers/1984.jpg', 305);
-
+('Amintiri din Copilarie', 'Ion Creangă', 'Memoir, Romanian Literature, Classics', 'covers/amintiri-din-copilarie.jpg', 130),
+('Circe', 'Madeline Miller', 'Fantasy, Mythology, Literary Fiction', 'covers/circe.jpg', 393),
+('Crime and Punishment', 'Fyodor Dostoevsky', 'Literary fiction, Philosophical fiction', 'covers/crime-and-prejudice.jpg', 527),
+('Dune', 'Frank Herbert', 'Science Fiction, Philosophical fiction', 'covers/dune.jpg', 412),
+('Enders Game', 'Orson Scott Card', 'Science Fiction', 'covers/enders-game.jpg', 324),
+('A Game of Thrones', 'George R. R. Martin', 'Political novel, epic fantasy', 'covers/game-of-thrones.jpg', 694),
+('Harry Potter and The Deathly Hallows', 'J.K. Rowling', 'Young Adult, Fiction, Magic', 'covers/harry-potter.jpg', 759),
+('I am Malala', 'Malala Yousafzai', 'Biography, Autobiography, Personal Memoirs', 'covers/i-am-malala.jpg', 464),
+('In Search of Lost Time', 'Marcel Proust', 'Fiction, France, Literature', 'covers/in-the-search-of-lost-time.jpg', 4211),
+('Lost Illusions', 'Honoré de Balzac', 'Fiction', 'covers/lost-illusions.jpg', 458),
+('One Hundred Years of Solitude', 'Gabriel García Márquez', 'Magic realism', 'covers/one-hundred-years-of-solitude.jpg', 422),
+('The Catcher in the Rye', 'J. D. Salinger', 'Realistic fiction, Coming-of-age fiction', 'covers/the-cathcer-in-the-rye.jpg', 234),
+('The Fault in Our Stars', 'John Green', 'contemporary romance; realistic fiction;', 'covers/the-fault-in-our-stars.jpg', 336),
+('The Hobbit', 'J. R. R. Tolkien', 'High fantasy, Children''s fantasy', 'covers/the-hobbit.jpg', 310),
+('The Silent Patient', 'Alex Michaelides', 'Thriller, Mystery, Fiction', 'covers/the-silent-patient.jpg', 336),
+('The Time Machine', 'H. G. Wells', 'Science fiction', 'covers/the-time-machine.jpg', 84);
 
 DROP TRIGGER IF EXISTS trg_validate_group_name_length ON groups;
 
