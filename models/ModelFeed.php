@@ -241,7 +241,6 @@ class ModelFeed
         $stmt->execute([$bookId]);
         $avg = $stmt->fetchColumn();
 
-        // Check if we got a numeric value
         return is_numeric($avg) ? round((float) $avg, 2) : null;
     }
 }

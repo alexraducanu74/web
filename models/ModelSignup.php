@@ -15,19 +15,18 @@ class ModelSignup
         return $stmt->rowCount() === 0;
     }
     public function setUser(string $uid, string $pwd, string $email): bool
-{
-    try {
-        $stmt = $this->connect()->prepare('INSERT INTO users (users_uid, users_pwd, users_email) VALUES (?, ?, ?);');
-        $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
-        if (!$stmt->execute([$uid, $hashed_pwd, $email])) {
-            $errorInfo = $stmt->errorInfo();
-            throw new Exception("Database error: " . $errorInfo[2]);
+    {
+        try {
+            $stmt = $this->connect()->prepare('INSERT INTO users (users_uid, users_pwd, users_email) VALUES (?, ?, ?);');
+            $hashed_pwd = password_hash($pwd, PASSWORD_DEFAULT);
+            if (!$stmt->execute([$uid, $hashed_pwd, $email])) {
+                $errorInfo = $stmt->errorInfo();
+                throw new Exception("Database error: " . $errorInfo[2]);
+            }
+            return true;
+        } catch (PDOException $e) {
+            throw $e;
         }
-        return true;
-    } catch (PDOException $e) {
-        // rethrow pt controller
-        throw $e;
     }
-}
 }
 ?>

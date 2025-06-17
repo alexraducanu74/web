@@ -12,38 +12,36 @@ class ControllerStats
         $this->actiune = $actiune;
         $this->params = $params;
 
-        $db = Dbh::getInstance()->getConnection();  
+        $db = Dbh::getInstance()->getConnection();
         $this->model = new ModelStats($db);
 
         switch ($this->actiune) {
-          case 'exportCSV':
-              $this->exportCSV();
-              break;
-          case 'exportDocBook':
-              $this->exportDocBook();
-              break;
-          default:
-              echo "Actiune invalida.";
-      }
+            case 'exportCSV':
+                $this->exportCSV();
+                break;
+            case 'exportDocBook':
+                $this->exportDocBook();
+                break;
+            default:
+                echo "Actiune invalida.";
+        }
     }
 
     public function exportCSV()
-     {
+    {
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment;filename="stats.csv"');
 
         $output = fopen('php://output', 'w');
 
-        // Cele mai citite carti
         fputcsv($output, ['Cele mai citite carti']);
         fputcsv($output, ['Titlu', 'Pagini citite']);
         foreach ($this->model->getMostReadBooks() as $row) {
             fputcsv($output, $row);
         }
 
-        fputcsv($output, []); // empty row
+        fputcsv($output, []);
 
-        // Genuri populare
         fputcsv($output, ['Genuri populare']);
         fputcsv($output, ['Gen', 'Numar carti']);
         foreach ($this->model->getPopularGenres() as $row) {
@@ -52,7 +50,6 @@ class ControllerStats
 
         fputcsv($output, []);
 
-        // Rating mediu
         fputcsv($output, ['Carti cu cel mai bun rating mediu']);
         fputcsv($output, ['Titlu', 'Rating Mediu']);
         foreach ($this->model->getTopRatedBooks() as $row) {
