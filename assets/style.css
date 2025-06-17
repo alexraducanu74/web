@@ -49,6 +49,7 @@ img {
   background-color: #1e1e1e;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .navbar .logo {
@@ -238,7 +239,7 @@ img {
   color: gold;
 }
 
-/* Forms (Login, Register, Filters) */
+/* Login/Register Forms */
 .form-container {
   background: #fff;
   padding: 30px 40px;
@@ -257,13 +258,60 @@ img {
 
 .form-container input[type="text"],
 .form-container input[type="password"],
-.form-container input[type="email"],
-textarea {
+.form-container input[type="email"] {
   width: 100%;
   padding: 12px 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1em;
+}
+
+/* Create Group Form Styles */
+.form-styled {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2%;
+  row-gap: 20px;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.form-styled .form-group {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 49%;
+}
+
+.form-styled .form-group label {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-styled .form-group.form-check,
+.form-styled .btn {
+  flex-basis: 100%;
+}
+
+.form-styled .form-group.form-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-styled input[type="text"],
+.form-styled textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  font-family: inherit;
+  resize: none;
+  /* Disable resizing */
 }
 
 /* Buttons */
@@ -416,30 +464,29 @@ button[type="submit"]:hover {
   color: #6c757d;
 }
 
-/* Responsive */
+/* Pentru telefoane mobile */
 @media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    gap: 10px;
+  main {
+    padding: 15px;
   }
 
-  .search-form {
-    position: static;
-    transform: none;
-    width: 100%;
-    margin-top: 10px;
+  /* Aranjeaza formularul de grup pe o singura coloana */
+  .form-styled .form-group {
+    flex-basis: 100%;
   }
 
-  .search-form input[type="text"] {
-    min-width: 0;
-    width: 100%;
-  }
-
+  /* Aranjeaza pagina de detalii pe o singura coloana */
   .book-detail {
     flex-direction: column;
     align-items: center;
+    text-align: center;
   }
 
+  .book-detail .user-interaction {
+    text-align: left;
+  }
+
+  /* Aranjeaza listele de membri/cereri */
   .request-list li {
     flex-direction: column;
     align-items: flex-start;
