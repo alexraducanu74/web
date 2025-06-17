@@ -158,8 +158,8 @@ class ControllerApiFeed
 
             $titleText = "Review for: " . $review['title'] . " by " . $review['users_uid'];
             $linkText = "http://localhost/web/index.php?controller=feed&actiune=viewBook&parametri=" . $review['book_id'];
-            $ratingValue = (int)$review['rating'];
-            $descText = htmlspecialchars($review['review'], ENT_XML1, 'UTF-8') 
+            $ratingValue = (int) $review['rating'];
+            $descText = htmlspecialchars($review['review'], ENT_XML1, 'UTF-8')
                 . " | Pages read: " . $review['pages_read'] . " | Rating: " . $ratingValue;
 
             $item->appendChild($doc->createElement("title", htmlspecialchars($titleText, ENT_XML1, 'UTF-8')));
