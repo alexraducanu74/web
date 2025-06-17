@@ -142,9 +142,9 @@ class ControllerAuth extends Controller
             $errorMsg = $e->getMessage();
 
             if (strpos($errorMsg, 'Numele de utilizator este prea scurt') !== false) {
-                $message = "Numele de utilizator trebuie să aibă cel puțin 3 caractere.";
+                $message = "Numele de utilizator trebuie sa aiba cel putin 3 caractere.";
             } else {
-                $message = "Eroare la înregistrare. Încearcă din nou.";
+                $message = "Eroare la inregistrare. incearca din nou.";
             }
 
             $this->showRegisterForm(['error_message' => $message]);

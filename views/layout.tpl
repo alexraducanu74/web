@@ -16,13 +16,17 @@
     <form action="/web/index.php" method="get" class="search-form">
       <input type="hidden" name="controller" value="feed">
       <input type="hidden" name="actiune" value="search">
-      <input type="text" name="q" placeholder="Caută o carte...">
+      <input type="text" name="q" placeholder="Cauta o carte...">
       <button type="submit">🔍</button>
     </form>
   </div>
 
   <div class="nav-right">
     <div class="secondary-links">
+      <a href="index.php?controller=stats&actiune=exportCSV">Export CSV</a>
+      <div class="separator"></div>
+      <a href="index.php?controller=stats&actiune=exportDocBook">Export DocBook</a>
+      <div class="separator"></div>
       <a href="/web/index.php?controller=feed&actiune=genereazaRssApi&api=1" aria-label="RSS Feed" class="rss-icon">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
         <path d="M4 11a9 9 0 0 1 9 9"/>

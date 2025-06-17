@@ -119,9 +119,9 @@ class ControllerApiFeed
         $doc->appendChild($rss);
 
         $channel = $doc->createElement("channel");
-        $channel->appendChild($doc->createElement("title", "Cărți Și Recenzii Adăugate Recent"));
+        $channel->appendChild($doc->createElement("title", "Carti si Recenzii Adaugate Recent"));
         $channel->appendChild($doc->createElement("link", "http://localhost/web/index.php"));
-        $channel->appendChild($doc->createElement("description", "Cărțile și recenziile adăugate cel mai recent"));
+        $channel->appendChild($doc->createElement("description", "Cartile si recenziile adaugate cel mai recent"));
         $channel->appendChild($doc->createElement("language", "ro"));
         $channel->appendChild($doc->createElement("pubDate", date(DATE_RSS)));
         $rss->appendChild($channel);

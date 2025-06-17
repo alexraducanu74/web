@@ -119,7 +119,7 @@ class ControllerFeed extends Controller
     {
         $book = $this->modelFeed->getBookById($id);
         if (!$book) {
-            echo "Cartea nu a fost găsită.";
+            echo "Cartea nu a fost gasita.";
             return;
         }
 
