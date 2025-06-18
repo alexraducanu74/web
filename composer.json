@@ -1,5 +1,14 @@
 {
     "require": {
         "firebase/php-jwt": "^6.11"
+    },
+    "autoload": {
+        "classmap": [
+            "controllers",
+            "models",
+            "views",
+            "config",
+            "auth"
+        ]
     }
 }

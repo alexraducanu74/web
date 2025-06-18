@@ -35,21 +35,6 @@ class ControllerFeed extends Controller
         }
     }
 
-
-    function getAuthenticatedUser()
-    {
-        if (
-            session_status() === PHP_SESSION_ACTIVE &&
-            isset($_SESSION['user_id'], $_SESSION['username'])
-        ) {
-            return [
-                'user_id' => $_SESSION['user_id'],
-                'username' => $_SESSION['username'],
-                'is_admin' => $_SESSION['is_admin'] ?? false,
-            ];
-        }
-        return false;
-    }
     private function editBookForm(int $id): void
     {
         $book = $this->modelFeed->getBookById($id);
@@ -62,7 +47,8 @@ class ControllerFeed extends Controller
         $book['genre'] = htmlspecialchars($book['genre']);
         $book['cover_image'] = htmlspecialchars($book['cover_image']);
 
-        $isAdmin = $this->getAuthenticatedUser()['is_admin'] ?? false;
+        $user = $this->getAuthenticatedUser();
+        $isAdmin = $user && $user['is_admin'];
         if (!$isAdmin) {
             http_response_code(403);
             echo "Forbidden";
@@ -91,7 +77,7 @@ class ControllerFeed extends Controller
         $allGenres = $this->modelFeed->getDistinctIndividualGenres();
 
         $user = $this->getAuthenticatedUser();
-        $isAdmin = $user !== false && isset($user['is_admin']) && $user['is_admin'] === true;
+        $isAdmin = $user && $user['is_admin'];
 
         $this->viewFeed->setIsAdmin($isAdmin);
         $this->viewFeed->setAllAuthors($allAuthors);
@@ -136,11 +122,12 @@ class ControllerFeed extends Controller
     }
     public function myBooks(): void
     {
-        $userId = $_SESSION['user_id'] ?? null;
-        if (!$userId) {
+        $user = $this->getAuthenticatedUser();
+        if (!$user) {
             header('Location: index.php?controller=auth&actiune=showLoginForm');
             exit;
         }
+        $userId = $user['user_id'];
 
         $books = $this->modelFeed->getBooksWithUserProgress($userId);
 
@@ -181,11 +168,12 @@ class ControllerFeed extends Controller
 
     public function saveReview($bookId)
     {
-        $userId = $_SESSION['user_id'] ?? null;
-        if (!$userId) {
+        $user = $this->getAuthenticatedUser();
+        if (!$user) {
             header('Location: index.php?controller=auth&actiune=showLoginForm');
             exit;
         }
+        $userId = $user['user_id'];
 
         $review = trim($_POST['review'] ?? '');
         $pagesRead = (int) ($_POST['pages_read'] ?? 0);

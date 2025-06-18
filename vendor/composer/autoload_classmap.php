@@ -7,4 +7,20 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Controller' => $baseDir . '/controllers/Controller.php',
+    'ControllerApiFeed' => $baseDir . '/controllers/ControllerApiFeed.php',
+    'ControllerAuth' => $baseDir . '/controllers/ControllerAuth.php',
+    'ControllerFeed' => $baseDir . '/controllers/ControllerFeed.php',
+    'ControllerGroup' => $baseDir . '/controllers/ControllerGroup.php',
+    'ControllerStats' => $baseDir . '/controllers/ControllerStats.php',
+    'Dbh' => $baseDir . '/config/Dbh.php',
+    'ModelFeed' => $baseDir . '/models/ModelFeed.php',
+    'ModelGroup' => $baseDir . '/models/ModelGroup.php',
+    'ModelLogin' => $baseDir . '/models/ModelLogin.php',
+    'ModelSignup' => $baseDir . '/models/ModelSignup.php',
+    'ModelStats' => $baseDir . '/models/ModelStats.php',
+    'ViewFeed' => $baseDir . '/views/ViewFeed.php',
+    'ViewGroup' => $baseDir . '/views/ViewGroup.php',
+    'ViewLogin' => $baseDir . '/views/ViewLogin.php',
+    'ViewRegister' => $baseDir . '/views/ViewRegister.php',
 );

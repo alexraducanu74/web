@@ -22,6 +22,22 @@ class ComposerStaticInit20fad51902f91e7fd3039e016a6556b5
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Controller' => __DIR__ . '/../..' . '/controllers/Controller.php',
+        'ControllerApiFeed' => __DIR__ . '/../..' . '/controllers/ControllerApiFeed.php',
+        'ControllerAuth' => __DIR__ . '/../..' . '/controllers/ControllerAuth.php',
+        'ControllerFeed' => __DIR__ . '/../..' . '/controllers/ControllerFeed.php',
+        'ControllerGroup' => __DIR__ . '/../..' . '/controllers/ControllerGroup.php',
+        'ControllerStats' => __DIR__ . '/../..' . '/controllers/ControllerStats.php',
+        'Dbh' => __DIR__ . '/../..' . '/config/Dbh.php',
+        'ModelFeed' => __DIR__ . '/../..' . '/models/ModelFeed.php',
+        'ModelGroup' => __DIR__ . '/../..' . '/models/ModelGroup.php',
+        'ModelLogin' => __DIR__ . '/../..' . '/models/ModelLogin.php',
+        'ModelSignup' => __DIR__ . '/../..' . '/models/ModelSignup.php',
+        'ModelStats' => __DIR__ . '/../..' . '/models/ModelStats.php',
+        'ViewFeed' => __DIR__ . '/../..' . '/views/ViewFeed.php',
+        'ViewGroup' => __DIR__ . '/../..' . '/views/ViewGroup.php',
+        'ViewLogin' => __DIR__ . '/../..' . '/views/ViewLogin.php',
+        'ViewRegister' => __DIR__ . '/../..' . '/views/ViewRegister.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

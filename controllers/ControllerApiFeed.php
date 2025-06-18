@@ -1,22 +1,7 @@
 <?php
-class ControllerApiFeed
+class ControllerApiFeed extends Controller
 {
     private ModelFeed $modelFeed;
-
-    function getAuthenticatedUser()
-    {
-        if (
-            session_status() === PHP_SESSION_ACTIVE &&
-            isset($_SESSION['user_id'], $_SESSION['username'])
-        ) {
-            return [
-                'user_id' => $_SESSION['user_id'],
-                'username' => $_SESSION['username'],
-                'is_admin' => $_SESSION['is_admin'] ?? false,
-            ];
-        }
-        return false;
-    }
 
     public function deleteBookApi(int $bookId): void
     {
@@ -233,5 +218,3 @@ class ControllerApiFeed
     }
 
 }
-
-

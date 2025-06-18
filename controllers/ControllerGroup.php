@@ -12,7 +12,8 @@ class ControllerGroup extends Controller
             $this->modelGroup = new ModelGroup();
             $this->ViewGroup = new ViewGroup();
 
-            $currentUserId = $_SESSION['user_id'] ?? null;
+            $user = $this->getAuthenticatedUser();
+            $currentUserId = $user ? $user['user_id'] : null;
 
             if (!$currentUserId && !in_array($actiune, ['view'])) {
                 $this->ViewGroup->renderError("You must be logged in to access this page.", "Login Required");
@@ -93,14 +94,15 @@ class ControllerGroup extends Controller
 
     private function createGroup(): void
     {
-        if ($_SERVER["REQUEST_METHOD"] !== "POST" || !isset($_SESSION['user_id'])) {
+        $user = $this->getAuthenticatedUser();
+        if ($_SERVER["REQUEST_METHOD"] !== "POST" || !$user) {
             header('Location: index.php?controller=group&actiune=showCreateForm&error=invalid_request');
             exit;
         }
 
         $name = trim($_POST['group_name'] ?? '');
         $description = trim($_POST['group_description'] ?? null);
-        $creatorUserId = $_SESSION['user_id'];
+        $creatorUserId = $user['user_id'];
         $requiresApproval = isset($_POST['requires_approval']);
 
         if (empty($name)) {
@@ -127,7 +129,8 @@ class ControllerGroup extends Controller
             return;
         }
 
-        $currentUserId = $_SESSION['user_id'] ?? null;
+        $user = $this->getAuthenticatedUser();
+        $currentUserId = $user ? $user['user_id'] : null;
         $isMember = false;
         $isCreator = false;
         $memberStatus = null;
@@ -146,12 +149,13 @@ class ControllerGroup extends Controller
 
     private function joinGroupWithCode(): void
     {
-        if ($_SERVER["REQUEST_METHOD"] !== "POST" || !isset($_SESSION['user_id'], $_POST['secret_code'])) {
+        $user = $this->getAuthenticatedUser();
+        if ($_SERVER["REQUEST_METHOD"] !== "POST" || !$user || !isset($_POST['secret_code'])) {
             header('Location: index.php?controller=group&actiune=myGroups&error=invalid_join_attempt');
             exit;
         }
 
-        $currentUserId = $_SESSION['user_id'];
+        $currentUserId = $user['user_id'];
         $secretCode = trim($_POST['secret_code']);
         $groupIdForContext = isset($_POST['group_id_for_code_join']) ? (int) $_POST['group_id_for_code_join'] : null;
 
@@ -243,11 +247,12 @@ class ControllerGroup extends Controller
 
     private function listUserGroups(?string $message = null, ?string $errorMessage = null): void
     {
-        if (!isset($_SESSION['user_id'])) {
+        $user = $this->getAuthenticatedUser();
+        if (!$user) {
             $this->ViewGroup->renderError("You must be logged in to view your groups.", "Login Required");
             exit;
         }
-        $userId = $_SESSION['user_id'];
+        $userId = $user['user_id'];
         $groups = $this->modelGroup->getUserGroups($userId);
 
         $this->ViewGroup->renderUserGroupsPage($groups, $message, $errorMessage);

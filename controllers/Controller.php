@@ -1,4 +1,9 @@
 <?php
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Firebase\JWT\ExpiredException;
+use Firebase\JWT\SignatureInvalidException;
+
 abstract class Controller
 {
     protected $model;
@@ -17,6 +22,36 @@ abstract class Controller
             if (class_exists($numeView)) {
                 $this->view = new $numeView;
             }
+        }
+    }
+
+    protected function getAuthenticatedUser()
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE || !isset($_SESSION['jwt'])) {
+            return false;
+        }
+
+        $token = $_SESSION['jwt'];
+
+        try {
+            $decodedPayload = JWT::decode($token, new Key(JWT_SECRET_KEY, JWT_ALGORITHM));
+
+            if (isset($decodedPayload->data) && isset($decodedPayload->data->userId)) {
+                return [
+                    'user_id' => $decodedPayload->data->userId,
+                    'username' => $decodedPayload->data->username,
+                    'is_admin' => $decodedPayload->data->is_admin ?? false,
+                ];
+            }
+
+            return false;
+
+        } catch (ExpiredException $e) {
+            return false;
+        } catch (SignatureInvalidException $e) {
+            return false;
+        } catch (Exception $e) {
+            return false;
         }
     }
 }

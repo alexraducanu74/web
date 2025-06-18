@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once 'autoload.php';
+require_once 'vendor/autoload.php';
+require_once 'config/jwt_config.php';
 
 function sanitizeKey($value)
 {
@@ -39,7 +40,7 @@ if ($isApi) {
         case 'genereazaRssApi':
             $api->genereazaRssApi();
             break;
-            
+
         default:
             http_response_code(404);
             echo json_encode(['error' => 'Unknown API action.']);
