@@ -1,13 +1,48 @@
 <?php
+
 class ControllerApiFeed extends Controller
 {
     private ModelFeed $modelFeed;
 
-    public function deleteBookApi(int $bookId): void
+    public function __construct(string $actiune, array $parametri)
     {
+        parent::__construct();
         $this->modelFeed = new ModelFeed();
+
+        // Set common API headers
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type');
         header('Content-Type: application/json');
 
+        $bookId = (int) ($parametri[0] ?? 0); // Assuming bookId is always the first parameter for these actions
+
+        switch ($actiune) {
+            case 'insertBookApi':
+                $this->insertBookApi();
+                break;
+
+            case 'deleteBookApi':
+                $this->deleteBookApi($bookId);
+                break;
+
+            case 'updateBookApi':
+                $this->updateBookApi($bookId);
+                break;
+
+            case 'genereazaRssApi':
+                $this->genereazaRssApi();
+                break;
+
+            default:
+                http_response_code(404);
+                echo json_encode(['error' => 'Unknown API action.']);
+                break;
+        }
+    }
+
+    public function deleteBookApi(int $bookId): void
+    {
         $user = $this->getAuthenticatedUser();
         if (!$user || !$user['is_admin']) {
             http_response_code(403);
@@ -23,10 +58,9 @@ class ControllerApiFeed extends Controller
             echo json_encode(['error' => 'Failed to delete book.']);
         }
     }
+
     public function updateBookApi(int $id): void
     {
-        header('Content-Type: application/json');
-
         $user = $this->getAuthenticatedUser();
         if (!$user || !$user['is_admin']) {
             http_response_code(403);
@@ -44,8 +78,7 @@ class ControllerApiFeed extends Controller
             return;
         }
 
-        $model = new ModelFeed();
-        $oldBook = $model->getBookById($id);
+        $oldBook = $this->modelFeed->getBookById($id);
         if (!$oldBook) {
             http_response_code(404);
             echo json_encode(['error' => 'Book not found.']);
@@ -70,7 +103,7 @@ class ControllerApiFeed extends Controller
             $coverImage = 'covers/' . $newFileName;
 
             // Delete old image if no longer used
-            $count = $model->countBooksUsingCover($oldBook['cover_image'], $id);
+            $count = $this->modelFeed->countBooksUsingCover($oldBook['cover_image'], $id);
             if ($oldBook['cover_image'] && $count === 0) {
                 $oldImagePath = __DIR__ . '/../assets/' . $oldBook['cover_image'];
                 if (file_exists($oldImagePath))
@@ -78,7 +111,7 @@ class ControllerApiFeed extends Controller
             }
         }
 
-        $updateSuccess = $model->updateBook($id, [
+        $updateSuccess = $this->modelFeed->updateBook($id, [
             'title' => $title,
             'author' => $author,
             'genre' => $genre,
@@ -92,6 +125,7 @@ class ControllerApiFeed extends Controller
             echo json_encode(['error' => 'Failed to update book.']);
         }
     }
+
     public function genereazaRssApi()
     {
         $pdo = Dbh::getInstance()->getConnection();
@@ -201,7 +235,6 @@ class ControllerApiFeed extends Controller
             return;
         }
 
-        $this->modelFeed = new ModelFeed();
         $success = $this->modelFeed->insertBook([
             'title' => $title,
             'author' => $author,
@@ -216,5 +249,4 @@ class ControllerApiFeed extends Controller
             echo json_encode(['error' => 'Failed to save book to database.']);
         }
     }
-
 }

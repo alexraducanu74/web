@@ -124,7 +124,70 @@ class ViewFeed
         $filterHtml .= "</div>";
         return $filterHtml;
     }
+    public function renderMyBooks(array $books, string $username): void
+    {
+        $bookHtml = '';
+        if (empty($books)) {
+            $bookHtml = "<p>Hello, " . htmlspecialchars($username) . "! You haven't reviewed or made progress on any books yet.</p>";
+        } else {
+            foreach ($books as $book) {
+                $progress = ($book['total_pages'] > 0)
+                    ? round(($book['pages_read'] / $book['total_pages']) * 100)
+                    : 0;
 
+                $ratingDisplay = isset($book['rating']) ? "Your Rating: " . htmlspecialchars($book['rating']) . " / 5" : "No rating yet";
+                $bookHtml .= "
+                    <div class='book-entry'>
+                        <h3>" . htmlspecialchars($book['title']) . "</h3>
+                        <p><strong>Author:</strong> " . htmlspecialchars($book['author']) . "</p>
+                        <p><strong>Progress:</strong> {$book['pages_read']} / {$book['total_pages']} pages ({$progress}%)</p>
+                        <p><strong>Your Review:</strong> " . nl2br(htmlspecialchars($book['review'])) . "</p>
+                        <p><strong>{$ratingDisplay}</strong></p>
+                        <a href='index.php?controller=feed&actiune=viewBook&parametri={$book['id']}'>View Book</a>
+                        <hr>
+                    </div>
+                ";
+            }
+        }
+
+        $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
+        $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
+        <script src="assets/js/feed_filters.js" defer></script>
+        <script src="assets/js/nav.js" defer></script>
+        <script src="assets/js/geolocation.js" defer></script>';
+        $layout = $this->loadTemplate('views/layout.tpl', [
+            'title' => 'My Books - ' . htmlspecialchars($username), // Dynamic title
+            'content' => $content . $scriptTag,
+            'authLinks' => $this->getAuthSpecificLinks()
+        ]);
+
+        echo $layout;
+    }
+
+    public function renderEditBookForm(array $book): void
+    {
+        // Htmlspecialchars the book data here, just before rendering,
+        // rather than in the controller.
+        $book['title'] = htmlspecialchars($book['title']);
+        $book['author'] = htmlspecialchars($book['author']);
+        $book['genre'] = htmlspecialchars($book['genre']);
+        $book['cover_image'] = htmlspecialchars($book['cover_image']);
+
+        $formHtml = $this->loadEditFormTemplate($book);
+        $authLinksForLayout = $this->getAuthSpecificLinks();
+        $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
+        <script src="assets/js/feed_filters.js" defer></script>
+        <script src="assets/js/nav.js" defer></script>
+        <script src="assets/js/geolocation.js" defer></script>';
+
+        $layout = $this->loadTemplate('views/layout.tpl', [
+            'title' => "Edit Book - " . htmlspecialchars($book['title']),
+            'content' => $formHtml . $scriptTag,
+            'authLinks' => $authLinksForLayout
+        ]);
+        echo $layout;
+    }
+    
     public function getAuthSpecificLinks(): string
     {
         if (isset($_SESSION['user_id'])) {

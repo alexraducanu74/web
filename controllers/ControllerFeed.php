@@ -42,10 +42,6 @@ class ControllerFeed extends Controller
             echo "Book not found.";
             return;
         }
-        $book['title'] = htmlspecialchars($book['title']);
-        $book['author'] = htmlspecialchars($book['author']);
-        $book['genre'] = htmlspecialchars($book['genre']);
-        $book['cover_image'] = htmlspecialchars($book['cover_image']);
 
         $user = $this->getAuthenticatedUser();
         $isAdmin = $user && $user['is_admin'];
@@ -55,19 +51,7 @@ class ControllerFeed extends Controller
             return;
         }
 
-        $formHtml = $this->view->loadEditFormTemplate($book);
-        $authLinksForLayout = $this->view->getAuthSpecificLinks();
-        $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
-        <script src="assets/js/feed_filters.js" defer></script>
-        <script src="assets/js/nav.js" defer></script>
-        <script src="assets/js/geolocation.js" defer></script>';
-
-        $layout = $this->view->loadTemplate('views/layout.tpl', [
-            'title' => "Edit Book - " . htmlspecialchars($book['title']),
-            'content' => $formHtml . $scriptTag,
-            'authLinks' => $authLinksForLayout
-        ]);
-        echo $layout;
+        $this->viewFeed->renderEditBookForm($book);
     }
 
     private function handleFeedDisplay(string $query, array $authorFilter, array $genreFilter): void
@@ -129,45 +113,12 @@ class ControllerFeed extends Controller
             exit;
         }
         $userId = $user['user_id'];
+        $username = $user['username']; 
 
         $books = $this->modelFeed->getBooksWithUserProgress($userId);
 
-        $bookHtml = '';
-        foreach ($books as $book) {
-            $progress = ($book['total_pages'] > 0)
-                ? round(($book['pages_read'] / $book['total_pages']) * 100)
-                : 0;
-
-            $ratingDisplay = isset($book['rating']) ? "Your Rating: " . htmlspecialchars($book['rating']) . " / 5" : "No rating yet";
-            $bookHtml .= "
-                <div class='book-entry'>
-                    <h3>" . htmlspecialchars($book['title']) . "</h3>
-                    <p><strong>Author:</strong> " . htmlspecialchars($book['author']) . "</p>
-                    <p><strong>Progress:</strong> {$book['pages_read']} / {$book['total_pages']} pages ({$progress}%)</p>
-                    <p><strong>Your Review:</strong> " . nl2br(htmlspecialchars($book['review'])) . "</p>
-                    <p><strong>{$ratingDisplay}</strong></p>
-                    <a href='index.php?controller=feed&actiune=viewBook&parametri={$book['id']}'>View Book</a>
-                    <hr>
-                </div>
-            ";
-        }
-
-        if (empty($bookHtml)) {
-            $bookHtml = "<p>You haven't reviewed or made progress on any books yet.</p>";
-        }
-
-        $content = $this->view->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
-        $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
-        <script src="assets/js/feed_filters.js" defer></script>
-        <script src="assets/js/nav.js" defer></script>
-        <script src="assets/js/geolocation.js" defer></script>';
-        $layout = $this->view->loadTemplate('views/layout.tpl', [
-            'title' => 'My Books',
-            'content' => $content . $scriptTag,
-            'authLinks' => $this->view->getAuthSpecificLinks()
-        ]);
-
-        echo $layout;
+    
+        $this->viewFeed->renderMyBooks($books, $username);
     }
 
     public function saveReview($bookId)
