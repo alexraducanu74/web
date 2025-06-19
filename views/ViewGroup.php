@@ -76,7 +76,9 @@ class ViewGroup
                             <label for="requires_approval">Require admin approval for new members</label>
                         </div>
                         <button type="submit" class="btn">Create Group</button>
-                      </form>';
+                      </form>
+                      <script src="assets/js/nav.js" defer></script>'
+                      ;
         $this->renderPage('Create Group', $content);
     }
 
@@ -175,7 +177,9 @@ class ViewGroup
                         </div>
                         <button type="submit" class="btn">Join Group</button>
                      </form>
-                     <hr>';
+                     <hr>
+                     <script src="assets/js/nav.js" defer></script>'
+                     ;
 
         if (empty($groups)) {
             $content .= '<p>You are not a member of any groups yet.</p>';

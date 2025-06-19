@@ -213,7 +213,7 @@ class ViewFeed
             <form method='post' action='index.php?controller=feed&actiune=saveReview&parametri={$book['id']}'>
                 <div>
                     <label for='review'>Your Review:</label><br>
-                    <textarea name='review' id='review' rows='5' cols='50' required>" . htmlspecialchars($review) . "</textarea>
+                    <textarea name='review' id='review' rows='5' cols='100' required>" . htmlspecialchars($review) . "</textarea>
                 </div>
                 <div>
                     <label for='pages_read'>Pages Read:</label>
@@ -249,7 +249,7 @@ class ViewFeed
                 <div class='user-interaction'>
                     $reviewForm
                 </div>
-            </div>";
+            ";
         $reviewsHtml = '';
         foreach ($allReviews as $review) {
             $rating = (int) $review['rating'];
@@ -265,11 +265,12 @@ class ViewFeed
             : "<p><strong>Average Rating:</strong> Not rated yet.</p>";
         $bookHtml .= $avgRatingHtml;
         $bookHtml .= $reviewsHtml;
+        $bookHtml .= '</div>';
         $content = $this->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
         $authLinksForLayout = $this->getAuthSpecificLinks();
         $layout = $this->loadTemplate('views/layout.tpl', [
             'title' => htmlspecialchars($book['title']),
-            'content' => $content,
+            'content' => $content . '<script src="assets/js/nav.js" defer></script>',
             'authLinks' => $authLinksForLayout
         ]);
         echo $layout;

@@ -59,6 +59,7 @@ class ControllerFeed extends Controller
         $authLinksForLayout = $this->view->getAuthSpecificLinks();
         $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
         <script src="assets/js/feed_filters.js" defer></script>
+        <script src="assets/js/nav.js" defer></script>
         <script src="assets/js/geolocation.js" defer></script>';
 
         $layout = $this->view->loadTemplate('views/layout.tpl', [
@@ -156,10 +157,13 @@ class ControllerFeed extends Controller
         }
 
         $content = $this->view->loadTemplate('views/book.tpl', ['book' => $bookHtml]);
-
+        $scriptTag = '<script src="/web/assets/js/feed-api.js" defer></script>
+        <script src="assets/js/feed_filters.js" defer></script>
+        <script src="assets/js/nav.js" defer></script>
+        <script src="assets/js/geolocation.js" defer></script>';
         $layout = $this->view->loadTemplate('views/layout.tpl', [
             'title' => 'My Books',
-            'content' => $content,
+            'content' => $content . $scriptTag,
             'authLinks' => $this->view->getAuthSpecificLinks()
         ]);
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <title>{$title}</title>
     <link rel="stylesheet" href="assets/style.css">
@@ -10,6 +11,11 @@
 <div class="navbar">
   <div class="nav-left">
     <a href="/web/index.php" class="logo">BoW</a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation" >
+      <span class="hamburger"></span>
+      <span class="hamburger"></span>
+      <span class="hamburger"></span>
+    </button>
   </div>
 
   <div class="search-container">
@@ -21,7 +27,7 @@
     </form>
   </div>
 
-  <div class="nav-right">
+  <div class="nav-right" id="nav-links">
     <div class="secondary-links">
       <a href="index.php?controller=stats&actiune=exportCSV">Export CSV</a>
       <div class="separator"></div>

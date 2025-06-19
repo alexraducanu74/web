@@ -65,7 +65,7 @@ class ViewLogin
 
         $layout = $this->loadTemplate('layout.tpl', [
             'title' => 'Login',
-            'content' => $content,
+            'content' => $content . '<script src="assets/js/nav.js" defer></script>',
             'authLinks' => $authLinks
         ]);
 

@@ -62,7 +62,7 @@ class ViewRegister
 
         $layout = $this->loadTemplate('layout.tpl', [
             'title' => 'Sign Up',
-            'content' => $content,
+            'content' => $content . '<script src="assets/js/nav.js" defer></script>',
             'authLinks' => $authLinks
         ]);
 

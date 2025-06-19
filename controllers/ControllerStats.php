@@ -108,7 +108,7 @@ class ControllerStats
         }
         $book->appendChild($chapter3);
 
-        // 4. Numar total utilizatori care au inceput o carte 
+        // Numar total utilizatori care au inceput o carte 
         $chapter4 = $dom->createElement('chapter');
         $chapter4->appendChild($dom->createElement('title', 'Numar total utilizatori care au inceput o carte'));
         $count = $this->model->getUserBookStartCount();
