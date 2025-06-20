@@ -30,9 +30,9 @@
 
   <div class="nav-right" id="nav-links">
     <div class="secondary-links">
-      <a href="index.php?controller=stats&actiune=exportCSV">Export CSV</a>
+      <a href="views/doc.html">Doc</a>
       <div class="separator"></div>
-      <a href="index.php/web/views/doc.html">doc</a>
+      <a href="index.php?controller=stats&actiune=exportCSV">Export CSV</a>
       <div class="separator"></div>
       <a href="index.php?controller=stats&actiune=exportDocBook">Export DocBook</a>
       <div class="separator"></div>

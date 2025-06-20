@@ -17,7 +17,7 @@ CREATE TABLE users (
 
 -- Add default admin user (already hashed password)
 INSERT INTO users (users_uid, users_email, is_admin, users_pwd) VALUES 
-('admin', 'admin@admin.com', TRUE, '$2y$10$INvQoLFmST6ewSBItlkXVOR8Q1sTzGRxkOU7TPiNvLOiLZ01nYhvG');
+('cosmin', 'admin@admin.com', TRUE, '$2y$10$INvQoLFmST6ewSBItlkXVOR8Q1sTzGRxkOU7TPiNvLOiLZ01nYhvG');
 
 -- Create groups table
 CREATE TABLE groups (

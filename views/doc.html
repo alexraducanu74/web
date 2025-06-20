@@ -2,151 +2,230 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <title>Raport Proiect: Books on Web (BoW)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specificarea Cerintelor de Sistem - Books on Web</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            line-height: 1.7; 
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 2em;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        main {
+            max-width: 1000px;
             margin: auto;
-            max-width: 960px;
-            padding: 2em;
-            color: #34495e;
+            background: white;
+            padding: 1em 2em;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
-        header, section, footer { 
-            margin-bottom: 2.5em; 
-        }
-        h1, h2, h3, h4 { 
-            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        h1, h2, h3, h4 {
             color: #2c3e50;
-            line-height: 1.3;
         }
-        h1 { font-size: 2.8em; text-align: center; color: #2980b9; }
-        h2 { font-size: 2em; border-bottom: 3px solid #3498db; padding-bottom: 10px; margin-top: 2em; }
-        h3 { font-size: 1.6em; margin-top: 1.5em; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; }
-        h4 { font-size: 1.2em; }
-        code { 
-            background-color: #ecf0f1; 
-            padding: 3px 7px; 
-            border: 1px solid #bdc3c7;
-            border-radius: 4px; 
-            font-family: "Consolas", "Monaco", monospace;
-            font-size: 0.95em;
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 1em; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #3498db; color: white; }
-        ul { padding-left: 20px; }
-        li { margin-bottom: 0.7em; }
-        .bibliography ul { list-style-type: none; padding-left: 0; }
-        .bibliography li { background-color: #f9f9f9; padding: 8px; border-left: 4px solid #3498db; margin-bottom: 5px; word-wrap: break-word; }
+        section {
+            margin-bottom: 2.5em;
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 0.5em;
+        }
+        .citation {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            vertical-align: super;
+        }
     </style>
 </head>
-<body>
+<body typeof="schema:ScholarlyArticle">
 
-    <header>
-        <h1>Raport Proiect: Books on Web (BoW)</h1>
-        <p style="text-align:center; font-style: italic;">Proiect realizat de: Alexandru Raducanu, Sacaleanu Stefan-Bogdan 
-    </header>
+    <main>
+        <article>
+            <header>
+                <h1>Raport de Specificare a Cerintelor de Sistem: Books on Web (BoW)</h1>
+            </header>
 
-    <section id="srs">
-        <h2>1. Specificarea Cerintelor Software (SRS)</h2>
-        <p>Aceasta sectiune detaliaza cerintele pentru aplicatia BoW, urmand o structura inspirata de IEEE System Requirements Specification Template.</p>
+            <section role="doc-abstract" typeof="sa:Abstract">
+                <h2>1. Introducere</h2>
+                <p>
+                    Acest document descrie cerintele functionale si non-functionale pentru aplicatia web "Books on Web" (BoW). Obiectivul sau este de a oferi o specificatie clara a functionalitatilor esentiale, a interactiunii cu utilizatorul si a arhitecturii sistemului, destinata echipei de dezvoltare si partilor interesate.
+                </p>
 
-        <h3>1.1 Introducere</h3>
-        <p>
-            Acest document defineste cerintele pentru aplicatia "Books on Web" (BoW), un sistem web destinat gestionarii cartilor, urmaririi progresului de lectura si interactiunii in grupuri sociale.
-        </p>
+                <h3>1.1 Scopul Documentului</h3>
+                <p>
+                    Scopul acestui raport este de a defini complet cerintele pentru sistemul "Books on Web". Acesta serveste ca un ghid pentru dezvoltarea, testarea si mentenanta aplicatiei.
+                </p>
 
-        <h3>1.2 Scopul Produsului</h3>
-        <p>
-            BoW este o platforma software al carei scop este de a centraliza experienta de lectura a utilizatorilor. Obiectivele principale includ oferirea unui catalog de carti usor de navigat, unelte pentru monitorizarea activitatii de lectura si facilitarea formarii de comunitati.
-        </p>
-        
-        <h3>1.3 Clase de Utilizatori si Caracteristici</h3>
-        <ul>
-            <li><strong>Utilizator Standard:</strong> Orice persoana care se inregistreaza in aplicatie. Poate cauta carti, salva progresul, lasa recenzii si interactiona in grupuri.</li>
-            <li><strong>Administrator:</strong> Un utilizator cu privilegii speciale, definit de atributul <code>is_admin</code> in baza de date. Are toate drepturile unui utilizator standard, plus capacitatea de a adauga, edita si sterge carti din sistem.</li>
-        </ul>
-    </section>
-    
-    <section id="architecture">
-        <h2>2. Arhitectura de Ansamblu (Modelul C4)</h2>
-        <p>Arhitectura aplicatiei este descrisa in detaliu in documentatia proiectului si este prezentata aici sub forma modelului C4.</p>
+                <h3>1.2 Publicul Tinta si Sugestii de Citire</h3>
+                <p>
+                    Documentul este destinat dezvoltatorilor de software, testerilor, managerilor de proiect si clientilor. Se recomanda citirea integrala pentru o intelegere completa, cu atentie speciala asupra sectiunii 6 (Modelul C4) pentru o viziune arhitecturala detaliata.
+                </p>
 
-        <h3>2.1 Contextul Sistemului</h3>
-        <p>La nivel de context, sistemul BoW este o aplicatie web care interactioneaza direct cu utilizatorii sai (Standard si Administratori) si se conecteaza la un sistem extern pentru servicii de geolocatie, API-ul Nominatim.</p>
+                <h3>1.3 Domeniul de Aplicare al Produsului</h3>
+                <p>
+                    "Books on Web" este o platforma web pentru gestionarea cartilor, a progresului de lectura si a grupurilor sociale de lectura. Utilizatorii pot vizualiza si cauta carti, salva progresul lecturii, adauga recenzii, crea si adera la grupuri de lectura. Administratorii au functionalitati suplimentare pentru managementul catalogului de carti. In plus, aplicatia ofera un flux RSS cu noutati si integreaza un serviciu extern pentru a sugera biblioteci publice din proximitate.
+                </p>
 
-        <h3>2.2 Containere</h3>
-        <p>Sistemul este alcatuit din urmatoarele containere logice care colaboreaza:</p>
-        <table>
-            <thead>
-                <tr><th>Container</th><th>Descriere</th><th>Tehnologie</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Aplicatie Web (Frontend)</td><td>Interfata cu utilizatorul, responsiva.</td><td>HTML5, CSS3, JavaScript</td></tr>
-                <tr><td>Aplicatie Server (Backend)</td><td>Logica de business a aplicatiei.</td><td>PHP 8+</td></tr>
-                <tr><td>Baza de Date</td><td>Stocarea persistenta a datelor.</td><td>PostgreSQL</td></tr>
-                <tr><td>API Extern</td><td>Serviciu de geolocatie pentru biblioteci.</td><td>Nominatim (REST/JSON)</td></tr>
-            </tbody>
-        </table>
+                <h3>1.4 Definitii si Acronime</h3>
+                <ul>
+                    <li><strong>SRS:</strong> System Requirements Specification (Specificarea Cerintelor de Sistem)</li>
+                    <li><strong>UI:</strong> User Interface (Interfata Utilizator)</li>
+                    <li><strong>API:</strong> Application Programming Interface (Interfata de Programare a Aplicatiilor)</li>
+                    <li><strong>JWT:</strong> JSON Web Token</li>
+                    <li><strong>MVC:</strong> Model-View-Controller</li>
+                    <li><strong>BoW:</strong> Books on Web (numele proiectului)</li>
+                    <li><strong>CRUD:</strong> Create, Read, Update, Delete</li>
+                </ul>
+            </section>
 
-        <h3>2.3 Componente</h3>
-        <p>Containerul Backend este modularizat in componente MVC:</p>
-        <ul>
-            <li><strong>Controllere (<code>controllers/</code>):</strong> Punctul de intrare pentru logica. <code>ControllerAuth</code> gestioneaza autentificarea, <code>ControllerFeed</code> gestioneaza catalogul de carti, iar <code>ControllerGroup</code> se ocupa de grupuri. Un front controller (<code>index.php</code>) directioneaza cererile.</li>
-            <li><strong>Modele (<code>models/</code>):</strong> Responsabile cu interactiunea cu baza de date prin PDO si prepared statements.</li>
-            <li><strong>View-uri (<code>views/</code>):</strong> Clase PHP care randeaza HTML, populand template-uri si securizand output-ul cu <code>htmlspecialchars</code>.</li>
-        </ul>
+            <section typeof="sa:GeneralDescription">
+                <h2>2. Descriere Generala</h2>
+                <p>
+                    Aceasta sectiune ofera o perspectiva generala asupra produsului, a contextului sau de operare si a dependentelor.
+                </p>
+                <h3>2.1 Nevoile Utilizatorilor</h3>
+                <ul>
+                    <li>Nevoia de a descoperi carti noi prin cautare si filtrare.</li>
+                    <li>Nevoia de a monitoriza progresul personal de lectura pentru fiecare carte (pagini citite, recenzii, rating).</li>
+                    <li>Nevoia de a interactiona cu alti cititori in cadrul unor grupuri de lectura private.</li>
+                    <li>Nevoia administratorilor de a gestiona eficient catalogul de carti al platformei.</li>
+                </ul>
 
-        <h3>2.4 Etape de Dezvoltare </h3>
-        <ol>
-            <li><strong>Fundatia Proiectului:</strong> Definirea schemei bazei de date (<code>db_script.sql</code>) si configurarea structurii de baza MVC si a dependintelor cu Composer (<code>composer.json</code>).</li>
-            <li><strong>Implementarea Nucleului Functional:</strong> Crearea sistemului de autentificare (<code>ControllerAuth</code>, <code>ModelLogin</code>, JWT) si afisarea catalogului de carti (<code>ControllerFeed</code>, <code>ModelFeed</code>).</li>
-            <li><strong>Extinderea Functionalitatilor:</strong> Adaugarea modulului de grupuri (<code>ControllerGroup</code>, <code>ModelGroup</code>) si a API-ului pentru administrare (<code>ControllerApiFeed</code>).</li>
-            <li><strong>Imbunatatiri Client-Side:</strong> Implementarea interactivitatii cu JavaScript, cum ar fi filtrarea AJAX (<code>feed_filters.js</code>) si geolocatia (<code>geolocation.js</code>).</li>
-        </ol>
-    </section>
+                <h3>2.2 Ipoteze si Dependente</h3>
+                <ul>
+                    <li>Sistemul necesita un mediu de rulare cu PHP versiunea 8.0 sau mai recenta.</li>
+                    <li>Este necesara o baza de date PostgreSQL pentru persistenta datelor.</li>
+                    <li>Proiectul utilizeaza Composer pentru managementul dependintelor, in special pentru biblioteca `firebase/php-jwt`.</li>
+                    <li>Functionalitatea de gasire a bibliotecilor din apropiere depinde de disponibilitatea si corectitudinea serviciului extern Nominatim (OpenStreetMap).</li>
+                </ul>
+            </section>
 
-    <section id="design">
-        <h2>3. Proiectarea Interfetei Web</h2>
-        <h3>3.1 Motivatia Designului</h3>
-        <p>Designul interfetei urmareste un stil minimalist si functional, axat pe lizibilitate si usurinta in utilizare. Paleta de culori este rece, cu accente de albastru, avand ca scop crearea unei experiente de navigare calme si placute. Grila de carti (<code>.book-list</code>) foloseste un layout flexibil pentru a se adapta eficient la continut variabil.</p>
+            <section typeof="sa:SystemFeatures">
+                <h2>3. Functionalitati Esentiale (Cerinte Functionale)</h2>
+                
+                <h3>3.1 Autentificare si Management Utilizatori</h3>
+                <ul>
+                    <li>Utilizatorii se pot inregistra cu un nume de utilizator, email si parola.</li>
+                    <li>Utilizatorii se pot autentifica folosind numele de utilizator sau email-ul si parola.</li>
+                    <li>La autentificare, sistemul genereaza un token JWT care este stocat in sesiunea PHP pentru paginile redate pe server si trimis clientului pentru a fi utilizat in cererile API.</li>
+                    <li>Utilizatorii se pot deloga, actiune care distruge sesiunea si sterge token-ul JWT din `sessionStorage`.</li>
+                </ul>
 
-        <h3>3.2 Design Responsiv</h3>
-        <p>Interfata este complet responsiva, utilizand CSS Media Queries pentru a se adapta la diferite dimensiuni de ecran. La rezolutii sub 1300px, bara de navigare se transforma intr-un meniu de tip "hamburger" controlat de <code>nav.js</code>, pentru a maximiza spatiul disponibil pe ecranele mobile. Layout-ul general trece de la o structura multi-coloana la una single-column pentru a asigura o experienta optima.</p>
-    </section>
+                <h3>3.2 Management Carti si Feed</h3>
+                <ul>
+                    <li>Toti vizitatorii pot vizualiza o lista de carti, pot cauta dupa titlu/autor si pot filtra dupa autor si gen.</li>
+                    <li>Filtrarea se poate realiza dinamic, fara reincarcarea paginii, printr-o cerere AJAX.</li>
+                    <li>Utilizatorii autentificati pot salva progresul (pagini citite), adauga o recenzie text si acorda un rating stelar (1-5) pentru orice carte.</li>
+                    <li>Fiecare utilizator are o pagina personala "My Books" unde poate vedea toate cartile la care a inregistrat progres.</li>
+                    <li>Administratorii pot adauga, edita si sterge carti din sistem prin intermediul unor API-uri dedicate.</li>
+                </ul>
 
-    <section id="data">
-        <h2>4. Structura si Provenienta Datelor</h2>
-        <h3>4.1 Modelarea Datelor</h3>
-        <p>
-            Structura datelor este relationala si este definita in <code>db_script.sql</code>.
-        </p>
-        <ul>
-            <li><strong>Entitati Principale:</strong> <code>users</code>, <code>books</code>, <code>groups</code>.</li>
-            <li><strong>Relatii:</strong> Tabelele de legatura precum <code>user_book_progress</code> si <code>group_members</code> modeleaza relatiile many-to-many.</li>
-            <li><strong>Integritate:</strong> Baza de date foloseste triggere (ex: <code>trg_validate_username_length</code>) pentru a impune reguli de business direct la nivel de date, asigurand consistenta indiferent de aplicatie.</li>
-        </ul>
+                <h3>3.3 Management Grupuri de Lectura</h3>
+                <ul>
+                    <li>Utilizatorii autentificati pot crea grupuri noi, specificand un nume, o descriere si daca aderarea necesita aprobare.</li>
+                    <li>La creare, fiecare grup primeste un cod secret unic.</li>
+                    <li>Utilizatorii se pot alatura unui grup existent introducand codul secret.</li>
+                    <li>Creatorul unui grup (administratorul grupului) poate gestiona cererile de aderare (aproba/respinge).</li>
+                    <li>Membrii unui grup pot vizualiza progresul de lectura (pagini citite, recenzii, rating) al celorlalti membri pentru cartile citite in comun.</li>
+                </ul>
+                
+                <h3>3.4 API si Export de Date</h3>
+                <ul>
+                    <li>Aplicatia expune un flux RSS cu ultimele carti si recenzii adaugate, accesibil public.</li>
+                    <li>Aplicatia ofera endpoint-uri pentru exportul de statistici agregate (cele mai citite carti, genuri populare etc.) in format CSV si DocBook (XML).</li>
+                </ul>
+            </section>
 
-        <h3>4.2 Provenienta Datelor</h3>
-        <ul>
-            <li><strong>Date Initiale:</strong> Catalogul initial de carti este populat printr-un script de inserare in <code>db_script.sql</code>.</li>
-            <li><strong>Date Generate de Utilizatori:</strong> Majoritatea datelor dinamice (recenzii, evaluari, progres, grupuri) sunt generate direct de catre utilizatori prin intermediul interfetei web.</li>
-            <li><strong>Date din Servicii Externe:</strong> Informatiile despre bibliotecile din apropiere sunt obtinute in timp real de la API-ul public Nominatim, asa cum este implementat in functia <code>findLibrariesNearby</code> din <code>ModelFeed.php</code>.</li>
-        </ul>
-    </section>
-    
-    <footer class="bibliography">
-        <h2>Bibliografie</h2>
-        <ul>
-            <li> 
-              <a href="https://profs.info.uaic.ro/cosmin.varlan/pagini/tw.html">https://profs.info.uaic.ro/cosmin.varlan/pagini/tw.html</code></li>
-          <li> 
-              <a href="https://github.com/rick4470/IEEE-SRS-Tempate#readme">IEE System Requirements Specification Template</code></li>
-          <li> 
-              <a href="https://edu.info.uaic.ro/web-technologies/web-projects.html">https://edu.info.uaic.ro/web-technologies/web-projects.html</code></li>
-        </ul>
-    </footer>
+            <section typeof="sa:ExternalInterfaceRequirements">
+                <h2>4. Cerinte de Interfata Externa</h2>
+                <h3>4.1 Interfata Utilizator (UI)</h3>
+                <p>
+                    Interfata este una web, construita cu HTML, CSS si JavaScript. Este responsiva, adaptandu-se la diferite dimensiuni de ecran, cum este definit in fisierul `style.css`. Anumite actiuni, precum filtrarea cartilor sau managementul acestora de catre admin, se realizeaza asincron (AJAX/Fetch API) pentru o experienta fluida.
+                </p>
+                <h3>4.2 Interfete Software (API)</h3>
+                <ul>
+                    <li><strong>API Intern:</strong> Aplicatia expune o serie de endpoint-uri REST-like pentru operatiuni de tip CRUD asupra cartilor (destinate administratorilor) si pentru generarea de fluxuri de date (RSS). Aceste endpoint-uri sunt securizate prin `auth_middleware.php`, care valideaza un token JWT trimis in header-ul `Authorization: Bearer`.</li>
+                    <li><strong>API Extern (Nominatim):</strong> Aplicatia consuma API-ul public Nominatim pentru a cauta biblioteci in proximitatea geografica a utilizatorului. Comunicarea se face prin HTTP, iar raspunsul este in format JSON.</li>
+                </ul>
+            </section>
 
+            <section typeof="sa:NonFunctionalRequirements">
+                <h2>5. Cerinte Non-Functionale</h2>
+                <h3>5.1 Securitate</h3>
+                <ul>
+                    <li><strong>Autentificare:</strong> Sistemul utilizeaza JSON Web Tokens (JWT) conform standardelor. Exista doua mecanisme de validare: unul bazat pe `$_SESSION` pentru paginile clasice si unul bazat pe header-ul `Authorization` pentru API-ul securizat.</li>
+                    <li><strong>Autorizare:</strong> Rolurile (utilizator/administrator) sunt stocate in payload-ul JWT si verificate pe server inainte de a permite actiuni critice (ex: stergerea unei carti).</li>
+                    <li><strong>Stocarea parolelor:</strong> Parolele sunt salvate in baza de date folosind un hash generat de functia `password_hash()`. Verificarea se face cu `password_verify()`.</li>
+                    <li><strong>Prevenirea SQL Injection:</strong> Toate interogarile catre baza de date se realizeaza prin prepared statements folosind extensia PDO, eliminand riscul de injectii SQL.</li>
+                    <li><strong>Prevenirea XSS (Cross-Site Scripting):</strong> Toate datele provenite de la utilizatori sunt escapate folosind `htmlspecialchars()` inainte de a fi afisate in paginile HTML, prevenind atacurile XSS.</li>
+                    <li><strong>Validarea datelor:</strong> Exista reguli de validare atat la nivel de aplicatie (PHP), cat si la nivel de baza de date, prin triggere (ex: lungimea minima a numelui de utilizator sau a numelui de grup).</li>
+                </ul>
+                <h3>5.2 Performanta</h3>
+                <ul>
+                    <li><strong>Conexiunea la baza de date:</strong> Se utilizeaza un design pattern Singleton (in clasa `Dbh`) pentru a asigura o singura instanta a conexiunii PDO pe durata unei cereri, evitand overhead-ul crearii de multiple conexiuni.</li>
+                </ul>
+            </section>
+
+            <section typeof="sa:C4ModelDescription">
+                <h2>6. Descrierea Arhitecturii - Modelul C4</h2>
+                <p>
+                    Pentru a vizualiza si comunica arhitectura software a proiectului "Books on Web", este utilizat modelul C4. Acesta ofera o metoda structurata pentru a descrie un sistem la diferite niveluri de abstractizare, facand arhitectura usor de inteles pentru diverse audiente.
+                </p>
+                
+                <h3>Nivelul 1: Context (System Context)</h3>
+                <p>
+                    La cel mai inalt nivel, sistemul "Books on Web" este o platforma web centrala. Acesta interactioneaza cu doua tipuri de actori principali: <strong>Utilizatorul Autentificat</strong>, care beneficiaza de toate functionalitatile de baza, si <strong>Administratorul</strong>, care are in plus drepturi de management al continutului. Sistemul interactioneaza cu un singur sistem software extern: <strong>Serviciul Nominatim (OpenStreetMap)</strong>, folosit pentru a oferi sugestii de biblioteci din apropiere atunci cand o cautare in platforma nu returneaza rezultate.
+                </p>
+
+                <h3>Nivelul 2: Containere (Container Diagram)</h3>
+                <p>
+                    Arhitectura aplicatiei este impartita in patru containere logice principale, conform modelului MVC:
+                </p>
+                <ul>
+                    <li><strong>Frontend (Interfata Utilizator):</strong> Construit cu HTML, CSS si JavaScript, este responsabil pentru redarea informatiilor in browserul utilizatorului. Interactioneaza cu backend-ul prin cereri HTTP clasice si prin cereri AJAX/Fetch pentru functionalitati dinamice.</li>
+                    <li><strong>Backend (Aplicatia PHP):</strong> Nucleul sistemului, scris in PHP 8+. Contine toata logica de business, gestiunea datelor, autentificarea si autorizarea. Comunica cu baza de date pentru persistenta si cu API-ul extern Nominatim.</li>
+                    <li><strong>Baza de date:</strong> Un server PostgreSQL responsabil cu stocarea persistenta a tuturor datelor aplicatiei: utilizatori, carti, grupuri, progres, recenzii etc.</li>
+                    <li><strong>API extern (Nominatim):</strong> Un serviciu de geolocatie tert, accesat de backend pentru a obtine date despre biblioteci in format JSON.</li>
+                </ul>
+
+                <h3>Nivelul 3: Componente (Component Diagram)</h3>
+                <p>
+                    Containerul de Backend (Aplicatia PHP) este structurat in componente conform principiilor MVC, asigurand o separare clara a responsabilitatilor.
+                </p>
+                <ul>
+                    <li><strong>Controllere (`controllers/`):</strong> Prelucreaza input-ul utilizatorului si orchestreaza interactiunea dintre Modele si View-uri. Exemple: `ControllerAuth.php` (logica de autentificare), `ControllerFeed.php` (logica pentru afisarea cartilor), `ControllerApiFeed.php` (endpoint-uri API).</li>
+                    <li><strong>Modele (`models/`):</strong> Encapsuleaza logica de acces la date si interactiunea directa cu baza de date PostgreSQL. Toate operatiunile SQL sunt efectuate aici, folosind PDO. Exemple: `ModelFeed.php` (CRUD pentru carti), `ModelGroup.php` (logica pentru grupuri).</li>
+                    <li><strong>View-uri (`views/`):</strong> Sunt clase PHP responsabile cu generarea output-ului HTML. Acestea primesc date de la Controllere si le formateaza pentru afisare, adesea folosind fisiere sablon. Exemple: `ViewFeed.php` (afiseaza lista de carti), `ViewGroup.php` (afiseaza pagina unui grup).</li>
+                    <li><strong>Rutare si Middleware (`index.php`, `auth/`):</strong> `index.php` actioneaza ca un front controller, directionand cererile catre controller-ul corespunzator. `auth/auth_middleware.php` contine logica pentru protejarea endpoint-urilor API.</li>
+                    <li><strong>Configurare (`config/`):</strong> Contine fisierele de configurare, precum `Dbh.php` (conexiunea la BD) si `jwt_config.php` (setarile pentru JWT).</li>
+                </ul>
+
+                <h3>Nivelul 4: Cod (Code Level)</h3>
+                <p>
+                    Acest nivel ilustreaza detalii de implementare specifice.
+                </p>
+                <ul>
+                    <li><strong>Rutare:</strong> Fisierul `index.php` functioneaza ca un front controller. Analizeaza parametrii GET `controller` si `actiune` pentru a instantia si a apela metoda corecta din clasa de controller corespunzatoare (ex: `new ControllerFeed('showFeed', [])`).</li>
+                    <li><strong>Conexiune la Baza de Date:</strong> Clasa `Dbh.php` implementeaza un pattern Singleton. Metoda statica `getInstance()` asigura ca pe parcursul unei cereri exista o singura conexiune PDO la baza de date, care este apoi partajata intre toate modelele ce o solicita.</li>
+                    <li><strong>Autoloading:</strong> Proiectul se bazeaza pe autoloader-ul generat de Composer, definit in `vendor/autoload.php`, pentru a incarca automat clasele necesare la momentul utilizarii lor, pe baza standardului PSR-4 si a unui classmap.</li>
+                    <li><strong>Securitate in Cod:</strong> Protectia impotriva SQL Injection este asigurata prin utilizarea exclusiva a interogarilor parametrizate in toate modelele (ex: `... WHERE group_id = :group_id`). Protectia XSS este implementata in view-uri prin apelarea `htmlspecialchars()` asupra datelor inainte de afisare (ex: `htmlspecialchars($book['title'])`).</li>
+                </ul>
+            </section>
+        </article>
+    </main>
 </body>
 </html>
