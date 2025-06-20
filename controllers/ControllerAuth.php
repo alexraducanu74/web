@@ -54,13 +54,15 @@ class ControllerAuth extends Controller
     public function login(): void
     {
         if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            $this->showLoginForm(['error_message' => 'Invalid request method.']);
+            http_response_code(405);
+            echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
             return;
         }
         $uid = $_POST["uid"] ?? '';
         $pwd = $_POST["pwd"] ?? '';
         if (empty($uid) || empty($pwd)) {
-            $this->showLoginForm(['error_message' => "Please fill in all fields."]);
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Please fill in all fields.']);
             return;
         }
         $userDataOrError = $this->modelLogin->getUser($uid, $pwd);
@@ -69,7 +71,8 @@ class ControllerAuth extends Controller
             if ($userDataOrError === "stmtfailed") {
                 $errorMessage = "An unexpected error occurred. Please try again later.";
             }
-            $this->showLoginForm(['error_message' => $errorMessage]);
+            http_response_code(401);
+            echo json_encode(['success' => false, 'error' => $errorMessage]);
             return;
         }
         $userId = $userDataOrError['users_id'];
@@ -92,13 +95,20 @@ class ControllerAuth extends Controller
         ];
         try {
             $jwt = JWT::encode($payload, JWT_SECRET_KEY, JWT_ALGORITHM);
+
+            // Stocăm în sesiune pentru paginile server-rendered
             $_SESSION['jwt'] = $jwt;
             $_SESSION['user_id'] = $userId;
             $_SESSION['username'] = $username;
             $_SESSION['is_admin'] = $isAdmin;
-            $this->showLoginForm(['jwt_token' => $jwt]);
+
+            // Returnăm token-ul ca JSON pentru client (JavaScript)
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'jwt_token' => $jwt]);
+
         } catch (Exception $e) {
-            $this->showLoginForm(['error_message' => 'Could not process login. Please try again.']);
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Could not process login. Please try again.']);
         }
     }
     public function register(): void
@@ -155,12 +165,9 @@ class ControllerAuth extends Controller
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
         $_SESSION = array();
-
         session_destroy();
-
-        header("Location: index.php");
+        echo "<script>sessionStorage.removeItem('jwtToken'); window.location.href = 'index.php';</script>";
         exit();
     }
 }

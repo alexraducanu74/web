@@ -16,8 +16,12 @@ $params = array_filter(array_map('trim', explode(',', $parametri)));
 $isApi = isset($_GET['api']) && $_GET['api'] == '1';
 
 if ($isApi) {
-    new ControllerApiFeed($actiune, $params);
-    exit; 
+    require_once 'auth/auth_middleware.php';
+
+    $userData = verify_jwt_and_get_payload();
+
+    new ControllerApiFeed($actiune, $params, $userData);
+    exit;
 } else {
     $controllerClass = 'Controller' . ucfirst(strtolower($controller));
     if (class_exists($controllerClass)) {

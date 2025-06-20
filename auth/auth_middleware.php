@@ -1,5 +1,4 @@
 <?php
-// File: auth/auth_middleware.php
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/jwt_config.php';
@@ -10,11 +9,6 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\BeforeValidException;
 
-/**
- * Verifies the JWT token from the Authorization header.
- * If valid, returns the decoded payload data.
- * If invalid or not present, it sends an HTTP 401 response and exits.
- */
 function verify_jwt_and_get_payload()
 {
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
@@ -25,7 +19,6 @@ function verify_jwt_and_get_payload()
         exit;
     }
 
-    // The header is typically "Bearer <token>"
     $arr = explode(" ", $authHeader);
     if (count($arr) !== 2 || $arr[0] !== 'Bearer') {
         http_response_code(401);
@@ -42,7 +35,7 @@ function verify_jwt_and_get_payload()
 
     try {
         $decoded = JWT::decode($token, new Key(JWT_SECRET_KEY, JWT_ALGORITHM));
-        return (array) $decoded->data; // Return user data from token's 'data' claim
+        return (array) $decoded->data;
     } catch (ExpiredException $e) {
         http_response_code(401);
         echo json_encode(["status" => "error", "message" => "Token has expired."]);

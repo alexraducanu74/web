@@ -1,21 +1,25 @@
 <?php
 
-class ControllerApiFeed extends Controller
+class ControllerApiFeed
 {
     private ModelFeed $modelFeed;
+    private array $userData;
 
-    public function __construct(string $actiune, array $parametri)
+    public function __construct(string $actiune, array $parametri, array $userData)
     {
-        parent::__construct();
         $this->modelFeed = new ModelFeed();
+        $this->userData = $userData;
 
-        // Set common API headers
         header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type');
+        header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
         header('Content-Type: application/json');
 
-        $bookId = (int) ($parametri[0] ?? 0); // Assuming bookId is always the first parameter for these actions
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            exit(0);
+        }
+
+        $bookId = (int) ($parametri[0] ?? 0);
 
         switch ($actiune) {
             case 'insertBookApi':
@@ -41,10 +45,14 @@ class ControllerApiFeed extends Controller
         }
     }
 
+    private function isAdmin(): bool
+    {
+        return isset($this->userData['is_admin']) && $this->userData['is_admin'];
+    }
+
     public function deleteBookApi(int $bookId): void
     {
-        $user = $this->getAuthenticatedUser();
-        if (!$user || !$user['is_admin']) {
+        if (!$this->isAdmin()) {
             http_response_code(403);
             echo json_encode(['error' => 'Forbidden']);
             return;
@@ -61,8 +69,7 @@ class ControllerApiFeed extends Controller
 
     public function updateBookApi(int $id): void
     {
-        $user = $this->getAuthenticatedUser();
-        if (!$user || !$user['is_admin']) {
+        if (!$this->isAdmin()) {
             http_response_code(403);
             echo json_encode(['error' => 'Forbidden']);
             return;
@@ -85,9 +92,8 @@ class ControllerApiFeed extends Controller
             return;
         }
 
-        $coverImage = $oldBook['cover_image']; // default to old image
+        $coverImage = $oldBook['cover_image'];
 
-        // Handle new cover image upload if any
         if (!empty($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $tmpName = $_FILES['cover_image']['tmp_name'];
             $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
@@ -102,7 +108,6 @@ class ControllerApiFeed extends Controller
 
             $coverImage = 'covers/' . $newFileName;
 
-            // Delete old image if no longer used
             $count = $this->modelFeed->countBooksUsingCover($oldBook['cover_image'], $id);
             if ($oldBook['cover_image'] && $count === 0) {
                 $oldImagePath = __DIR__ . '/../assets/' . $oldBook['cover_image'];
@@ -123,6 +128,61 @@ class ControllerApiFeed extends Controller
         } else {
             http_response_code(500);
             echo json_encode(['error' => 'Failed to update book.']);
+        }
+    }
+
+    public function insertBookApi(): void
+    {
+        if (!$this->isAdmin()) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            return;
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        $author = trim($_POST['author'] ?? '');
+        $genre = trim($_POST['genre'] ?? '');
+
+        if ($title === '' || $author === '') {
+            http_response_code(400);
+            echo json_encode(['error' => 'Title and author are required.']);
+            return;
+        }
+
+        if (!isset($_FILES['cover_image']) || $_FILES['cover_image']['error'] !== UPLOAD_ERR_OK) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Image upload failed.']);
+            return;
+        }
+
+        $uploadDir = __DIR__ . '/../assets/covers/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+        $newFileName = time() . '.' . $ext;
+        $destPath = $uploadDir . $newFileName;
+        $tmpPath = $_FILES['cover_image']['tmp_name'];
+
+        if (!move_uploaded_file($tmpPath, $destPath)) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Could not save uploaded image.']);
+            return;
+        }
+
+        $success = $this->modelFeed->insertBook([
+            'title' => $title,
+            'author' => $author,
+            'genre' => $genre,
+            'cover_image' => 'covers/' . $newFileName,
+        ]);
+
+        if ($success) {
+            echo json_encode(['success' => true]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to save book to database.']);
         }
     }
 
@@ -192,61 +252,5 @@ class ControllerApiFeed extends Controller
         header("Content-Type: application/rss+xml; charset=UTF-8");
         echo $doc->saveXML();
         exit;
-    }
-
-    public function insertBookApi(): void
-    {
-        $user = $this->getAuthenticatedUser();
-        if (!$user || !$user['is_admin']) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Forbidden']);
-            return;
-        }
-
-        $title = trim($_POST['title'] ?? '');
-        $author = trim($_POST['author'] ?? '');
-        $genre = trim($_POST['genre'] ?? '');
-
-        if ($title === '' || $author === '') {
-            http_response_code(400);
-            echo json_encode(['error' => 'Title and author are required.']);
-            return;
-        }
-
-        if (!isset($_FILES['cover_image']) || $_FILES['cover_image']['error'] !== UPLOAD_ERR_OK) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Image upload failed.']);
-            return;
-        }
-
-        $uploadDir = __DIR__ . '/../assets/covers/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-
-        $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
-        $newFileName = time() . '.' . $ext;
-        $destPath = $uploadDir . $newFileName;
-        $tmpPath = $_FILES['cover_image']['tmp_name'];
-
-        if (!move_uploaded_file($tmpPath, $destPath)) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Could not save uploaded image.']);
-            return;
-        }
-
-        $success = $this->modelFeed->insertBook([
-            'title' => $title,
-            'author' => $author,
-            'genre' => $genre,
-            'cover_image' => 'covers/' . $newFileName,
-        ]);
-
-        if ($success) {
-            echo json_encode(['success' => true]);
-        } else {
-            http_response_code(500);
-            echo json_encode(['error' => 'Failed to save book to database.']);
-        }
     }
 }

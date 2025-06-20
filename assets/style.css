@@ -467,6 +467,7 @@ p[style*="color:green"] {
   font-weight: bold;
   padding: 0 5px;
 }
+
 .form-check {
   display: flex;
   align-items: center;
@@ -475,6 +476,7 @@ p[style*="color:green"] {
   height: 50px;
   padding-left: 20px;
 }
+
 textarea {
   width: 100%;
   box-sizing: border-box;
@@ -493,6 +495,7 @@ textarea {
   white-space: normal;
   max-width: 100%;
 }
+
 .review-block p,
 .review-item p {
   word-wrap: break-word;
@@ -602,8 +605,8 @@ textarea {
 }
 
 .star-rating label:hover,
-.star-rating label:hover ~ label,
-.star-rating input[type="radio"]:checked ~ label {
+.star-rating label:hover~label,
+.star-rating input[type="radio"]:checked~label {
   color: gold;
 }
 
@@ -700,9 +703,11 @@ textarea {
     gap: 20px;
     padding: 15px;
   }
+
   .book-detail img {
     width: 150px;
   }
+
   .book-info h2 {
     text-align: center;
     font-size: 1.5rem;
@@ -720,17 +725,21 @@ textarea {
   .book-list {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
+
   .navbar {
     flex-wrap: nowrap;
   }
+
   .nav-left {
     width: auto;
   }
+
   .search-container {
     order: initial;
     width: auto;
     margin: 0 20px;
   }
+
   .nav-right {
     order: initial;
     width: auto;
@@ -763,6 +772,7 @@ textarea {
     display: block;
   }
 }
+
 .edit-book-form {
   display: flex;
   flex-direction: column;
@@ -826,9 +836,16 @@ textarea {
 .edit-book-form button[type="submit"]:hover {
   background-color: #0056b3;
 }
+
 .form-inline {
   display: flex;
   align-items: center;
   gap: 8px;
   padding-bottom: 7px;
+}
+
+.no-books-message ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin-left: 0;
 }
