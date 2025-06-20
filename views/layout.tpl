@@ -32,6 +32,8 @@
     <div class="secondary-links">
       <a href="index.php?controller=stats&actiune=exportCSV">Export CSV</a>
       <div class="separator"></div>
+      <a href="index.php/web/views/doc.html">doc</a>
+      <div class="separator"></div>
       <a href="index.php?controller=stats&actiune=exportDocBook">Export DocBook</a>
       <div class="separator"></div>
       <a href="/web/index.php?controller=feed&actiune=genereazaRssApi&api=1" aria-label="RSS Feed" class="rss-icon">

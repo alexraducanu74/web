@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Raport Proiect: Books on Web (BoW)</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            line-height: 1.7; 
+            margin: auto;
+            max-width: 960px;
+            padding: 2em;
+            color: #34495e;
+        }
+        header, section, footer { 
+            margin-bottom: 2.5em; 
+        }
+        h1, h2, h3, h4 { 
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            color: #2c3e50;
+            line-height: 1.3;
+        }
+        h1 { font-size: 2.8em; text-align: center; color: #2980b9; }
+        h2 { font-size: 2em; border-bottom: 3px solid #3498db; padding-bottom: 10px; margin-top: 2em; }
+        h3 { font-size: 1.6em; margin-top: 1.5em; border-bottom: 1px solid #bdc3c7; padding-bottom: 5px; }
+        h4 { font-size: 1.2em; }
+        code { 
+            background-color: #ecf0f1; 
+            padding: 3px 7px; 
+            border: 1px solid #bdc3c7;
+            border-radius: 4px; 
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 0.95em;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 1em; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #3498db; color: white; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 0.7em; }
+        .bibliography ul { list-style-type: none; padding-left: 0; }
+        .bibliography li { background-color: #f9f9f9; padding: 8px; border-left: 4px solid #3498db; margin-bottom: 5px; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Raport Proiect: Books on Web (BoW)</h1>
+        <p style="text-align:center; font-style: italic;">Proiect realizat de: Alexandru Raducanu, Sacaleanu Stefan-Bogdan 
+    </header>
+
+    <section id="srs">
+        <h2>1. Specificarea Cerintelor Software (SRS)</h2>
+        <p>Aceasta sectiune detaliaza cerintele pentru aplicatia BoW, urmand o structura inspirata de IEEE System Requirements Specification Template.</p>
+
+        <h3>1.1 Introducere</h3>
+        <p>
+            Acest document defineste cerintele pentru aplicatia "Books on Web" (BoW), un sistem web destinat gestionarii cartilor, urmaririi progresului de lectura si interactiunii in grupuri sociale.
+        </p>
+
+        <h3>1.2 Scopul Produsului</h3>
+        <p>
+            BoW este o platforma software al carei scop este de a centraliza experienta de lectura a utilizatorilor. Obiectivele principale includ oferirea unui catalog de carti usor de navigat, unelte pentru monitorizarea activitatii de lectura si facilitarea formarii de comunitati.
+        </p>
+        
+        <h3>1.3 Clase de Utilizatori si Caracteristici</h3>
+        <ul>
+            <li><strong>Utilizator Standard:</strong> Orice persoana care se inregistreaza in aplicatie. Poate cauta carti, salva progresul, lasa recenzii si interactiona in grupuri.</li>
+            <li><strong>Administrator:</strong> Un utilizator cu privilegii speciale, definit de atributul <code>is_admin</code> in baza de date. Are toate drepturile unui utilizator standard, plus capacitatea de a adauga, edita si sterge carti din sistem.</li>
+        </ul>
+    </section>
+    
+    <section id="architecture">
+        <h2>2. Arhitectura de Ansamblu (Modelul C4)</h2>
+        <p>Arhitectura aplicatiei este descrisa in detaliu in documentatia proiectului si este prezentata aici sub forma modelului C4.</p>
+
+        <h3>2.1 Contextul Sistemului</h3>
+        <p>La nivel de context, sistemul BoW este o aplicatie web care interactioneaza direct cu utilizatorii sai (Standard si Administratori) si se conecteaza la un sistem extern pentru servicii de geolocatie, API-ul Nominatim.</p>
+
+        <h3>2.2 Containere</h3>
+        <p>Sistemul este alcatuit din urmatoarele containere logice care colaboreaza:</p>
+        <table>
+            <thead>
+                <tr><th>Container</th><th>Descriere</th><th>Tehnologie</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Aplicatie Web (Frontend)</td><td>Interfata cu utilizatorul, responsiva.</td><td>HTML5, CSS3, JavaScript</td></tr>
+                <tr><td>Aplicatie Server (Backend)</td><td>Logica de business a aplicatiei.</td><td>PHP 8+</td></tr>
+                <tr><td>Baza de Date</td><td>Stocarea persistenta a datelor.</td><td>PostgreSQL</td></tr>
+                <tr><td>API Extern</td><td>Serviciu de geolocatie pentru biblioteci.</td><td>Nominatim (REST/JSON)</td></tr>
+            </tbody>
+        </table>
+
+        <h3>2.3 Componente</h3>
+        <p>Containerul Backend este modularizat in componente MVC:</p>
+        <ul>
+            <li><strong>Controllere (<code>controllers/</code>):</strong> Punctul de intrare pentru logica. <code>ControllerAuth</code> gestioneaza autentificarea, <code>ControllerFeed</code> gestioneaza catalogul de carti, iar <code>ControllerGroup</code> se ocupa de grupuri. Un front controller (<code>index.php</code>) directioneaza cererile.</li>
+            <li><strong>Modele (<code>models/</code>):</strong> Responsabile cu interactiunea cu baza de date prin PDO si prepared statements.</li>
+            <li><strong>View-uri (<code>views/</code>):</strong> Clase PHP care randeaza HTML, populand template-uri si securizand output-ul cu <code>htmlspecialchars</code>.</li>
+        </ul>
+
+        <h3>2.4 Etape de Dezvoltare </h3>
+        <ol>
+            <li><strong>Fundatia Proiectului:</strong> Definirea schemei bazei de date (<code>db_script.sql</code>) si configurarea structurii de baza MVC si a dependintelor cu Composer (<code>composer.json</code>).</li>
+            <li><strong>Implementarea Nucleului Functional:</strong> Crearea sistemului de autentificare (<code>ControllerAuth</code>, <code>ModelLogin</code>, JWT) si afisarea catalogului de carti (<code>ControllerFeed</code>, <code>ModelFeed</code>).</li>
+            <li><strong>Extinderea Functionalitatilor:</strong> Adaugarea modulului de grupuri (<code>ControllerGroup</code>, <code>ModelGroup</code>) si a API-ului pentru administrare (<code>ControllerApiFeed</code>).</li>
+            <li><strong>Imbunatatiri Client-Side:</strong> Implementarea interactivitatii cu JavaScript, cum ar fi filtrarea AJAX (<code>feed_filters.js</code>) si geolocatia (<code>geolocation.js</code>).</li>
+        </ol>
+    </section>
+
+    <section id="design">
+        <h2>3. Proiectarea Interfetei Web</h2>
+        <h3>3.1 Motivatia Designului</h3>
+        <p>Designul interfetei urmareste un stil minimalist si functional, axat pe lizibilitate si usurinta in utilizare. Paleta de culori este rece, cu accente de albastru, avand ca scop crearea unei experiente de navigare calme si placute. Grila de carti (<code>.book-list</code>) foloseste un layout flexibil pentru a se adapta eficient la continut variabil.</p>
+
+        <h3>3.2 Design Responsiv</h3>
+        <p>Interfata este complet responsiva, utilizand CSS Media Queries pentru a se adapta la diferite dimensiuni de ecran. La rezolutii sub 1300px, bara de navigare se transforma intr-un meniu de tip "hamburger" controlat de <code>nav.js</code>, pentru a maximiza spatiul disponibil pe ecranele mobile. Layout-ul general trece de la o structura multi-coloana la una single-column pentru a asigura o experienta optima.</p>
+    </section>
+
+    <section id="data">
+        <h2>4. Structura si Provenienta Datelor</h2>
+        <h3>4.1 Modelarea Datelor</h3>
+        <p>
+            Structura datelor este relationala si este definita in <code>db_script.sql</code>.
+        </p>
+        <ul>
+            <li><strong>Entitati Principale:</strong> <code>users</code>, <code>books</code>, <code>groups</code>.</li>
+            <li><strong>Relatii:</strong> Tabelele de legatura precum <code>user_book_progress</code> si <code>group_members</code> modeleaza relatiile many-to-many.</li>
+            <li><strong>Integritate:</strong> Baza de date foloseste triggere (ex: <code>trg_validate_username_length</code>) pentru a impune reguli de business direct la nivel de date, asigurand consistenta indiferent de aplicatie.</li>
+        </ul>
+
+        <h3>4.2 Provenienta Datelor</h3>
+        <ul>
+            <li><strong>Date Initiale:</strong> Catalogul initial de carti este populat printr-un script de inserare in <code>db_script.sql</code>.</li>
+            <li><strong>Date Generate de Utilizatori:</strong> Majoritatea datelor dinamice (recenzii, evaluari, progres, grupuri) sunt generate direct de catre utilizatori prin intermediul interfetei web.</li>
+            <li><strong>Date din Servicii Externe:</strong> Informatiile despre bibliotecile din apropiere sunt obtinute in timp real de la API-ul public Nominatim, asa cum este implementat in functia <code>findLibrariesNearby</code> din <code>ModelFeed.php</code>.</li>
+        </ul>
+    </section>
+    
+    <footer class="bibliography">
+        <h2>Bibliografie</h2>
+        <ul>
+            <li> 
+              <a href="https://profs.info.uaic.ro/cosmin.varlan/pagini/tw.html">https://profs.info.uaic.ro/cosmin.varlan/pagini/tw.html</code></li>
+          <li> 
+              <a href="https://github.com/rick4470/IEEE-SRS-Tempate#readme">IEE System Requirements Specification Template</code></li>
+          <li> 
+              <a href="https://edu.info.uaic.ro/web-technologies/web-projects.html">https://edu.info.uaic.ro/web-technologies/web-projects.html</code></li>
+        </ul>
+    </footer>
+
+</body>
+</html>
