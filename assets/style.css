@@ -845,3 +845,9 @@ textarea {
   padding-left: 0;
   margin-left: 0;
 }
+.btn-admin{
+  margin-bottom: 10px;
+}
+.status-member{
+  margin-top : 10px;
+}
