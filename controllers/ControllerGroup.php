@@ -13,6 +13,7 @@ class ControllerGroup extends Controller
             $this->ViewGroup = new ViewGroup();
 
             $user = $this->getAuthenticatedUser();
+            $this->ViewGroup->setUser($user); // Pass user data to the view
             $currentUserId = $user ? $user['user_id'] : null;
 
             if (!$currentUserId && !in_array($actiune, ['view'])) {

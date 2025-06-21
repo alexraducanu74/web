@@ -11,6 +11,9 @@ class ControllerFeed extends Controller
         $this->modelFeed = new ModelFeed();
         $this->viewFeed = new ViewFeed();
 
+        $user = $this->getAuthenticatedUser();
+        $this->viewFeed->setUser($user); // Pass user data to the view
+
         $query = $_GET['q'] ?? '';
         $authorParams = $_GET['author'] ?? [];
         $genreParams = $_GET['genre'] ?? [];
@@ -113,11 +116,11 @@ class ControllerFeed extends Controller
             exit;
         }
         $userId = $user['user_id'];
-        $username = $user['username']; 
+        $username = $user['username'];
 
         $books = $this->modelFeed->getBooksWithUserProgress($userId);
 
-    
+
         $this->viewFeed->renderMyBooks($books, $username);
     }
 

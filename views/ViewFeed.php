@@ -9,6 +9,12 @@ class ViewFeed
     private array $allAuthors = [];
     private array $allGenres = [];
     private bool $isAdmin = false;
+    private ?array $user = null;
+
+    public function setUser(?array $user): void
+    {
+        $this->user = $user;
+    }
 
     public function setIsAdmin(bool $isAdmin): void
     {
@@ -166,8 +172,6 @@ class ViewFeed
 
     public function renderEditBookForm(array $book): void
     {
-        // Htmlspecialchars the book data here, just before rendering,
-        // rather than in the controller.
         $book['title'] = htmlspecialchars($book['title']);
         $book['author'] = htmlspecialchars($book['author']);
         $book['genre'] = htmlspecialchars($book['genre']);
@@ -187,11 +191,11 @@ class ViewFeed
         ]);
         echo $layout;
     }
-    
+
     public function getAuthSpecificLinks(): string
     {
-        if (isset($_SESSION['user_id'])) {
-            $username = isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'User';
+        if ($this->user) {
+            $username = htmlspecialchars($this->user['username']);
             return '<a href="index.php?controller=feed&actiune=myBooks">My Books</a>
                     <a href="index.php?controller=group&actiune=myGroups">My Groups</a>
                     <a href="index.php?controller=group&actiune=showCreateForm">Create Group</a>
@@ -263,7 +267,7 @@ class ViewFeed
 
     public function renderBook(array $book, ?array $userBookData = null, array $allReviews = [], ?float $averageRating = null): void
     {
-        $isLoggedIn = isset($_SESSION['user_id']);
+        $isLoggedIn = !is_null($this->user);
         $review = $userBookData['review'] ?? '';
         $pagesRead = $userBookData['pages_read'] ?? 0;
         $totalPages = $book['total_pages'] ?? 0;

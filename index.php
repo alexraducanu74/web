@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'vendor/autoload.php';
 require_once 'config/jwt_config.php';
 
@@ -15,18 +14,20 @@ $params = array_filter(array_map('trim', explode(',', $parametri)));
 
 $isApi = isset($_GET['api']) && $_GET['api'] == '1';
 
-$publicApiActions = ['genereazaRssApi'];
-
 if ($isApi) {
-    if (in_array($actiune, $publicApiActions)) {
-        new ControllerApiFeed($actiune, $params, []); 
-        exit;
-    } else {
-        require_once 'auth/auth_middleware.php';
-        $userData = verify_jwt_and_get_payload();
-        new ControllerApiFeed($actiune, $params, $userData);
+    // Make an exception for the public RSS feed, which does not need authentication.
+    if ($actiune === 'genereazaRssApi') {
+        new ControllerApiFeed($actiune, $params, []); // Call controller without user data.
         exit;
     }
+
+    // All other API calls require JWT authentication.
+    require_once 'auth/auth_middleware.php';
+
+    $userData = verify_jwt_and_get_payload();
+
+    new ControllerApiFeed($actiune, $params, $userData);
+    exit;
 } else {
     $controllerClass = 'Controller' . ucfirst(strtolower($controller));
     if (class_exists($controllerClass)) {

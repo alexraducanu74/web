@@ -96,16 +96,16 @@ class ControllerAuth extends Controller
         try {
             $jwt = JWT::encode($payload, JWT_SECRET_KEY, JWT_ALGORITHM);
 
-            // Stocăm în sesiune pentru paginile server-rendered
-            $_SESSION['jwt'] = $jwt;
-            $_SESSION['user_id'] = $userId;
-            $_SESSION['username'] = $username;
-            $_SESSION['is_admin'] = $isAdmin;
+            setcookie('jwt_auth', $jwt, [
+                'expires' => $expirationTime,
+                'path' => '/',
+                'secure' => isset($_SERVER['HTTPS']),
+                'httponly' => true, // Prevent JavaScript access
+                'samesite' => 'Lax'
+            ]);
 
-            // Returnăm token-ul ca JSON pentru client (JavaScript)
             header('Content-Type: application/json');
             echo json_encode(['success' => true, 'jwt_token' => $jwt]);
-
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'error' => 'Could not process login. Please try again.']);
@@ -162,11 +162,10 @@ class ControllerAuth extends Controller
     }
     public function logout(): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        $_SESSION = array();
-        session_destroy();
+        setcookie('jwt_auth', '', [
+            'expires' => time() - 3600,
+            'path' => '/',
+        ]);
         echo "<script>sessionStorage.removeItem('jwtToken'); window.location.href = 'index.php';</script>";
         exit();
     }

@@ -1,6 +1,13 @@
 <?php
 class ViewGroup
 {
+    private ?array $user = null;
+
+    public function setUser(?array $user): void
+    {
+        $this->user = $user;
+    }
+
     private function loadLayout(string $title, string $content, string $authLinks): string
     {
         $layoutPath = __DIR__ . '/layout.tpl';
@@ -31,12 +38,13 @@ class ViewGroup
 
     private function getAuthLinks(): string
     {
-        if (isset($_SESSION['user_id'])) {
+        if ($this->user) {
+            $username = htmlspecialchars($this->user['username']);
             return '<a href="index.php?controller=feed&actiune=myBooks">My Books</a>
                     <a href="index.php?controller=group&actiune=myGroups">My Groups</a>
                     <a href="index.php?controller=group&actiune=showCreateForm">Create Group</a>
                     <div class="separator"></div>
-                    <a href="index.php?controller=auth&actiune=logout">Logout (' . htmlspecialchars($_SESSION['username'] ?? '') . ')</a>';
+                    <a href="index.php?controller=auth&actiune=logout">Logout (' . $username . ')</a>';
         } else {
             return '
                 <a href="index.php?controller=auth&actiune=showLoginForm">Login</a>
@@ -78,7 +86,7 @@ class ViewGroup
                         <button type="submit" class="btn">Create Group</button>
                       </form>
                       <script src="assets/js/nav.js" defer></script>'
-                      ;
+        ;
         $this->renderPage('Create Group', $content);
     }
 
@@ -103,7 +111,7 @@ class ViewGroup
             $content .= '</div>';
         }
 
-        $currentUserId = $_SESSION['user_id'] ?? null;
+        $currentUserId = $this->user['user_id'] ?? null;
         if ($currentUserId && !$isMember && $memberStatus !== 'pending') {
             $content .= '<div class="join-group-section">
                             <h3>Join this Group</h3>
@@ -179,7 +187,7 @@ class ViewGroup
                      </form>
                      <hr>
                      <script src="assets/js/nav.js" defer></script>'
-                     ;
+        ;
 
         if (empty($groups)) {
             $content .= '<p>You are not a member of any groups yet.</p>';

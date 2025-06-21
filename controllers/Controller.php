@@ -25,13 +25,13 @@ abstract class Controller
         }
     }
 
-    protected function getAuthenticatedUser()
+    protected function getAuthenticatedUser(): ?array
     {
-        if (session_status() !== PHP_SESSION_ACTIVE || !isset($_SESSION['jwt'])) {
-            return false;
+        if (!isset($_COOKIE['jwt_auth'])) {
+            return null;
         }
 
-        $token = $_SESSION['jwt'];
+        $token = $_COOKIE['jwt_auth'];
 
         try {
             $decodedPayload = JWT::decode($token, new Key(JWT_SECRET_KEY, JWT_ALGORITHM));
@@ -44,14 +44,14 @@ abstract class Controller
                 ];
             }
 
-            return false;
+            return null;
 
         } catch (ExpiredException $e) {
-            return false;
+            return null;
         } catch (SignatureInvalidException $e) {
-            return false;
+            return null;
         } catch (Exception $e) {
-            return false;
+            return null;
         }
     }
 }
