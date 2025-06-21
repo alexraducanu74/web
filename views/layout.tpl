@@ -11,7 +11,7 @@
 
 <div class="navbar">
   <div class="nav-left">
-    <a href="/index.php" class="logo">BoW</a>
+    <a href="index.php" class="logo">BoW</a>
     <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation" >
       <span class="hamburger"></span>
       <span class="hamburger"></span>
