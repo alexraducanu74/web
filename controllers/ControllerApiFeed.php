@@ -199,7 +199,7 @@ class ControllerApiFeed
 
         $channel = $doc->createElement("channel");
         $channel->appendChild($doc->createElement("title", "Carti si Recenzii Adaugate Recent"));
-        $channel->appendChild($doc->createElement("link", "http://localhost/web/index.php"));
+        $channel->appendChild($doc->createElement("link", "http://localhost/index.php"));
         $channel->appendChild($doc->createElement("description", "Cartile si recenziile adaugate cel mai recent"));
         $channel->appendChild($doc->createElement("language", "ro"));
         $channel->appendChild($doc->createElement("pubDate", date(DATE_RSS)));
@@ -211,7 +211,7 @@ class ControllerApiFeed
             $item = $doc->createElement("item");
 
             $titleText = $book['title'];
-            $linkText = "http://localhost/web/index.php?controller=feed&actiune=viewBook&parametri=" . $book['id'];
+            $linkText = "http://localhost/index.php?controller=feed&actiune=viewBook&parametri=" . $book['id'];
             $descText = "Autor: " . $book['author'] . " | Gen: " . $book['genre'];
 
             $item->appendChild($doc->createElement("title", htmlspecialchars($titleText, ENT_XML1, 'UTF-8')));
@@ -236,7 +236,7 @@ class ControllerApiFeed
             $item = $doc->createElement("item");
 
             $titleText = "Review for: " . $review['title'] . " by " . $review['users_uid'];
-            $linkText = "http://localhost/web/index.php?controller=feed&actiune=viewBook&parametri=" . $review['book_id'];
+            $linkText = "http://localhost/index.php?controller=feed&actiune=viewBook&parametri=" . $review['book_id'];
             $ratingValue = (int) $review['rating'];
             $descText = htmlspecialchars($review['review'], ENT_XML1, 'UTF-8')
                 . " | Pages read: " . $review['pages_read'] . " | Rating: " . $ratingValue;

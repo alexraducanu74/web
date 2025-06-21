@@ -11,7 +11,7 @@
 
 <div class="navbar">
   <div class="nav-left">
-    <a href="/web/index.php" class="logo">BoW</a>
+    <a href="/index.php" class="logo">BoW</a>
     <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation" >
       <span class="hamburger"></span>
       <span class="hamburger"></span>
@@ -20,7 +20,7 @@
   </div>
 
   <div class="search-container">
-    <form action="/web/index.php" method="get" class="search-form">
+    <form action="/index.php" method="get" class="search-form">
       <input type="hidden" name="controller" value="feed">
       <input type="hidden" name="actiune" value="search">
       <input type="text" name="q" placeholder="Cauta o carte...">
@@ -36,7 +36,7 @@
       <div class="separator"></div>
       <a href="index.php?controller=stats&actiune=exportDocBook">Export DocBook</a>
       <div class="separator"></div>
-      <a href="/web/index.php?controller=feed&actiune=genereazaRssApi&api=1" aria-label="RSS Feed" class="rss-icon">
+      <a href="index.php?controller=feed&actiune=genereazaRssApi&api=1" aria-label="RSS Feed" class="rss-icon">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" >
         <path d="M4 11a9 9 0 0 1 9 9"/>
         <path d="M4 4a16 16 0 0 1 16 16"/>
