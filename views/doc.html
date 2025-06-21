@@ -62,7 +62,7 @@
             <section role="doc-abstract" typeof="sa:Abstract">
                 <h2>1. Introducere</h2>
                 <p>
-                    Acest document descrie cerintele functionale si non-functionale pentru aplicatia web "Books on Web" (BoW). Obiectivul sau este de a oferi o specificatie clara a functionalitatilor esentiale, a interactiunii cu utilizatorul si a arhitecturii sistemului, destinata echipei de dezvoltare si partilor interesate.
+                    Acest document descrie cerintele pentru aplicatia web "Books on Web" (BoW). Obiectivul sau este de a oferi o specificatie clara a functionalitatilor esentiale, a interactiunii cu utilizatorul si a arhitecturii sistemului, destinata echipei de dezvoltare.
                 </p>
 
                 <h3>1.1 Scopul Documentului</h3>
@@ -121,7 +121,7 @@
                 <ul>
                     <li>Utilizatorii se pot inregistra cu un nume de utilizator, email si parola.</li>
                     <li>Utilizatorii se pot autentifica folosind numele de utilizator sau email-ul si parola.</li>
-                    <li>La autentificare, sistemul genereaza un token JWT care este stocat in sesiunea PHP pentru paginile redate pe server si trimis clientului pentru a fi utilizat in cererile API.</li>
+                    <li>La autentificare, sistemul genereaza un token JWT care este stocat cookie-uri sau headere pentru paginile redate pe server si trimis clientului pentru a fi utilizat in cererile API.</li>
                     <li>Utilizatorii se pot deloga, actiune care distruge sesiunea si sterge token-ul JWT din `sessionStorage`.</li>
                 </ul>
 
@@ -167,7 +167,7 @@
                 <h2>5. Cerinte Non-Functionale</h2>
                 <h3>5.1 Securitate</h3>
                 <ul>
-                    <li><strong>Autentificare:</strong> Sistemul utilizeaza JSON Web Tokens (JWT) conform standardelor. Exista doua mecanisme de validare: unul bazat pe `$_SESSION` pentru paginile clasice si unul bazat pe header-ul `Authorization` pentru API-ul securizat.</li>
+                    <li><strong>Autentificare:</strong> Sistemul utilizeaza JSON Web Tokens (JWT) conform standardelor, acesta functionand intr-o maniera stateless.</li>
                     <li><strong>Autorizare:</strong> Rolurile (utilizator/administrator) sunt stocate in payload-ul JWT si verificate pe server inainte de a permite actiuni critice (ex: stergerea unei carti).</li>
                     <li><strong>Stocarea parolelor:</strong> Parolele sunt salvate in baza de date folosind un hash generat de functia `password_hash()`. Verificarea se face cu `password_verify()`.</li>
                     <li><strong>Prevenirea SQL Injection:</strong> Toate interogarile catre baza de date se realizeaza prin prepared statements folosind extensia PDO, eliminand riscul de injectii SQL.</li>
