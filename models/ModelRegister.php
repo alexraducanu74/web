@@ -1,5 +1,5 @@
 <?php
-class ModelSignup
+class ModelRegister
 {
     protected function connect(): PDO
     {

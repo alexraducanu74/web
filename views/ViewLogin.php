@@ -1,20 +1,13 @@
 <?php
 class ViewLogin
 {
-    private function getLoginForm(array $data = []): string
+    private function getLoginForm(): string
     {
-        $error_message = $data['error_message'] ?? '';
-        $jwt_token = $data['jwt_token'] ?? null;
-
         $formHtml = '<section class="index-login">
             <div class="wrapper">
                 <div class="index-login-login">
                     <h4>LOGIN</h4>
                     <p>Already have an account? Login here!</p>';
-
-        if (!empty($error_message)) {
-            $formHtml .= "<p style='color:red;'>" . htmlspecialchars($error_message) . "</p>";
-        }
 
         $formHtml .= '<form action="index.php?controller=auth&actiune=login" method="post">
                         <div><input type="text" name="uid" placeholder="Username or Email" required></div>
@@ -25,12 +18,6 @@ class ViewLogin
                 </div>
             </div>
         </section>';
-
-        if ($jwt_token) {
-            $formHtml .= "<script>
-                var jwtTokenToStore = " . json_encode($jwt_token) . ";
-            </script>";
-        }
 
         $formHtml .= '<script src="assets/js/auth.js" defer></script>';
 
@@ -58,9 +45,9 @@ class ViewLogin
         return $template;
     }
 
-    public function render(array $data = []): void
+    public function render(): void
     {
-        $content = $this->getLoginForm($data);
+        $content = $this->getLoginForm();
         $authLinks = $this->getGuestAuthLinks();
 
         $layout = $this->loadTemplate('layout.tpl', [

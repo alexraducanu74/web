@@ -3,7 +3,7 @@ use Firebase\JWT\JWT;
 class ControllerAuth extends Controller
 {
     private ModelLogin $modelLogin;
-    private ModelSignup $modelSignup;
+    private ModelRegister $modelRegister;
     private ViewLogin $viewLogin;
     private ViewRegister $viewRegister;
     private string $action;
@@ -12,7 +12,7 @@ class ControllerAuth extends Controller
     {
         parent::__construct();
         $this->modelLogin = new ModelLogin();
-        $this->modelSignup = new ModelSignup();
+        $this->modelRegister = new ModelRegister();
         $this->viewLogin = new ViewLogin();
         $this->viewRegister = new ViewRegister();
         $this->action = $action;
@@ -45,11 +45,11 @@ class ControllerAuth extends Controller
     }
     public function showLoginForm(array $data = []): void
     {
-        echo $this->viewLogin->render($data);
+        echo $this->viewLogin->render();
     }
     public function showRegisterForm(array $data = []): void
     {
-        echo $this->viewRegister->render($data);
+        echo $this->viewRegister->render();
     }
     public function login(): void
     {
@@ -113,51 +113,59 @@ class ControllerAuth extends Controller
     }
     public function register(): void
     {
+        header('Content-Type: application/json');
         if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            $this->showRegisterForm(['error_message' => 'Invalid request method.']);
+            http_response_code(405);
+            echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
             return;
         }
+
         $uid = $_POST["uid"] ?? '';
         $pwd = $_POST["pwd"] ?? '';
         $pwdRepeat = $_POST["pwdrepeat"] ?? '';
         $email = $_POST["email"] ?? '';
+
         if (empty($uid) || empty($pwd) || empty($pwdRepeat) || empty($email)) {
-            $this->showRegisterForm(['error_message' => "Please input all the fields."]);
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Please fill in all fields.']);
             return;
         }
         if (!preg_match("/^[a-zA-Z0-9]*$/", $uid)) {
-            $this->showRegisterForm(['error_message' => "Username is invalid. Only alphanumeric characters allowed."]);
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Username is invalid. Only alphanumeric characters allowed.']);
             return;
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->showRegisterForm(['error_message' => "Email address is invalid."]);
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Email address is invalid.']);
             return;
         }
         if ($pwd !== $pwdRepeat) {
-            $this->showRegisterForm(['error_message' => "Passwords do not match."]);
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Passwords do not match.']);
             return;
         }
-        if (!$this->modelSignup->checkUser($uid, $email)) {
-            $this->showRegisterForm(['error_message' => "Username or email already taken."]);
+        if (!$this->modelRegister->checkUser($uid, $email)) {
+            http_response_code(409); // 409 Conflict
+            echo json_encode(['success' => false, 'error' => 'Username or email already taken.']);
             return;
         }
+
         try {
-            if ($this->modelSignup->setUser($uid, $pwd, $email)) {
-                header("Location: index.php");
-                exit();
+            if ($this->modelRegister->setUser($uid, $pwd, $email)) {
+                echo json_encode(['success' => true, 'message' => 'Registration successful! You can now log in.']);
             } else {
-                $this->showRegisterForm(['error_message' => "An error occurred during registration. Please try again."]);
+                http_response_code(500);
+                echo json_encode(['success' => false, 'error' => 'An error occurred during registration. Please try again.']);
             }
         } catch (PDOException $e) {
             $errorMsg = $e->getMessage();
-
+            $message = "Database error during registration.";
             if (strpos($errorMsg, 'Numele de utilizator este prea scurt') !== false) {
-                $message = "Numele de utilizator trebuie sa aiba cel putin 3 caractere.";
-            } else {
-                $message = "Eroare la inregistrare. incearca din nou.";
+                $message = "Username must be at least 3 characters long.";
             }
-
-            $this->showRegisterForm(['error_message' => $message]);
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => $message]);
         }
     }
     public function logout(): void

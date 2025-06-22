@@ -1,23 +1,13 @@
 <?php
 class ViewRegister
 {
-    private function getRegisterForm(array $data = []): string
+    private function getRegisterForm(): string
     {
-        $error_message = $data['error_message'] ?? '';
-        $success_message = $data['success_message'] ?? '';
-
         $formHtml = '<section class="index-login">
             <div class="wrapper">
                 <div class="index-login-signup">
                     <h4>SIGN UP</h4>
                     <p>Don\'t have an account yet? Sign up here!</p>';
-
-        if (!empty($error_message)) {
-            $formHtml .= "<p style='color:red;'>" . htmlspecialchars($error_message) . "</p>";
-        }
-        if (!empty($success_message)) {
-            $formHtml .= "<p style='color:green;'>" . htmlspecialchars($success_message) . "</p>";
-        }
 
         $formHtml .= '<form action="index.php?controller=auth&actiune=register" method="post">
                         <div><input type="text" name="uid" placeholder="Username" required></div>
@@ -55,14 +45,17 @@ class ViewRegister
         return $template;
     }
 
-    public function render(array $data = []): void
+    public function render(): void
     {
-        $content = $this->getRegisterForm($data);
+        $content = $this->getRegisterForm();
         $authLinks = $this->getGuestAuthLinks();
+
+        $scripts = '<script src="assets/js/nav.js" defer></script>' .
+            '<script src="assets/js/auth.js" defer></script>';
 
         $layout = $this->loadTemplate('layout.tpl', [
             'title' => 'Sign Up',
-            'content' => $content . '<script src="assets/js/nav.js" defer></script>',
+            'content' => $content . $scripts,
             'authLinks' => $authLinks
         ]);
 

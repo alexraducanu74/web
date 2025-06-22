@@ -14,7 +14,7 @@ function verify_jwt_and_get_payload()
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
 
     if (!$authHeader) {
-        http_response_code(401); // Unauthorized
+        http_response_code(401);
         echo json_encode(["status" => "error", "message" => "Authorization header not found."]);
         exit;
     }

@@ -17,7 +17,7 @@ return array(
     'ModelFeed' => $baseDir . '/models/ModelFeed.php',
     'ModelGroup' => $baseDir . '/models/ModelGroup.php',
     'ModelLogin' => $baseDir . '/models/ModelLogin.php',
-    'ModelSignup' => $baseDir . '/models/ModelSignup.php',
+    'ModelRegister' => $baseDir . '/models/ModelRegister.php',
     'ModelStats' => $baseDir . '/models/ModelStats.php',
     'ViewFeed' => $baseDir . '/views/ViewFeed.php',
     'ViewGroup' => $baseDir . '/views/ViewGroup.php',

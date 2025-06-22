@@ -32,7 +32,7 @@ class ComposerStaticInit20fad51902f91e7fd3039e016a6556b5
         'ModelFeed' => __DIR__ . '/../..' . '/models/ModelFeed.php',
         'ModelGroup' => __DIR__ . '/../..' . '/models/ModelGroup.php',
         'ModelLogin' => __DIR__ . '/../..' . '/models/ModelLogin.php',
-        'ModelSignup' => __DIR__ . '/../..' . '/models/ModelSignup.php',
+        'ModelRegister' => __DIR__ . '/../..' . '/models/ModelRegister.php',
         'ModelStats' => __DIR__ . '/../..' . '/models/ModelStats.php',
         'ViewFeed' => __DIR__ . '/../..' . '/views/ViewFeed.php',
         'ViewGroup' => __DIR__ . '/../..' . '/views/ViewGroup.php',
